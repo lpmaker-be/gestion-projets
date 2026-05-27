@@ -1,1 +1,664 @@
-<!-- voir D:\claude\gestion_projets\index.html — fichier trop volumineux pour inline, copier depuis le dossier local -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestionnaire de Projets</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb;--sidebar:#1f2d3d;--sidebar-hover:#2d3f52;--sidebar-active:#0073ea;
+  --white:#ffffff;--border:#e6e9ef;--text:#323338;--text2:#676879;--text3:#c3c6d4;
+  --accent:#0073ea;--accent-h:#0060c2;
+  --green:#00c875;--orange:#fdab3d;--red:#e2445c;--purple:#a25ddc;
+  --blue:#579bfc;--yellow:#ffcb00;--grey:#c4c4c4;--pink:#ff7575;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Figtree',sans-serif}
+body{background:var(--bg);color:var(--text);font-size:14px;height:100vh;overflow:hidden;display:flex}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.sidebar{width:230px;min-width:230px;background:var(--sidebar);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden}
+.sidebar-logo{padding:16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.logo-text{color:#fff;font-size:15px;font-weight:600}
+.sb-section{padding:8px 8px 4px}
+.sb-label{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.2px;padding:8px 10px 4px;font-weight:600}
+.sb-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:6px;cursor:pointer;color:rgba(255,255,255,.65);font-size:13px;transition:all .15s;user-select:none;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:var(--sidebar-hover);color:#fff}
+.sb-item.active{background:var(--sidebar-active);color:#fff}
+.sb-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.sb-count{margin-left:auto;background:rgba(255,255,255,.1);font-size:11px;padding:1px 7px;border-radius:10px;color:rgba(255,255,255,.4)}
+.sb-footer{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-footer-text{font-size:10px;color:rgba(255,255,255,.2);line-height:1.6;word-break:break-all}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
+.topbar{height:54px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0;z-index:10}
+.topbar-title{font-size:17px;font-weight:700;color:var(--text);flex:1}
+.search-wrap{position:relative}
+.search-wrap input{background:var(--bg);border:1.5px solid var(--border);color:var(--text);padding:6px 10px 6px 32px;border-radius:6px;font-size:13px;width:190px;outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
+.btn{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-h)}
+.btn-secondary{background:var(--white);color:var(--text2);border:1.5px solid var(--border)}.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.view-tabs{height:38px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:stretch;padding:0 16px;gap:2px;flex-shrink:0}
+.view-tab{padding:0 12px;font-size:13px;cursor:pointer;color:var(--text2);border:none;background:none;display:flex;align-items:center;gap:6px;font-weight:500;transition:all .15s;border-bottom:2px solid transparent}
+.view-tab:hover{color:var(--text)}.view-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.content{flex:1;overflow:auto}
+.pill{display:inline-flex;align-items:center;justify-content:center;padding:0 9px;height:22px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;border:none;transition:filter .15s}
+.pill:hover{filter:brightness(.9)}
+.s-todo{background:#e2e2e2;color:#555}.s-prog{background:#fdab3d;color:#fff}.s-done{background:#00c875;color:#fff}.s-block{background:#e2445c;color:#fff}
+.p-high{background:#e2445c;color:#fff}.p-med{background:#fdab3d;color:#fff}.p-low{background:#00c875;color:#fff}
+.project-block{margin-bottom:2px}
+.proj-hdr{display:flex;align-items:center;height:42px;background:var(--white);border-bottom:1px solid var(--border);border-top:1px solid var(--border);padding:0 10px;gap:6px;position:sticky;top:0;z-index:5}
+.collapse-btn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:10px;border-radius:4px;flex-shrink:0;transition:transform .2s;border:none;background:none}
+.collapse-btn.open{transform:rotate(90deg)}
+.proj-color{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.proj-name-inp{font-size:14px;font-weight:700;color:var(--text);border:none;background:none;outline:none;flex:1;cursor:pointer;min-width:0}
+.proj-name-inp:focus{background:var(--bg);border-radius:4px;padding:1px 6px;cursor:text}
+.proj-tc{font-size:11px;color:var(--text3);margin-left:4px;white-space:nowrap}
+.proj-prog{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.mini-pb{width:70px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.mini-pb-fill{height:100%;border-radius:3px;transition:width .3s}
+.mini-pb-txt{font-size:11px;color:var(--text2);min-width:28px;text-align:right}
+.proj-actions{display:flex;gap:3px;margin-left:8px;flex-shrink:0}
+.ic-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ic-btn:hover{background:var(--bg);color:var(--accent)}
+.tbl-wrap{overflow-x:auto}
+.btbl{width:100%;border-collapse:collapse;min-width:760px}
+.btbl thead th{height:32px;background:var(--bg);border-bottom:2px solid var(--border);font-size:11px;font-weight:600;color:var(--text2);text-align:left;padding:0 10px;white-space:nowrap;position:sticky;top:42px;z-index:4;text-transform:uppercase;letter-spacing:.4px}
+.btbl tbody tr{height:38px;border-bottom:1px solid var(--border);background:var(--white);transition:background .1s;cursor:pointer}
+.btbl tbody tr:hover{background:#f0f4ff}
+.btbl tbody td{padding:0 10px;font-size:13px;color:var(--text);vertical-align:middle;white-space:nowrap}
+.btbl tbody tr.row-done{opacity:.55}
+.row-chk{width:15px;height:15px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.tname-cell{display:flex;align-items:center;gap:7px;max-width:360px}
+.tname-txt{flex:1;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.tname-txt.done{text-decoration:line-through;color:var(--text3)}
+.open-btn{opacity:0;font-size:10px;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:1px 5px;background:none;cursor:pointer;white-space:nowrap}
+.btbl tbody tr:hover .open-btn{opacity:1}
+.note-ic{font-size:11px;color:var(--text3)}
+.dl-cell{font-size:12px;color:var(--text2)}.dl-cell.overdue{color:var(--red);font-weight:600}.dl-cell.soon{color:var(--orange);font-weight:600}
+.add-row td{padding:0 10px;height:34px;background:var(--white);border-bottom:1px solid var(--border)}
+.add-task-btn{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0}.add-task-btn:hover{color:var(--accent)}
+.add-proj-row{padding:10px 16px}
+.add-proj-btn{background:none;border:1.5px dashed var(--border);color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:6px;transition:all .15s}.add-proj-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,115,234,.04)}
+.kanban-wrap{display:flex;gap:14px;padding:16px;height:100%;overflow-x:auto;align-items:flex-start}
+.kanban-col{min-width:240px;max-width:240px;background:var(--bg);border-radius:8px;overflow:hidden;flex-shrink:0}
+.kanban-col-hdr{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600}
+.kanban-col-hdr .kcnt{font-size:11px;background:rgba(0,0,0,.07);padding:1px 7px;border-radius:10px;font-weight:500}
+.kanban-cards{padding:8px;display:flex;flex-direction:column;gap:8px;min-height:80px}
+.k-card{background:var(--white);border-radius:6px;border:1px solid var(--border);padding:10px 12px;cursor:pointer;transition:box-shadow .15s}
+.k-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.1)}
+.k-card-proj{font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.k-card-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.4}
+.k-card-name.done{text-decoration:line-through;color:var(--text3)}
+.k-card-footer{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.k-card-dl{font-size:11px;color:var(--text2)}.k-card-dl.overdue{color:var(--red)}.k-card-dl.soon{color:var(--orange)}
+.k-add-btn{display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:12px;color:var(--text3);cursor:pointer;border:none;background:none;width:100%;transition:color .15s}.k-add-btn:hover{color:var(--accent)}
+.drag-over{background:#e8f0fe !important;border:2px dashed var(--accent)}
+.cal-wrap{padding:16px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-nav h2{font-size:16px;font-weight:600}
+.cal-nav-btns{display:flex;gap:6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
+.cal-day-hdr{background:var(--bg);padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.cal-day{background:var(--white);min-height:90px;padding:6px}
+.cal-day.other-month{background:#fafafa}.cal-day.today{background:#f0f4ff}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.cal-day.today .cal-day-num{color:#fff;background:var(--accent);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px}
+.cal-event{font-size:10px;padding:2px 5px;border-radius:3px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;font-weight:500;color:#fff}
+.cal-event:hover{filter:brightness(.9)}
+.gantt-outer{padding:16px}
+.gantt-hdr{display:flex;align-items:center;height:32px;background:var(--white);border:1px solid var(--border);border-radius:6px 6px 0 0}
+.gantt-lbl-hdr{width:220px;min-width:220px;padding:0 12px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;border-right:1px solid var(--border)}
+.gantt-months{flex:1;overflow:hidden;position:relative;height:32px}
+.gantt-month-tick{position:absolute;top:0;bottom:0;border-left:1px solid var(--border);display:flex;align-items:center;padding-left:4px;font-size:10px;color:var(--text2);font-weight:600;white-space:nowrap;overflow:hidden}
+.gantt-body{border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;overflow:hidden}
+.gantt-row{display:flex;align-items:center;height:36px;border-bottom:1px solid var(--border)}
+.gantt-row:last-child{border-bottom:none}.gantt-row:hover{background:#f8f9ff}
+.gantt-label{width:220px;min-width:220px;padding:0 12px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.gantt-timeline{flex:1;position:relative;height:100%}
+.gantt-bar{position:absolute;height:18px;top:9px;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;cursor:pointer}
+.gantt-bar:hover{filter:brightness(.9)}
+.gantt-today{position:absolute;top:0;bottom:0;width:2px;background:var(--red);opacity:.5;pointer-events:none;z-index:2}
+.dash-wrap{padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.dash-widget{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px}
+.dash-widget h3{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-box{background:var(--bg);border-radius:7px;padding:12px;text-align:center}
+.stat-val{font-size:26px;font-weight:700;color:var(--text)}
+.stat-val.green{color:var(--green)}.stat-val.orange{color:var(--orange)}.stat-val.red{color:var(--red)}.stat-val.blue{color:var(--accent)}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:3px}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{flex:1}
+.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.progress-list .pl-row{margin-bottom:10px}
+.pl-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.pl-bar{height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
+.pl-fill{height:100%;border-radius:4px;transition:width .4s}
+.overdue-list .od-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.overdue-list .od-row:last-child{border-bottom:none}
+.activity-list .al-row{padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
+.activity-list .al-row:last-child{border-bottom:none}
+.al-time{font-size:10px;color:var(--text3);margin-top:2px}
+.priority-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:8px}
+.priority-seg{transition:width .4s}
+.summary-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 20px;display:flex;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.sum-item{display:flex;align-items:center;gap:5px;font-size:12px}
+.sum-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.sum-lbl{color:var(--text2)}.sum-val{font-weight:600;color:var(--text)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;box-shadow:0 10px 50px rgba(0,0,0,.2);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:mIn .17s ease}
+@keyframes mIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-hdr{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between}
+.modal-hdr h2{font-size:15px;font-weight:700}
+.modal-x{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text2);width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:4px}.modal-x:hover{background:var(--bg)}
+.modal-body{padding:16px 22px}
+.frow{margin-bottom:13px}
+.frow label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.frow input,.frow select,.frow textarea{width:100%;background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:8px 11px;border-radius:6px;font-size:13px;outline:none;transition:border-color .15s;font-family:'Figtree',sans-serif}
+.frow input:focus,.frow select:focus,.frow textarea:focus{border-color:var(--accent)}
+.frow textarea{min-height:85px;resize:vertical}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.spopup{display:none;position:absolute;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:60;min-width:130px;padding:5px;top:calc(100% + 3px);left:0}
+.spopup.open{display:block}
+.spopup-opt{padding:5px 8px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:1px}.spopup-opt:hover{filter:brightness(.9)}
+.cell-rel{position:relative;display:flex;align-items:center}
+.tt-btn{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.tt-btn:hover{border-color:var(--accent);color:var(--accent)}.tt-btn.running{background:#fff0f0;border-color:var(--red);color:var(--red)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:#323338;color:#fff;font-size:13px;padding:9px 18px;border-radius:8px;z-index:200;opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.filter-chip{padding:3px 10px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;cursor:pointer;color:var(--text2);background:var(--white);transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.filter-chip:hover{border-color:var(--accent);color:var(--accent)}.filter-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">GP</div>
+    <span class="logo-text">Mes Projets</span>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Vues</div>
+    <button class="sb-item" onclick="goView('dashboard',this)">📊 Tableau de bord</button>
+    <button class="sb-item active" onclick="goView('board',this)">📋 Tableau</button>
+    <button class="sb-item" onclick="goView('kanban',this)">🗂 Kanban</button>
+    <button class="sb-item" onclick="goView('calendar',this)">📅 Calendrier</button>
+    <button class="sb-item" onclick="goView('gantt',this)">📈 Timeline</button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Statut</div>
+    <button class="sb-item" onclick="setSideFilter('all',this)"><span class="sb-dot" style="background:#888"></span>Tous<span class="sb-count" id="sc-all">0</span></button>
+    <button class="sb-item" onclick="setSideFilter('todo',this)"><span class="sb-dot" style="background:#c4c4c4"></span>À faire<span class="sb-count" id="sc-todo">0</span></button>
+    <button class="sb-item" onclick="setSideFilter('prog',this)"><span class="sb-dot" style="background:#fdab3d"></span>En cours<span class="sb-count" id="sc-prog">0</span></button>
+    <button class="sb-item" onclick="setSideFilter('done',this)"><span class="sb-dot" style="background:#00c875"></span>Terminés<span class="sb-count" id="sc-done">0</span></button>
+    <button class="sb-item" onclick="setSideFilter('block',this)"><span class="sb-dot" style="background:#e2445c"></span>Bloqués<span class="sb-count" id="sc-block">0</span></button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Type</div>
+    <button class="sb-item" onclick="setSideType('arduino',this)">🔌 Arduino / RPI</button>
+    <button class="sb-item" onclick="setSideType('software',this)">💻 Logiciel</button>
+    <button class="sb-item" onclick="setSideType('mixed',this)">⚙️ Mixte</button>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-footer-text">💾 D:\Onedrive\Documents\Claude\gestion_projets\projets.json</div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Tableau</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-left:auto">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="search" placeholder="Rechercher..." oninput="renderAll()"></div>
+      <select class="btn btn-secondary btn-sm" id="filter-type" onchange="renderAll()">
+        <option value="">Tous types</option><option value="arduino">Arduino/RPI</option><option value="software">Logiciel</option><option value="mixed">Mixte</option>
+      </select>
+      <select class="btn btn-secondary btn-sm" id="sort-by" onchange="renderAll()">
+        <option value="created">Tri: Création</option><option value="deadline">Tri: Deadline</option><option value="priority">Tri: Priorité</option><option value="name">Tri: Nom A-Z</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="openProjectModal()">+ Nouveau projet</button>
+    </div>
+  </div>
+  <div class="view-tabs">
+    <button class="view-tab" onclick="setView('dashboard',this)">📊 Dashboard</button>
+    <button class="view-tab active" onclick="setView('board',this)">📋 Tableau</button>
+    <button class="view-tab" onclick="setView('kanban',this)">🗂 Kanban</button>
+    <button class="view-tab" onclick="setView('calendar',this)">📅 Calendrier</button>
+    <button class="view-tab" onclick="setView('gantt',this)">📈 Timeline</button>
+  </div>
+  <div class="filter-bar">
+    <span style="font-size:12px;color:var(--text2);font-weight:500">Priorité :</span>
+    <button class="filter-chip active" id="fp-all" onclick="togglePrioFilter('all')">Toutes</button>
+    <button class="filter-chip" id="fp-high" onclick="togglePrioFilter('high')">🔴 Haute</button>
+    <button class="filter-chip" id="fp-med" onclick="togglePrioFilter('med')">🟡 Moyenne</button>
+    <button class="filter-chip" id="fp-low" onclick="togglePrioFilter('low')">🟢 Basse</button>
+    <span style="font-size:12px;color:var(--text2);font-weight:500;margin-left:8px">Afficher :</span>
+    <button class="filter-chip active" id="show-done" onclick="toggleShowDone()">✅ Terminées</button>
+  </div>
+  <div class="content" id="content"></div>
+  <div class="summary-bar" id="summary-bar"></div>
+</div>
+
+<!-- MODAL PROJET -->
+<div class="modal-overlay" id="modal-project">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="modal-proj-title">Nouveau projet</h2><button class="modal-x" onclick="closeModal('modal-project')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><label>Nom du projet</label><input id="f-name" type="text" placeholder="Ex: Capteur température salon"></div>
+      <div class="grid2">
+        <div class="frow"><label>Type</label><select id="f-type"><option value="arduino">Arduino / Raspberry Pi</option><option value="software">Logiciel</option><option value="mixed">Mixte</option></select></div>
+        <div class="frow"><label>Statut</label><select id="f-status"><option value="todo">À faire</option><option value="prog">En cours</option><option value="done">Terminé</option><option value="block">Bloqué</option></select></div>
+      </div>
+      <div class="grid3">
+        <div class="frow"><label>Priorité</label><select id="f-priority"><option value="high">🔴 Haute</option><option value="med" selected>🟡 Moyenne</option><option value="low">🟢 Basse</option></select></div>
+        <div class="frow"><label>Début</label><input id="f-start" type="date"></div>
+        <div class="frow"><label>Deadline</label><input id="f-deadline" type="date"></div>
+      </div>
+      <div class="frow"><label>Composants / Matériel</label><input id="f-components" type="text" placeholder="Ex: Arduino Uno, DHT22..."></div>
+      <div class="frow"><label>Description / Notes</label><textarea id="f-desc" placeholder="Objectifs, liens utiles..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('modal-project')">Annuler</button><button class="btn btn-primary btn-sm" onclick="saveProject()">💾 Sauvegarder</button></div>
+  </div>
+</div>
+
+<!-- MODAL TÂCHE -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="modal-task-title">Nouvelle tâche</h2><button class="modal-x" onclick="closeModal('modal-task')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><label>Titre</label><input id="t-name" type="text" placeholder="Ex: Câbler DHT22..."></div>
+      <div class="grid3">
+        <div class="frow"><label>Priorité</label><select id="t-priority"><option value="high">🔴 Haute</option><option value="med" selected>🟡 Moyenne</option><option value="low">🟢 Basse</option></select></div>
+        <div class="frow"><label>Début</label><input id="t-start" type="date"></div>
+        <div class="frow"><label>Deadline</label><input id="t-deadline" type="date"></div>
+      </div>
+      <div class="grid2">
+        <div class="frow"><label>Estimation (h)</label><input id="t-estimate" type="number" min="0" step="0.5" placeholder="ex: 2.5"></div>
+        <div class="frow"><label>Dépend de</label><input id="t-depends" type="text" placeholder="Nom tâche parente"></div>
+      </div>
+      <div class="frow"><label>Notes</label><textarea id="t-note" placeholder="Détails techniques..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('modal-task')">Annuler</button><button class="btn btn-primary btn-sm" onclick="saveTask()">+ Ajouter</button></div>
+  </div>
+</div>
+
+<!-- MODAL DÉTAIL -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-hdr"><h2 id="det-title" style="font-size:16px;flex:1;padding-right:12px"></h2><button class="modal-x" onclick="closeModal('modal-detail')">✕</button></div>
+    <div class="modal-body" id="det-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" style="color:var(--red);border:1.5px solid var(--red);background:none" id="det-del">🗑 Supprimer</button>
+      <button class="btn btn-secondary btn-sm" id="det-edit">✏️ Modifier</button>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('modal-detail')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API='http://localhost:8742';
+let data={projects:[],tasks:{}};
+let currentView='board',sideFilter='all',sideType='',collapsed=new Set(),prioFilter='all',showDone=true;
+let editingProjId=null,editingTaskId=null,taskProjId=null,timers={},activity=[];
+const PCOLS=['#0073ea','#00c875','#e2445c','#fdab3d','#a25ddc','#579bfc','#ff7575','#00d0f0','#7e5af1'];
+function pcol(id){const i=data.projects.findIndex(p=>p.id===id);return PCOLS[i%PCOLS.length]||'#0073ea'}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+async function loadData(){
+  try{const r=await fetch(`${API}/api/data`);data=await r.json();
+    data.projects.forEach(p=>{if(!p.start)p.start='';if(!p.components)p.components='';});
+    Object.values(data.tasks).flat().forEach(t=>{if(!t.estimate)t.estimate=0;if(!t.timeSpent)t.timeSpent=0;if(!t.depends)t.depends='';if(!t.start)t.start='';});
+    renderAll();
+  }catch(e){toast('⚠️ Lance start.bat pour démarrer le serveur',true)}
+}
+async function apiPost(url,body){const r=await fetch(`${API}${url}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json()}
+async function apiDel(url){const r=await fetch(`${API}${url}`,{method:'DELETE'});return r.json()}
+function addActivity(msg){activity.unshift({msg,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})});if(activity.length>20)activity.pop()}
+function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.style.background=err?'#e2445c':'#323338';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function goView(v,el){setView(v,null);document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active')}
+function setView(v,el){
+  currentView=v;document.querySelectorAll('.view-tab').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else{const tabs=['dashboard','board','kanban','calendar','gantt'];const i=tabs.indexOf(v);const all=document.querySelectorAll('.view-tab');if(all[i])all[i].classList.add('active')}
+  document.getElementById('topbar-title').textContent={dashboard:'Tableau de bord',board:'Tableau',kanban:'Kanban',calendar:'Calendrier',gantt:'Timeline'}[v]||v;
+  renderAll();
+}
+function setSideFilter(f,el){sideFilter=f;sideType='';document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');renderAll()}
+function setSideType(t,el){sideType=t;sideFilter='all';document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('filter-type').value=t;renderAll()}
+function togglePrioFilter(p){prioFilter=p;document.querySelectorAll('[id^="fp-"]').forEach(x=>x.classList.remove('active'));document.getElementById('fp-'+p).classList.add('active');renderAll()}
+function toggleShowDone(){showDone=!showDone;document.getElementById('show-done').classList.toggle('active',showDone);renderAll()}
+function statusLabel(s){return{todo:'À faire',prog:'En cours',done:'Terminé',block:'Bloqué'}[s]||s}
+function statusCls(s){return{todo:'s-todo',prog:'s-prog',done:'s-done',block:'s-block'}[s]||'s-todo'}
+function prioCls(p){return{high:'p-high',med:'p-med',low:'p-low'}[p]||'p-med'}
+function prioLabel(p){return{high:'🔴 Haute',med:'🟡 Moyenne',low:'🟢 Basse'}[p]||p}
+function typeLabel(t){return{arduino:'🔌 Arduino/RPI',software:'💻 Logiciel',mixed:'⚙️ Mixte'}[t]||t}
+function dlInfo(d){
+  if(!d)return null;const today=new Date();today.setHours(0,0,0,0);const dd=new Date(d);const diff=Math.round((dd-today)/86400000);
+  const fmt=dd.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  if(diff<0)return{str:`⚠ ${fmt} (${-diff}j)`,cls:'overdue'};if(diff===0)return{str:`⚡ Aujourd'hui`,cls:'overdue'};if(diff<=3)return{str:`⏰ ${fmt}`,cls:'soon'};return{str:fmt,cls:''}
+}
+function fmtTime(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return h>0?`${h}h${m.toString().padStart(2,'0')}`:`${m}min`}
+function getFilteredProjects(){
+  const search=(document.getElementById('search').value||'').toLowerCase();
+  const typeF=document.getElementById('filter-type').value||sideType;
+  const sortBy=document.getElementById('sort-by').value;
+  let projs=data.projects.filter(p=>{
+    if(sideFilter!=='all'&&p.status!==sideFilter)return false;
+    if(typeF&&p.type!==typeF)return false;
+    if(search&&!p.name.toLowerCase().includes(search)&&!(p.desc||'').toLowerCase().includes(search)&&!(p.components||'').toLowerCase().includes(search))return false;
+    return true;
+  });
+  projs.sort((a,b)=>{
+    if(sortBy==='deadline')return(a.deadline||'9999')>(b.deadline||'9999')?1:-1;
+    if(sortBy==='priority'){const po={high:0,med:1,low:2};return po[a.priority]-po[b.priority]}
+    if(sortBy==='name')return a.name.localeCompare(b.name);
+    return b.createdAt-a.createdAt;
+  });
+  return projs;
+}
+function filterTasks(tasks){let t=[...tasks];if(prioFilter!=='all')t=t.filter(x=>x.priority===prioFilter);if(!showDone)t=t.filter(x=>!x.done);return t}
+function updateSideCounts(){const c={all:data.projects.length,todo:0,prog:0,done:0,block:0};data.projects.forEach(p=>{c[p.status]=(c[p.status]||0)+1});['all','todo','prog','done','block'].forEach(k=>{const el=document.getElementById('sc-'+k);if(el)el.textContent=c[k]||0})}
+function updateSummary(){
+  const allT=Object.values(data.tasks).flat(),doneT=allT.filter(t=>t.done).length,pct=allT.length?Math.round(doneT/allT.length*100):0;
+  const overdue=allT.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date()).length;
+  const totalEst=allT.reduce((s,t)=>s+(t.estimate||0),0);
+  document.getElementById('summary-bar').innerHTML=`
+    <div class="sum-item"><span class="sum-dot" style="background:#0073ea"></span><span class="sum-lbl">Projets</span><span class="sum-val">${data.projects.length}</span></div>
+    <div class="sum-item"><span class="sum-dot" style="background:#fdab3d"></span><span class="sum-lbl">En cours</span><span class="sum-val">${data.projects.filter(p=>p.status==='prog').length}</span></div>
+    <div class="sum-item"><span class="sum-dot" style="background:#00c875"></span><span class="sum-lbl">Terminés</span><span class="sum-val">${data.projects.filter(p=>p.status==='done').length}</span></div>
+    <div class="sum-item"><span class="sum-dot" style="background:#e2445c"></span><span class="sum-lbl">Bloqués</span><span class="sum-val">${data.projects.filter(p=>p.status==='block').length}</span></div>
+    <div class="sum-item"><span class="sum-dot" style="background:#a25ddc"></span><span class="sum-lbl">Tâches</span><span class="sum-val">${doneT}/${allT.length} (${pct}%)</span></div>
+    ${overdue?`<div class="sum-item"><span class="sum-dot" style="background:#e2445c"></span><span class="sum-lbl">En retard</span><span class="sum-val" style="color:var(--red)">${overdue}</span></div>`:''}
+    ${totalEst>0?`<div class="sum-item"><span class="sum-dot" style="background:#579bfc"></span><span class="sum-lbl">Estimé</span><span class="sum-val">${totalEst}h</span></div>`:''}`;
+}
+function renderAll(){updateSideCounts();updateSummary();if(currentView==='board')renderBoard();else if(currentView==='kanban')renderKanban();else if(currentView==='calendar')renderCalendar();else if(currentView==='gantt')renderGantt();else if(currentView==='dashboard')renderDashboard()}
+
+function renderBoard(){
+  const projs=getFilteredProjects();
+  if(!projs.length){document.getElementById('content').innerHTML='<div style="text-align:center;padding:80px;color:var(--text3)"><div style="font-size:48px">📭</div><p style="margin-top:12px">Aucun projet</p></div>';return}
+  let html='<div>';
+  projs.forEach(p=>{
+    const tasks=filterTasks(data.tasks[p.id]||[]),allTasks=data.tasks[p.id]||[];
+    const doneCnt=allTasks.filter(t=>t.done).length,pct=allTasks.length?Math.round(doneCnt/allTasks.length*100):0;
+    const color=pcol(p.id),isCol=collapsed.has(p.id);
+    html+=`<div class="project-block"><div class="proj-hdr">
+      <button class="collapse-btn ${isCol?'':'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
+      <span class="proj-color" style="background:${color}"></span>
+      <input class="proj-name-inp" value="${escHtml(p.name)}" onblur="renameProj('${p.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <span class="proj-tc">${allTasks.length} tâche${allTasks.length!==1?'s':''}</span>
+      ${p.components?`<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>`:''}
+      <div class="proj-prog"><div class="mini-pb"><div class="mini-pb-fill" style="width:${pct}%;background:${color}"></div></div><span class="mini-pb-txt">${pct}%</span></div>
+      <div class="proj-actions">
+        <button class="ic-btn" onclick="openTaskModal('${p.id}')" title="Ajouter tâche">＋</button>
+        <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
+        <button class="ic-btn" style="color:var(--red)" onclick="deleteProject('${p.id}')" title="Supprimer">🗑</button>
+      </div></div>`;
+    if(!isCol){
+      const pdl=p.deadline?dlInfo(p.deadline):null;
+      html+=`<div class="tbl-wrap"><table class="btbl"><thead><tr>
+        <th style="width:36px"></th><th style="min-width:260px">Tâche</th><th style="width:120px">Statut</th>
+        <th style="width:100px">Priorité</th><th style="width:120px">Deadline</th><th style="width:90px">Temps</th><th style="width:80px">Estimé</th><th style="width:50px"></th>
+      </tr></thead><tbody>
+      <tr style="background:#f5f7ff" onclick="openProjectModal('${p.id}')">
+        <td></td>
+        <td><div class="tname-cell"><span style="font-weight:700;color:${color}">${escHtml(p.name)}</span>
+          <span style="font-size:10px;background:#eee;color:#666;padding:1px 5px;border-radius:3px;font-weight:600">${typeLabel(p.type)}</span>
+          ${p.desc?`<span class="note-ic" title="${escHtml(p.desc)}">📝</span>`:''}
+        </div></td>
+        <td class="cell-rel"><button class="pill ${statusCls(p.status)}" onclick="event.stopPropagation();openStatusPicker('${p.id}',this)">${statusLabel(p.status)}</button></td>
+        <td><span class="pill ${prioCls(p.priority)}">${prioLabel(p.priority)}</span></td>
+        <td class="dl-cell ${pdl?pdl.cls:''}">${pdl?pdl.str:'—'}</td>
+        <td></td><td style="font-size:12px;color:var(--text2)">${allTasks.reduce((s,t)=>s+(t.estimate||0),0)}h</td><td></td>
+      </tr>`;
+      tasks.forEach(t=>{
+        const tdl=t.deadline?dlInfo(t.deadline):null;
+        const isRunning=timers[t.id]&&timers[t.id].running;
+        const spent=(t.timeSpent||0)+(isRunning?Math.floor((Date.now()-timers[t.id].start)/1000):0);
+        html+=`<tr class="${t.done?'row-done':''}" onclick="openTaskDetail('${p.id}','${t.id}')">
+          <td onclick="event.stopPropagation()"><input class="row-chk" type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${p.id}','${t.id}')"></td>
+          <td><div class="tname-cell">
+            ${t.depends?`<span style="font-size:10px;color:var(--text3)" title="Dépend de ${t.depends}">🔗</span>`:''}
+            <span class="tname-txt ${t.done?'done':''}">${escHtml(t.name)}</span>
+            ${t.note?`<span class="note-ic" title="${escHtml(t.note)}">📝</span>`:''}
+            <button class="open-btn" onclick="event.stopPropagation();openTaskDetail('${p.id}','${t.id}')">Ouvrir</button>
+          </div></td>
+          <td></td>
+          <td><span class="pill ${prioCls(t.priority)}">${prioLabel(t.priority)}</span></td>
+          <td class="dl-cell ${tdl?tdl.cls:''}">${tdl?tdl.str:'—'}</td>
+          <td onclick="event.stopPropagation()"><button class="tt-btn ${isRunning?'running':''}" onclick="toggleTimer('${p.id}','${t.id}')">${isRunning?'⏹':'▶'} ${spent>0?fmtTime(spent):''}</button></td>
+          <td style="font-size:12px;color:var(--text2)">${t.estimate?t.estimate+'h':'—'}</td>
+          <td onclick="event.stopPropagation()"><button class="ic-btn" style="color:var(--red);font-size:12px" onclick="deleteTask('${p.id}','${t.id}')">✕</button></td>
+        </tr>`;
+      });
+      html+=`</tbody></table><table class="btbl"><tbody><tr class="add-row"><td colspan="8"><button class="add-task-btn" onclick="openTaskModal('${p.id}')">＋ Ajouter une tâche</button></td></tr></tbody></table></div>`;
+    }
+    html+='</div>';
+  });
+  html+=`<div class="add-proj-row"><button class="add-proj-btn" onclick="openProjectModal()">＋ Ajouter un projet</button></div></div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+function renderKanban(){
+  const statuses=['todo','prog','done','block'];
+  const labels={todo:'À faire',prog:'En cours',done:'Terminé',block:'Bloqué'};
+  const colors={todo:'#c4c4c4',prog:'#fdab3d',done:'#00c875',block:'#e2445c'};
+  const projs=getFilteredProjects();
+  let html='<div class="kanban-wrap">';
+  statuses.forEach(st=>{
+    let cards=[];
+    projs.forEach(p=>{
+      if(p.status===st&&st!=='done'){
+        const dl=p.deadline?dlInfo(p.deadline):null,allT=data.tasks[p.id]||[];
+        const pct=allT.length?Math.round(allT.filter(t=>t.done).length/allT.length*100):0;
+        cards.push(`<div class="k-card" draggable="true" ondragstart="dragStart(event,'proj','${p.id}')" onclick="openProjectModal('${p.id}')">
+          <div class="k-card-proj">📁 PROJET</div>
+          <div class="k-card-name" style="color:${pcol(p.id)}">${escHtml(p.name)}</div>
+          <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:7px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pcol(p.id)};border-radius:2px"></div></div>
+          <div class="k-card-footer"><span class="pill ${prioCls(p.priority)}" style="height:18px;font-size:10px">${prioLabel(p.priority)}</span>${dl?`<span class="k-card-dl ${dl.cls}">${dl.str}</span>`:''}</div>
+        </div>`);
+      }
+    });
+    if(st==='done'){projs.forEach(p=>{filterTasks(data.tasks[p.id]||[]).filter(t=>t.done).forEach(t=>{const dl=t.deadline?dlInfo(t.deadline):null;cards.push(`<div class="k-card row-done" onclick="openTaskDetail('${p.id}','${t.id}')"><div class="k-card-proj" style="color:${pcol(p.id)}">${escHtml(p.name)}</div><div class="k-card-name done">${escHtml(t.name)}</div><div class="k-card-footer"><span class="pill ${prioCls(t.priority)}" style="height:18px;font-size:10px">${prioLabel(t.priority)}</span>${dl?`<span class="k-card-dl ${dl.cls}">${dl.str}</span>`:''}</div></div>`)});})}
+    html+=`<div class="kanban-col" ondragover="event.preventDefault();this.querySelector('.kanban-cards').classList.add('drag-over')" ondragleave="this.querySelector('.kanban-cards').classList.remove('drag-over')" ondrop="dropKanban(event,'${st}',this)">
+      <div class="kanban-col-hdr" style="color:${colors[st]}">${labels[st]} <span class="kcnt">${cards.length}</span></div>
+      <div class="kanban-cards">${cards.join('')}</div>
+      <button class="k-add-btn" onclick="openProjectModal()">＋ Ajouter</button>
+    </div>`;
+  });
+  html+='</div>';document.getElementById('content').innerHTML=html;
+}
+
+let dragData=null;
+function dragStart(e,type,id){dragData={type,id}}
+async function dropKanban(e,status,colEl){
+  e.preventDefault();colEl.querySelector('.kanban-cards').classList.remove('drag-over');if(!dragData)return;
+  if(dragData.type==='proj'){const p=data.projects.find(x=>x.id===dragData.id);if(p){p.status=status;await apiPost('/api/projects',p);addActivity(`"${p.name}" → ${statusLabel(status)}`);renderAll();}}
+  dragData=null;
+}
+
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+function renderCalendar(){
+  const today=new Date(),firstDay=new Date(calYear,calMonth,1),lastDay=new Date(calYear,calMonth+1,0);
+  const startDow=(firstDay.getDay()+6)%7;
+  const monthName=firstDay.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  const events={};
+  const addEv=(d,label,color,click)=>{if(!events[d])events[d]=[];events[d].push({label,color,click})};
+  data.projects.forEach(p=>{
+    if(p.deadline)addEv(p.deadline,`📁 ${p.name}`,pcol(p.id),`openProjectModal('${p.id}')`);
+    if(p.start)addEv(p.start,`▶ ${p.name}`,pcol(p.id),`openProjectModal('${p.id}')`);
+    (data.tasks[p.id]||[]).forEach(t=>{if(t.deadline)addEv(t.deadline,`• ${t.name}`,t.done?'#c4c4c4':pcol(p.id),`openTaskDetail('${p.id}','${t.id}')`)});
+  });
+  const days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  let html=`<div class="cal-wrap"><div class="cal-nav">
+    <div class="cal-nav-btns"><button class="btn btn-secondary btn-sm" onclick="calNav(-1)">◀</button><button class="btn btn-secondary btn-sm" onclick="calNav(1)">▶</button><button class="btn btn-secondary btn-sm" onclick="calToday()">Aujourd'hui</button></div>
+    <h2>${monthName.charAt(0).toUpperCase()+monthName.slice(1)}</h2><div></div></div>
+    <div class="cal-grid">${days.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('')}`;
+  for(let i=0;i<startDow;i++)html+=`<div class="cal-day other-month"></div>`;
+  for(let d=1;d<=lastDay.getDate();d++){
+    const isToday=d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs=events[dateStr]||[];
+    html+=`<div class="cal-day ${isToday?'today':''}"><div class="cal-day-num">${d}</div>
+      ${evs.slice(0,3).map(e=>`<div class="cal-event" style="background:${e.color}" onclick="${e.click}" title="${escHtml(e.label)}">${escHtml(e.label)}</div>`).join('')}
+      ${evs.length>3?`<div style="font-size:10px;color:var(--text3)">+${evs.length-3} autres</div>`:''}
+    </div>`;
+  }
+  const endDow=(lastDay.getDay()+6)%7;for(let i=endDow;i<6;i++)html+=`<div class="cal-day other-month"></div>`;
+  html+=`</div></div>`;document.getElementById('content').innerHTML=html;
+}
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}renderCalendar()}
+function calToday(){calYear=new Date().getFullYear();calMonth=new Date().getMonth();renderCalendar()}
+
+function renderGantt(){
+  const projs=getFilteredProjects();const today=new Date();today.setHours(0,0,0,0);
+  let minD=new Date(today);minD.setDate(minD.getDate()-7);let maxD=new Date(today);maxD.setDate(maxD.getDate()+60);
+  [...projs,...Object.values(data.tasks).flat()].forEach(x=>{
+    if(x.deadline){const d=new Date(x.deadline);if(d<minD)minD=new Date(d);if(d>maxD)maxD=new Date(d)}
+    if(x.start){const d=new Date(x.start);if(d<minD)minD=new Date(d)}
+  });
+  minD.setDate(minD.getDate()-3);maxD.setDate(maxD.getDate()+5);
+  const total=Math.round((maxD-minD)/86400000);
+  const pct=d=>Math.max(0,Math.min(100,Math.round((new Date(d)-minD)/86400000/total*100)));
+  const todayPct=pct(today);
+  const months=[];let cur=new Date(minD);cur.setDate(1);
+  while(cur<=maxD){const s=Math.max(0,pct(cur));const nx=new Date(cur);nx.setMonth(nx.getMonth()+1);const e=Math.min(100,pct(nx));months.push({label:cur.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}),start:s,width:e-s});cur=nx;}
+  let html=`<div class="gantt-outer"><div class="gantt-hdr">
+    <div class="gantt-lbl-hdr">Projet / Tâche</div>
+    <div class="gantt-months">${months.map(m=>`<div class="gantt-month-tick" style="left:${m.start}%;width:${m.width}%">${m.label}</div>`).join('')}<div class="gantt-today" style="left:${todayPct}%"></div></div>
+  </div><div class="gantt-body">`;
+  projs.forEach(p=>{
+    const color=pcol(p.id),tasks=filterTasks(data.tasks[p.id]||[]);
+    const hasStart=p.start&&p.deadline,barLeft=hasStart?pct(p.start):p.deadline?pct(p.deadline)-5:null,barWidth=hasStart?Math.max(1,pct(p.deadline)-pct(p.start)):8;
+    html+=`<div class="gantt-row" style="background:#f5f7ff"><div class="gantt-label" style="font-weight:700;color:${color}"><span>${escHtml(p.name)}</span><span class="pill ${statusCls(p.status)}" style="height:18px;font-size:10px;margin-left:auto">${statusLabel(p.status)}</span></div>
+      <div class="gantt-timeline" style="position:relative"><div class="gantt-today" style="left:${todayPct}%"></div>${barLeft!==null?`<div class="gantt-bar" style="background:${color};left:${barLeft}%;width:${barWidth}%;min-width:30px" onclick="openProjectModal('${p.id}')">${statusLabel(p.status)}</div>`:''}</div></div>`;
+    tasks.forEach(t=>{
+      const tStart=t.start||t.deadline,tBarLeft=tStart?pct(tStart)-3:null,tBarWidth=t.start&&t.deadline?Math.max(1,pct(t.deadline)-pct(t.start)):5;
+      const tdl=t.deadline?dlInfo(t.deadline):null;
+      html+=`<div class="gantt-row"><div class="gantt-label" style="padding-left:28px;font-size:12px;color:${t.done?'var(--text3)':'var(--text)'};text-decoration:${t.done?'line-through':''}"><span>${escHtml(t.name)}</span>${tdl?`<span class="dl-cell ${tdl.cls}" style="margin-left:4px;font-size:10px">${tdl.str}</span>`:''}</div>
+        <div class="gantt-timeline" style="position:relative"><div class="gantt-today" style="left:${todayPct}%"></div>${tBarLeft!==null?`<div class="gantt-bar" style="background:${t.done?'var(--grey)':color};left:${tBarLeft}%;width:${tBarWidth}%;min-width:16px;opacity:${t.done?.5:1}" onclick="openTaskDetail('${p.id}','${t.id}')">${t.done?'✓':''}</div>`:''}</div></div>`;
+    });
+  });
+  html+=`</div></div>`;document.getElementById('content').innerHTML=html;
+}
+
+function renderDashboard(){
+  const projs=data.projects,allT=Object.values(data.tasks).flat();
+  const doneT=allT.filter(t=>t.done).length,overdueT=allT.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date());
+  const totalEst=allT.reduce((s,t)=>s+(parseFloat(t.estimate)||0),0),totalSpent=allT.reduce((s,t)=>s+(t.timeSpent||0),0);
+  const pHigh=allT.filter(t=>t.priority==='high'&&!t.done).length,pMed=allT.filter(t=>t.priority==='med'&&!t.done).length,pLow=allT.filter(t=>t.priority==='low'&&!t.done).length,pTotal=pHigh+pMed+pLow||1;
+  const projProg=projs.map(p=>{const t=data.tasks[p.id]||[],d=t.filter(x=>x.done).length;return{name:p.name,pct:t.length?Math.round(d/t.length*100):0,color:pcol(p.id)}}).sort((a,b)=>b.pct-a.pct);
+  let html=`<div class="dash-wrap">
+    <div class="dash-widget" style="grid-column:span 2"><h3>📊 Vue d'ensemble</h3><div class="stat-grid">
+      <div class="stat-box"><div class="stat-val blue">${projs.length}</div><div class="stat-lbl">Projets</div></div>
+      <div class="stat-box"><div class="stat-val green">${doneT}/${allT.length}</div><div class="stat-lbl">Tâches terminées</div></div>
+      <div class="stat-box"><div class="stat-val ${overdueT.length?'red':'green'}">${overdueT.length}</div><div class="stat-lbl">En retard</div></div>
+      <div class="stat-box"><div class="stat-val orange">${projs.filter(p=>p.status==='prog').length}</div><div class="stat-lbl">En cours</div></div>
+    </div></div>
+    <div class="dash-widget"><h3>🗂 Statuts</h3><div class="donut-wrap">
+      <svg width="80" height="80" viewBox="0 0 80 80">${donutSvg(projs)}</svg>
+      <div class="donut-legend">${[['todo','#c4c4c4','À faire'],['prog','#fdab3d','En cours'],['done','#00c875','Terminés'],['block','#e2445c','Bloqués']].map(([s,c,l])=>`<div class="legend-item"><span class="legend-dot" style="background:${c}"></span>${l} <strong>${projs.filter(p=>p.status===s).length}</strong></div>`).join('')}</div>
+    </div></div>
+    <div class="dash-widget"><h3>🎯 Priorités actives</h3>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Haute <strong>${pHigh}</strong></div>
+      <div class="legend-item" style="margin:6px 0"><span class="legend-dot" style="background:var(--orange)"></span>Moyenne <strong>${pMed}</strong></div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Basse <strong>${pLow}</strong></div>
+      <div class="priority-bar"><div class="priority-seg" style="width:${Math.round(pHigh/pTotal*100)}%;background:var(--red)"></div><div class="priority-seg" style="width:${Math.round(pMed/pTotal*100)}%;background:var(--orange)"></div><div class="priority-seg" style="width:${Math.round(pLow/pTotal*100)}%;background:var(--green)"></div></div>
+    </div>
+    <div class="dash-widget"><h3>📈 Avancement</h3><div class="progress-list">${projProg.map(p=>`<div class="pl-row"><div class="pl-label"><span>${escHtml(p.name)}</span><span style="color:var(--text2)">${p.pct}%</span></div><div class="pl-bar"><div class="pl-fill" style="width:${p.pct}%;background:${p.color}"></div></div></div>`).join('')}</div></div>
+    ${overdueT.length?`<div class="dash-widget"><h3 style="color:var(--red)">⚠️ En retard (${overdueT.length})</h3><div class="overdue-list">${overdueT.map(t=>{const p=data.projects.find(x=>data.tasks[x.id]&&data.tasks[x.id].some(tt=>tt.id===t.id));const dl=dlInfo(t.deadline);return`<div class="od-row"><div><div style="font-weight:500">${escHtml(t.name)}</div><div style="font-size:11px;color:var(--text3)">${p?escHtml(p.name):''}</div></div><span class="dl-cell overdue">${dl?dl.str:''}</span></div>`}).join('')}</div></div>`:''}
+    ${totalEst>0?`<div class="dash-widget"><h3>⏱ Temps</h3><div class="stat-grid"><div class="stat-box"><div class="stat-val blue">${totalEst}h</div><div class="stat-lbl">Estimé</div></div><div class="stat-box"><div class="stat-val orange">${totalSpent>0?fmtTime(totalSpent):'0'}</div><div class="stat-lbl">Passé</div></div></div></div>`:''}
+    ${activity.length?`<div class="dash-widget"><h3>🕒 Activité récente</h3><div class="activity-list">${activity.slice(0,8).map(a=>`<div class="al-row">${a.msg}<div class="al-time">${a.time}</div></div>`).join('')}</div></div>`:''}
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+function donutSvg(projs){
+  const vals=[projs.filter(p=>p.status==='todo').length,projs.filter(p=>p.status==='prog').length,projs.filter(p=>p.status==='done').length,projs.filter(p=>p.status==='block').length];
+  const cols=['#c4c4c4','#fdab3d','#00c875','#e2445c'],total=vals.reduce((a,b)=>a+b,0)||1;
+  let angle=-90,segs='';
+  vals.forEach((v,i)=>{const pct=v/total,sweep=pct*360;if(pct===0)return;const r=28,cx=40,cy=40,a1=angle*Math.PI/180,a2=(angle+sweep)*Math.PI/180,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),la=sweep>180?1:0;segs+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${la},1 ${x2},${y2} Z" fill="${cols[i]}"/>`;angle+=sweep;});
+  return segs+`<circle cx="40" cy="40" r="16" fill="white"/><text x="40" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="#323338">${total}</text>`;
+}
+
+function toggleTimer(projId,taskId){
+  if(!timers[taskId])timers[taskId]={running:false,start:0,elapsed:0};
+  const tm=timers[taskId];
+  if(tm.running){tm.elapsed+=Math.floor((Date.now()-tm.start)/1000);tm.running=false;const t=(data.tasks[projId]||[]).find(x=>x.id===taskId);if(t){t.timeSpent=(t.timeSpent||0)+tm.elapsed;tm.elapsed=0;apiPost('/api/tasks',{projectId:projId,task:t});addActivity(`Temps sur "${t.name}": ${fmtTime(t.timeSpent)}`)}}
+  else{tm.start=Date.now();tm.running=true;toast('⏱ Chrono démarré')}
+  renderAll();
+}
+setInterval(()=>{if(Object.values(timers).some(t=>t.running))renderAll()},5000);
+
+function openProjectModal(id=null){
+  editingProjId=id;document.getElementById('modal-proj-title').textContent=id?'Modifier le projet':'Nouveau projet';
+  if(id){const p=data.projects.find(x=>x.id===id);document.getElementById('f-name').value=p.name;document.getElementById('f-type').value=p.type;document.getElementById('f-status').value=p.status;document.getElementById('f-priority').value=p.priority;document.getElementById('f-deadline').value=p.deadline||'';document.getElementById('f-start').value=p.start||'';document.getElementById('f-components').value=p.components||'';document.getElementById('f-desc').value=p.desc||'';}
+  else{['f-name','f-desc','f-components'].forEach(i=>document.getElementById(i).value='');document.getElementById('f-type').value='arduino';document.getElementById('f-status').value='todo';document.getElementById('f-priority').value='med';document.getElementById('f-deadline').value='';document.getElementById('f-start').value='';}
+  document.getElementById('modal-project').classList.add('open');setTimeout(()=>document.getElementById('f-name').focus(),100);
+}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+async function saveProject(){
+  const name=document.getElementById('f-name').value.trim();if(!name){toast('Nom requis !',true);return;}
+  const proj={id:editingProjId||genId(),name,type:document.getElementById('f-type').value,status:document.getElementById('f-status').value,priority:document.getElementById('f-priority').value,deadline:document.getElementById('f-deadline').value,start:document.getElementById('f-start').value,components:document.getElementById('f-components').value.trim(),desc:document.getElementById('f-desc').value.trim(),createdAt:editingProjId?(data.projects.find(x=>x.id===editingProjId)||{}).createdAt:Date.now()};
+  await apiPost('/api/projects',proj);
+  if(editingProjId){const i=data.projects.findIndex(x=>x.id===editingProjId);if(i>=0)data.projects[i]=proj;}else{data.projects.push(proj);data.tasks[proj.id]=[];}
+  closeModal('modal-project');addActivity(editingProjId?`Projet modifié: ${proj.name}`:`Projet créé: ${proj.name}`);toast(editingProjId?'Projet modifié ✓':'Projet créé ✓');renderAll();
+}
+async function renameProj(id,name){name=name.trim();if(!name)return;const p=data.projects.find(x=>x.id===id);if(!p||p.name===name)return;p.name=name;await apiPost('/api/projects',p);renderAll()}
+async function deleteProject(id){
+  if(!confirm('Supprimer ce projet ?'))return;const p=data.projects.find(x=>x.id===id);await apiDel(`/api/projects?id=${id}`);data.projects=data.projects.filter(x=>x.id!==id);delete data.tasks[id];addActivity(`Projet supprimé: ${p?p.name:id}`);toast('Projet supprimé');renderAll();
+}
+function openTaskModal(projId,taskId=null){
+  taskProjId=projId;editingTaskId=taskId;document.getElementById('modal-task-title').textContent=taskId?'Modifier la tâche':'Nouvelle tâche';
+  if(taskId){const t=(data.tasks[projId]||[]).find(x=>x.id===taskId);document.getElementById('t-name').value=t.name;document.getElementById('t-priority').value=t.priority;document.getElementById('t-deadline').value=t.deadline||'';document.getElementById('t-start').value=t.start||'';document.getElementById('t-estimate').value=t.estimate||'';document.getElementById('t-depends').value=t.depends||'';document.getElementById('t-note').value=t.note||'';}
+  else{['t-name','t-note','t-depends'].forEach(i=>document.getElementById(i).value='');document.getElementById('t-priority').value='med';document.getElementById('t-deadline').value='';document.getElementById('t-start').value='';document.getElementById('t-estimate').value='';}
+  closeModal('modal-detail');document.getElementById('modal-task').classList.add('open');setTimeout(()=>document.getElementById('t-name').focus(),100);
+}
+async function saveTask(){
+  const name=document.getElementById('t-name').value.trim();if(!name){toast('Titre requis !',true);return;}
+  const task={id:editingTaskId||genId(),name,priority:document.getElementById('t-priority').value,deadline:document.getElementById('t-deadline').value,start:document.getElementById('t-start').value,estimate:parseFloat(document.getElementById('t-estimate').value)||0,depends:document.getElementById('t-depends').value.trim(),note:document.getElementById('t-note').value.trim(),done:editingTaskId?((data.tasks[taskProjId]||[]).find(x=>x.id===editingTaskId)||{}).done:false,timeSpent:editingTaskId?((data.tasks[taskProjId]||[]).find(x=>x.id===editingTaskId)||{}).timeSpent||0:0};
+  await apiPost('/api/tasks',{projectId:taskProjId,task});
+  if(!data.tasks[taskProjId])data.tasks[taskProjId]=[];
+  if(editingTaskId){const i=data.tasks[taskProjId].findIndex(x=>x.id===editingTaskId);if(i>=0)data.tasks[taskProjId][i]=task;}else data.tasks[taskProjId].push(task);
+  closeModal('modal-task');addActivity(editingTaskId?`Tâche modifiée: ${task.name}`:`Tâche créée: ${task.name}`);toast(editingTaskId?'Tâche modifiée ✓':'Tâche ajoutée ✓');renderAll();
+}
+async function toggleTask(projId,taskId){const t=(data.tasks[projId]||[]).find(x=>x.id===taskId);if(!t)return;t.done=!t.done;await apiPost('/api/tasks',{projectId:projId,task:t});addActivity(`Tâche ${t.done?'terminée':'réouverte'}: ${t.name}`);renderAll()}
+async function deleteTask(projId,taskId){const t=(data.tasks[projId]||[]).find(x=>x.id===taskId);await apiDel(`/api/tasks?projectId=${projId}&taskId=${taskId}`);data.tasks[projId]=(data.tasks[projId]||[]).filter(x=>x.id!==taskId);addActivity(`Tâche supprimée: ${t?t.name:taskId}`);toast('Tâche supprimée');renderAll()}
+function openTaskDetail(projId,taskId){
+  const t=(data.tasks[projId]||[]).find(x=>x.id===taskId),p=data.projects.find(x=>x.id===projId);if(!t)return;
+  document.getElementById('det-title').textContent=t.name;const dl=t.deadline?dlInfo(t.deadline):null,spent=t.timeSpent||0;
+  document.getElementById('det-body').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Projet</div><div style="font-size:13px;font-weight:600;color:${p?pcol(p.id):'inherit'}">${p?escHtml(p.name):'—'}</div></div>
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Priorité</div><span class="pill ${prioCls(t.priority)}">${prioLabel(t.priority)}</span></div>
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Statut</div><span class="pill ${t.done?'s-done':'s-todo'}">${t.done?'Terminée':'En attente'}</span></div>
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Deadline</div><div class="dl-cell ${dl?dl.cls:''}" style="font-size:13px">${dl?dl.str:'Non définie'}</div></div>
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Estimation</div><div style="font-size:13px">${t.estimate?t.estimate+'h':'—'}</div></div>
+    <div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Temps passé</div><div style="font-size:13px">${spent?fmtTime(spent):'0'}</div></div>
+  </div>
+  ${t.depends?`<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">🔗 Dépendance</div><div style="font-size:12px;background:var(--bg);padding:7px 10px;border-radius:5px">${escHtml(t.depends)}</div></div>`:''}
+  ${t.note?`<div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">📝 Notes</div><div style="background:var(--bg);border-radius:6px;padding:10px 12px;font-size:13px;line-height:1.6;white-space:pre-wrap">${escHtml(t.note)}</div></div>`:''}`;
+  document.getElementById('det-del').onclick=()=>{closeModal('modal-detail');deleteTask(projId,taskId)};
+  document.getElementById('det-edit').onclick=()=>openTaskModal(projId,taskId);
+  document.getElementById('modal-detail').classList.add('open');
+}
+function openStatusPicker(projId,btn){
+  document.querySelectorAll('.spopup').forEach(x=>x.remove());const popup=document.createElement('div');popup.className='spopup open';
+  [['todo','s-todo','À faire'],['prog','s-prog','En cours'],['done','s-done','Terminé'],['block','s-block','Bloqué']].forEach(([s,cls,l])=>{
+    const opt=document.createElement('div');opt.className=`spopup-opt pill ${cls}`;opt.style.display='block';opt.style.textAlign='center';opt.textContent=l;
+    opt.onclick=async()=>{const p=data.projects.find(x=>x.id===projId);if(p){p.status=s;await apiPost('/api/projects',p);addActivity(`"${p.name}" → ${l}`);renderAll();}popup.remove()};
+    popup.appendChild(opt);
+  });
+  btn.parentNode.appendChild(popup);setTimeout(()=>document.addEventListener('click',()=>popup.remove(),{once:true}),50);
+}
+function toggleCollapse(id){if(collapsed.has(id))collapsed.delete(id);else collapsed.add(id);renderAll()}
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['modal-project','modal-task','modal-detail'].forEach(closeModal)});
+loadData();
+</script>
+</body>
+</html>
