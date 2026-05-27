@@ -1,0 +1,11 @@
+# Données personnelles — ne pas versionner
+projets.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db
