@@ -1,0 +1,1299 @@
+/**
+ * =============================================================================
+ * GESTIONNAIRE DE PROJETS — styles.css
+ * Inspiré de Monday.com
+ * Auteur : Philippe (lpmaker-be)
+ * =============================================================================
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VARIABLES CSS — palette de couleurs et tokens de design
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+    /* Couleurs de fond */
+    --bg:             #f6f7fb;
+    --white:          #ffffff;
+
+    /* Sidebar */
+    --sidebar:        #1f2d3d;
+    --sidebar-hover:  #2d3f52;
+    --sidebar-active: #0073ea;
+
+    /* Bordures */
+    --border:         #e6e9ef;
+
+    /* Textes */
+    --text:           #323338;
+    --text2:          #676879;
+    --text3:          #c3c6d4;
+
+    /* Couleur principale */
+    --accent:         #0073ea;
+    --accent-h:       #0060c2;   /* hover de l'accent */
+
+    /* Couleurs sémantiques */
+    --green:          #00c875;
+    --orange:         #fdab3d;
+    --red:            #e2445c;
+    --purple:         #a25ddc;
+    --blue:           #579bfc;
+    --yellow:         #ffcb00;
+    --grey:           #c4c4c4;
+    --pink:           #ff7575;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESET & BASE
+   ───────────────────────────────────────────────────────────────────────────── */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Figtree', sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--border); border-radius: 3px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIDEBAR — navigation latérale gauche
+   ───────────────────────────────────────────────────────────────────────────── */
+.sidebar {
+    width: 230px;
+    min-width: 230px;
+    background: var(--sidebar);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Logo / en-tête sidebar */
+.sidebar-logo {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.logo-text {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* Sections de la sidebar */
+.sb-section { padding: 8px 8px 4px; }
+
+.sb-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, .3);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 8px 10px 4px;
+    font-weight: 600;
+}
+
+/* Éléments de navigation */
+.sb-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, .65);
+    font-size: 13px;
+    transition: all .15s;
+    user-select: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.sb-item:hover  { background: var(--sidebar-hover); color: #fff; }
+.sb-item.active { background: var(--sidebar-active); color: #fff; }
+
+/* Point coloré dans la sidebar */
+.sb-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* Compteur de projets dans la sidebar */
+.sb-count {
+    margin-left: auto;
+    background: rgba(255, 255, 255, .1);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, .4);
+}
+
+/* Pied de sidebar — chemin du fichier JSON */
+.sb-footer {
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.sb-footer-text {
+    font-size: 10px;
+    color: rgba(255, 255, 255, .2);
+    line-height: 1.6;
+    word-break: break-all;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ZONE PRINCIPALE — colonne de droite
+   ───────────────────────────────────────────────────────────────────────────── */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOPBAR — barre du haut avec titre et actions
+   ───────────────────────────────────────────────────────────────────────────── */
+.topbar {
+    height: 54px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.topbar-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+}
+
+/* Barre de recherche */
+.search-wrap { position: relative; }
+
+.search-wrap input {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px 6px 32px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 190px;
+    outline: none;
+    transition: border-color .15s;
+}
+
+.search-wrap input:focus { border-color: var(--accent); }
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BOUTONS génériques
+   ───────────────────────────────────────────────────────────────────────────── */
+.btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn-primary          { background: var(--accent); color: #fff; }
+.btn-primary:hover    { background: var(--accent-h); }
+
+.btn-secondary        { background: var(--white); color: var(--text2); border: 1.5px solid var(--border); }
+.btn-secondary:hover  { border-color: var(--accent); color: var(--accent); }
+
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ONGLETS DE VUE — Dashboard, Tableau, Kanban, Calendrier, Timeline
+   ───────────────────────────────────────────────────────────────────────────── */
+.view-tabs {
+    height: 38px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    padding: 0 16px;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.view-tab {
+    padding: 0 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text2);
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    transition: all .15s;
+    border-bottom: 2px solid transparent;
+}
+
+.view-tab:hover  { color: var(--text); }
+.view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BARRE DE FILTRE — priorité et affichage des terminées
+   ───────────────────────────────────────────────────────────────────────────── */
+.filter-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text2);
+    background: var(--white);
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.filter-chip:hover   { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active  { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ZONE DE CONTENU — zone scrollable principale
+   ───────────────────────────────────────────────────────────────────────────── */
+.content { flex: 1; overflow: auto; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PILLS / BADGES — statuts et priorités
+   ───────────────────────────────────────────────────────────────────────────── */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 9px;
+    height: 22px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    border: none;
+    transition: filter .15s;
+}
+
+.pill:hover { filter: brightness(.9); }
+
+/* Statuts */
+.s-todo  { background: #e2e2e2; color: #555; }
+.s-prog  { background: var(--orange); color: #fff; }
+.s-done  { background: var(--green); color: #fff; }
+.s-block { background: var(--red); color: #fff; }
+
+/* Priorités */
+.p-high { background: var(--red); color: #fff; }
+.p-med  { background: var(--orange); color: #fff; }
+.p-low  { background: var(--green); color: #fff; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VUE TABLEAU — blocs projet + lignes de tâches
+   ───────────────────────────────────────────────────────────────────────────── */
+.project-block { margin-bottom: 2px; }
+
+/* En-tête de projet (barre collante) */
+.proj-hdr {
+    display: flex;
+    align-items: center;
+    height: 42px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    padding: 0 10px;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Bouton collapse/expand du projet */
+.collapse-btn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: transform .2s;
+    border: none;
+    background: none;
+}
+
+.collapse-btn.open { transform: rotate(90deg); }
+
+/* Carré coloré identifiant le projet */
+.proj-color {
+    width: 13px;
+    height: 13px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* Nom du projet (éditable inline) */
+.proj-name-inp {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.proj-name-inp:focus {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 1px 6px;
+    cursor: text;
+}
+
+/* Compteur de tâches */
+.proj-tc {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: 4px;
+    white-space: nowrap;
+}
+
+/* Mini barre de progression dans l'en-tête */
+.proj-prog {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.mini-pb {
+    width: 70px;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.mini-pb-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .3s;
+}
+
+.mini-pb-txt {
+    font-size: 11px;
+    color: var(--text2);
+    min-width: 28px;
+    text-align: right;
+}
+
+/* Actions rapides sur le projet */
+.proj-actions {
+    display: flex;
+    gap: 3px;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+/* Petit bouton icône */
+.ic-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+}
+
+.ic-btn:hover { background: var(--bg); color: var(--accent); }
+
+/* Tableau des tâches */
+.tbl-wrap { overflow-x: auto; }
+
+.btbl {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+.btbl thead th {
+    height: 32px;
+    background: var(--bg);
+    border-bottom: 2px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-align: left;
+    padding: 0 10px;
+    white-space: nowrap;
+    position: sticky;
+    top: 42px;   /* collé sous l'en-tête projet */
+    z-index: 4;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.btbl tbody tr {
+    height: 38px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    transition: background .1s;
+    cursor: pointer;
+}
+
+.btbl tbody tr:hover   { background: #f0f4ff; }
+.btbl tbody tr.row-done { opacity: .55; }
+
+.btbl tbody td {
+    padding: 0 10px;
+    font-size: 13px;
+    color: var(--text);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Checkbox de complétion */
+.row-chk {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* Cellule nom de la tâche */
+.tname-cell {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 360px;
+}
+
+.tname-txt {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+}
+
+.tname-txt.done {
+    text-decoration: line-through;
+    color: var(--text3);
+}
+
+/* Bouton "Ouvrir" qui apparaît au survol */
+.open-btn {
+    opacity: 0;
+    font-size: 10px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 1px 5px;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btbl tbody tr:hover .open-btn { opacity: 1; }
+
+/* Icône note */
+.note-ic { font-size: 11px; color: var(--text3); }
+
+/* Cellule deadline */
+.dl-cell         { font-size: 12px; color: var(--text2); }
+.dl-cell.overdue { color: var(--red); font-weight: 600; }
+.dl-cell.soon    { color: var(--orange); font-weight: 600; }
+
+/* Ligne "ajouter une tâche" */
+.add-row td {
+    padding: 0 10px;
+    height: 34px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+}
+
+.add-task-btn {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+}
+
+.add-task-btn:hover { color: var(--accent); }
+
+/* Bouton "ajouter un projet" en bas de liste */
+.add-proj-row { padding: 10px 16px; }
+
+.add-proj-btn {
+    background: none;
+    border: 1.5px dashed var(--border);
+    color: var(--text3);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border-radius: 6px;
+    transition: all .15s;
+}
+
+.add-proj-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 115, 234, .04);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VUE KANBAN — colonnes glissables
+   ───────────────────────────────────────────────────────────────────────────── */
+.kanban-wrap {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    height: 100%;
+    overflow-x: auto;
+    align-items: flex-start;
+}
+
+.kanban-col {
+    min-width: 240px;
+    max-width: 240px;
+    background: var(--bg);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.kanban-col-hdr {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kanban-col-hdr .kcnt {
+    font-size: 11px;
+    background: rgba(0, 0, 0, .07);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.kanban-cards {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 80px;
+}
+
+/* Carte kanban */
+.k-card {
+    background: var(--white);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: box-shadow .15s;
+}
+
+.k-card:hover { box-shadow: 0 2px 12px rgba(0, 0, 0, .1); }
+
+.k-card-proj {
+    font-size: 10px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.k-card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.k-card-name.done { text-decoration: line-through; color: var(--text3); }
+
+.k-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.k-card-dl         { font-size: 11px; color: var(--text2); }
+.k-card-dl.overdue { color: var(--red); }
+.k-card-dl.soon    { color: var(--orange); }
+
+/* Bouton d'ajout en bas de colonne */
+.k-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--text3);
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    transition: color .15s;
+}
+
+.k-add-btn:hover { color: var(--accent); }
+
+/* Zone de dépôt drag & drop */
+.drag-over {
+    background: #e8f0fe !important;
+    border: 2px dashed var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VUE CALENDRIER — grille mensuelle
+   ───────────────────────────────────────────────────────────────────────────── */
+.cal-wrap { padding: 16px; }
+
+.cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.cal-nav h2 { font-size: 16px; font-weight: 600; }
+
+.cal-nav-btns { display: flex; gap: 6px; }
+
+/* Grille 7 colonnes */
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cal-day-hdr {
+    background: var(--bg);
+    padding: 6px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.cal-day {
+    background: var(--white);
+    min-height: 90px;
+    padding: 6px;
+}
+
+.cal-day.other-month { background: #fafafa; }
+.cal-day.today       { background: #f0f4ff; }
+
+.cal-day-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 4px;
+}
+
+/* Numéro du jour courant cerclé en bleu */
+.cal-day.today .cal-day-num {
+    color: #fff;
+    background: var(--accent);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+}
+
+.cal-event {
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 500;
+    color: #fff;
+}
+
+.cal-event:hover { filter: brightness(.9); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VUE GANTT / TIMELINE — barres horizontales
+   ───────────────────────────────────────────────────────────────────────────── */
+.gantt-outer { padding: 16px; }
+
+/* En-tête avec les mois */
+.gantt-hdr {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px 6px 0 0;
+}
+
+.gantt-lbl-hdr {
+    width: 220px;
+    min-width: 220px;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-right: 1px solid var(--border);
+}
+
+.gantt-months {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 32px;
+}
+
+.gantt-month-tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    font-size: 10px;
+    color: var(--text2);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Corps du gantt */
+.gantt-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+}
+
+.gantt-row {
+    display: flex;
+    align-items: center;
+    height: 36px;
+    border-bottom: 1px solid var(--border);
+}
+
+.gantt-row:last-child { border-bottom: none; }
+.gantt-row:hover      { background: #f8f9ff; }
+
+.gantt-label {
+    width: 220px;
+    min-width: 220px;
+    padding: 0 12px;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gantt-timeline {
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
+
+/* Barre de durée */
+.gantt-bar {
+    position: absolute;
+    height: 18px;
+    top: 9px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.gantt-bar:hover { filter: brightness(.9); }
+
+/* Ligne verticale "aujourd'hui" en rouge */
+.gantt-today {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--red);
+    opacity: .5;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VUE DASHBOARD — widgets de statistiques
+   ───────────────────────────────────────────────────────────────────────────── */
+.dash-wrap {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.dash-widget {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.dash-widget h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 14px;
+}
+
+/* Grille 2 colonnes pour les stats */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-box {
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Modificateurs de couleur pour les stats */
+.stat-val.green  { color: var(--green); }
+.stat-val.orange { color: var(--orange); }
+.stat-val.red    { color: var(--red); }
+.stat-val.blue   { color: var(--accent); }
+
+.stat-lbl {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 3px;
+}
+
+/* Widget donut + légende */
+.donut-wrap  { display: flex; align-items: center; gap: 16px; }
+.donut-legend { flex: 1; }
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--text2);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* Barres de progression par projet */
+.progress-list .pl-row { margin-bottom: 10px; }
+
+.pl-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.pl-bar {
+    height: 7px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.pl-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .4s;
+}
+
+/* Liste des tâches en retard */
+.overdue-list .od-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+}
+
+.overdue-list .od-row:last-child { border-bottom: none; }
+
+/* Journal d'activité */
+.activity-list .al-row {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text2);
+}
+
+.activity-list .al-row:last-child { border-bottom: none; }
+
+.al-time {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 2px;
+}
+
+/* Barre de répartition des priorités */
+.priority-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.priority-seg { transition: width .4s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BARRE DE RÉSUMÉ — statistiques en bas d'écran
+   ───────────────────────────────────────────────────────────────────────────── */
+.summary-bar {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    gap: 20px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.sum-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.sum-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.sum-lbl { color: var(--text2); }
+.sum-val  { font-weight: 600; color: var(--text); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODALES — fenêtres de création/édition
+   ───────────────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, .2);
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: mIn .17s ease;
+}
+
+@keyframes mIn {
+    from { transform: scale(.95); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+.modal-hdr {
+    padding: 18px 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-hdr h2 { font-size: 15px; font-weight: 700; }
+
+.modal-x {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text2);
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.modal-x:hover { background: var(--bg); }
+
+.modal-body { padding: 16px 22px; }
+
+/* Champs de formulaire */
+.frow { margin-bottom: 13px; }
+
+.frow label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 5px;
+}
+
+.frow input,
+.frow select,
+.frow textarea {
+    width: 100%;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 8px 11px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+    font-family: 'Figtree', sans-serif;
+}
+
+.frow input:focus,
+.frow select:focus,
+.frow textarea:focus { border-color: var(--accent); }
+
+.frow textarea { min-height: 85px; resize: vertical; }
+
+.modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Grilles de colonnes pour les formulaires */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 11px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POPUP DE SÉLECTION DE STATUT
+   ───────────────────────────────────────────────────────────────────────────── */
+.spopup {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+    z-index: 60;
+    min-width: 130px;
+    padding: 5px;
+    top: calc(100% + 3px);
+    left: 0;
+}
+
+.spopup.open { display: block; }
+
+.spopup-opt {
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 1px;
+}
+
+.spopup-opt:hover { filter: brightness(.9); }
+
+.cell-rel {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BOUTON CHRONOMÈTRE — suivi du temps
+   ───────────────────────────────────────────────────────────────────────────── */
+.tt-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all .15s;
+}
+
+.tt-btn:hover   { border-color: var(--accent); color: var(--accent); }
+.tt-btn.running { background: #fff0f0; border-color: var(--red); color: var(--red); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOAST — notification temporaire en bas d'écran
+   ───────────────────────────────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #323338;
+    color: #fff;
+    font-size: 13px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    z-index: 200;
+    opacity: 0;
+    transition: all .22s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
