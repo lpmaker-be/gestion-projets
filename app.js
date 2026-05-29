@@ -2175,10 +2175,11 @@ async function saveTask() {
     const name = document.getElementById('t-name').value.trim();
     if (!name) { toast('Titre requis !', true); return; }
 
-    // Récupérer les données existantes si modification
     const existing = editingTaskId
         ? (data.tasks[taskProjId] || []).find(x => x.id === editingTaskId) || {}
         : {};
+
+    const parentId = document.getElementById('t-depends').value || '';
 
     const task = {
         id:        editingTaskId || genId(),
@@ -2187,7 +2188,7 @@ async function saveTask() {
         deadline:  document.getElementById('t-deadline').value,
         start:     document.getElementById('t-start').value,
         estimate:  parseFloat(document.getElementById('t-estimate').value) || 0,
-        depends:   document.getElementById('t-depends').value || '',
+        depends:   parentId,
         note:      document.getElementById('t-note').value.trim(),
         status:    existing.status    || 'todo',
         done:      existing.done      || false,
@@ -2195,9 +2196,25 @@ async function saveTask() {
         timeSpent: existing.timeSpent || 0
     };
 
-    await apiPost('/api/tasks', { projectId: taskProjId, task });
-
     if (!data.tasks[taskProjId]) data.tasks[taskProjId] = [];
+
+    if (parentId && !editingTaskId) {
+        // Ajouter comme sous-tache de la tache parente
+        const parent = data.tasks[taskProjId].find(x => x.id === parentId);
+        if (parent) {
+            if (!parent.subtasks) parent.subtasks = [];
+            parent.subtasks.push(task);
+            await apiPost('/api/tasks', { projectId: taskProjId, task: parent });
+            closeModal('modal-task');
+            addActivity('Etape ajoutee : ' + task.name);
+            toast('Etape ajoutee dans "' + parent.name + '" !');
+            renderAll();
+            return;
+        }
+    }
+
+    // Tache independante (ou modification)
+    await apiPost('/api/tasks', { projectId: taskProjId, task });
 
     if (editingTaskId) {
         const i = data.tasks[taskProjId].findIndex(x => x.id === editingTaskId);
@@ -2207,16 +2224,12 @@ async function saveTask() {
     }
 
     closeModal('modal-task');
-    addActivity(editingTaskId ? `Tâche modifiée : ${task.name}` : `Tâche créée : ${task.name}`);
-    toast(editingTaskId ? 'Tâche modifiée ✓' : 'Tâche ajoutée ✓');
+    addActivity(editingTaskId ? 'Tache modifiee : ' + task.name : 'Tache creee : ' + task.name);
+    toast(editingTaskId ? 'Tache modifiee !' : 'Tache ajoutee !');
     renderAll();
 }
 
-/**
- * Bascule l'état terminé/non-terminé d'une tâche.
- * @param {string} projId - ID du projet
- * @param {string} taskId - ID de la tâche
- */
+
 async function toggleTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
     if (!t) return;
