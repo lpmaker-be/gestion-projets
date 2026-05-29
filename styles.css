@@ -271,3 +271,35 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .add-row td { padding: 0 !important; }
 .add-task-btn { width: 100%; padding: 10px 16px !important; border-radius: 0 !important; border: none !important; border-top: 1px solid var(--border) !important; color: var(--accent) !important; font-weight: 500; font-size: 13px; justify-content: flex-start; }
 .add-task-btn:hover { background: rgba(0,115,234,.06) !important; }
+
+/* ── Animations ── */
+
+/* Apparition d'une nouvelle ligne */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Tache cochee : flash vert puis barree */
+@keyframes checkDone {
+    0%   { background: var(--white); }
+    30%  { background: #e6fff5; }
+    100% { background: var(--white); }
+}
+
+/* Suppression : fondu vers la droite */
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(30px); }
+}
+
+/* Nouveau projet/tache : apparition douce */
+.btbl tbody tr         { animation: fadeIn .2s ease; }
+.project-block         { animation: fadeIn .25s ease; }
+
+/* Flash vert quand on coche */
+.btbl tbody tr.just-done { animation: checkDone .5s ease; }
+
+/* Toast ameliore */
+.toast { transition: all .25s cubic-bezier(.34,1.56,.64,1); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.02); }

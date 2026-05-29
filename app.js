@@ -2197,8 +2197,18 @@ async function toggleTask(projId, taskId) {
 
     t.done = !t.done;
     await apiPost('/api/tasks', { projectId: projId, task: t });
-    addActivity(`Tâche ${t.done ? 'terminée' : 'réouverte'} : ${t.name}`);
+    addActivity('Tache ' + (t.done ? 'terminee' : 'reouverte') + ' : ' + t.name);
     renderAll();
+
+    // Animation flash vert si tache cochee
+    if (t.done) {
+        setTimeout(() => {
+            document.querySelectorAll('.btbl tbody tr.task-row').forEach(row => {
+                row.classList.add('just-done');
+                setTimeout(() => row.classList.remove('just-done'), 600);
+            });
+        }, 50);
+    }
 }
 
 /**
