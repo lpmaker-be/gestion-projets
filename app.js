@@ -605,7 +605,7 @@ function renderBoard() {
                     : 0);
 
                 html += `
-                    <tr class="${t.done ? 'row-done' : ''}" onclick="openTaskDetail('${p.id}', '${t.id}')">
+                    <tr class="task-row ${t.done ? 'row-done' : ''}" onclick="openTaskDetail('${p.id}', '${t.id}')">
                         <td onclick="event.stopPropagation()">
                             <input class="row-chk" type="checkbox" ${t.done ? 'checked' : ''}
                                    onchange="toggleTask('${p.id}', '${t.id}')">
@@ -704,7 +704,7 @@ function renderKanban() {
 
         // Cartes de projets (sauf colonne "Terminé" qui affiche les tâches)
         projs.forEach(p => {
-            if (p.status === st && st !== 'done') {
+            if (p.status === st) {
                 const dl   = p.deadline ? dlInfo(p.deadline) : null;
                 const allT = data.tasks[p.id] || [];
                 const pct  = allT.length
@@ -731,28 +731,28 @@ function renderKanban() {
             }
         });
 
-        // Colonne "Terminé" : affiche les tâches terminées
-        if (st === 'done') {
-            projs.forEach(p => {
-                filterTasks(data.tasks[p.id] || [])
-                    .filter(t => t.done)
-                    .forEach(t => {
-                        const dl = t.deadline ? dlInfo(t.deadline) : null;
-                        cards.push(`
-                        <div class="k-card row-done"
-                             onclick="openTaskDetail('${p.id}', '${t.id}')">
-                            <div class="k-card-proj" style="color:${pcol(p.id)}">${escHtml(p.name)}</div>
-                            <div class="k-card-name done">${escHtml(t.name)}</div>
-                            <div class="k-card-footer">
-                                <span class="pill ${prioCls(t.priority)}" style="height:18px;font-size:10px">
-                                    ${prioLabel(t.priority)}
-                                </span>
-                                ${dl ? `<span class="k-card-dl ${dl.cls}">${dl.str}</span>` : ''}
-                            </div>
-                        </div>`);
-                    });
-            });
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Colonne Kanban avec zone de dépôt
         html += `
