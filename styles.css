@@ -241,7 +241,7 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 11px; }
 
 /* Popup statut */
-.spopup { display: none; position: absolute; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.15); z-index: 60; min-width: 130px; padding: 5px; top: calc(100% + 3px); left: 0; }
+.spopup { display: none; position: fixed; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.15); z-index: 999; min-width: 130px; padding: 5px; }
 .spopup.open { display: block; }
 .spopup-opt { padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 1px; }
 .spopup-opt:hover { filter: brightness(.9); }

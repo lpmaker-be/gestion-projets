@@ -676,6 +676,50 @@ function renderBoard() {
  * Collapse/expand un projet dans la vue tableau.
  * @param {string} id - ID du projet
  */
+
+function openTaskStatusPicker(projId, taskId, btn) {
+    document.querySelectorAll('.spopup').forEach(x => x.remove());
+    const popup = document.createElement('div');
+    popup.className = 'spopup open';
+    [
+        ['todo',  's-todo',  'A faire'],
+        ['prog',  's-prog',  'En cours'],
+        ['done',  's-done',  'Termine'],
+        ['block', 's-block', 'Bloque']
+    ].forEach(([s, cls, l]) => {
+        const opt = document.createElement('div');
+        opt.className = 'spopup-opt pill ' + cls;
+        opt.style.display = 'block';
+        opt.style.textAlign = 'center';
+        opt.textContent = l;
+        opt.onclick = async () => {
+            const t = (data.tasks[projId] || []).find(x => x.id === taskId);
+            if (t) {
+                t.status = s;
+                if (s === 'done') t.done = true;
+                else if (s === 'todo') t.done = false;
+                await apiPost('/api/tasks', { projectId: projId, task: t });
+                renderAll();
+            }
+            popup.remove();
+        };
+        popup.appendChild(opt);
+    });
+    document.body.appendChild(popup);
+    const rect = btn.getBoundingClientRect();
+    popup.style.display = 'block';
+    const ph = popup.offsetHeight;
+    const pw = popup.offsetWidth;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow < ph + 10) {
+        popup.style.top = (rect.top - ph - 4) + 'px';
+    } else {
+        popup.style.top = (rect.bottom + 4) + 'px';
+    }
+    popup.style.left = Math.min(rect.left, window.innerWidth - pw - 8) + 'px';
+    setTimeout(() => document.addEventListener('click', () => popup.remove(), { once: true }), 50);
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
