@@ -2258,127 +2258,37 @@ async function renameProj(id, name) {
  * @param {string} id - ID du projet
  */
 async function deleteProject(id) {
-    const p = data.projects.find(x => x.id === id);
+    const p  = data.projects.find(x => x.id === id);
     const tc = (data.tasks[id] || []).length;
-    if (!window._confirmOk) {
-        showConfirm('Supprimer "' + (p?p.name:id) + '" ?', tc ? tc + ' tache(s) seront supprimees' : '', () => { window._confirmOk=true; deleteProject(id); });
-        return;
-    }
-    window._confirmOk = false;
-    await apiDel(`/api/projects?id=${id}`);
-
-    data.projects = data.projects.filter(x => x.id !== id);
-    delete data.tasks[id];
-
-    addActivity(`Projet supprimé : ${p ? p.name : id}`);
-    toast('Projet supprimé');
-    renderAll();
-}
-
-
-/* =============================================================================
-   14. ACTIONS CRUD — TÂCHES
-   ============================================================================= */
-
-/**
- * Sauvegarde une tâche (création ou modification) via l'API.
- */
-async function saveTask() {
-    const name = document.getElementById('t-name').value.trim();
-    if (!name) { toast('Titre requis !', true); return; }
-
-    const existing = editingTaskId
-        ? (data.tasks[taskProjId] || []).find(x => x.id === editingTaskId) || {}
-        : {};
-
-    const parentId = document.getElementById('t-depends').value || '';
-
-    const task = {
-        id:        editingTaskId || genId(),
-        name,
-        priority:  document.getElementById('t-priority').value,
-        deadline:  document.getElementById('t-deadline').value,
-        start:     document.getElementById('t-start').value,
-        estimate:  parseFloat(document.getElementById('t-estimate').value) || 0,
-        depends:   parentId,
-        note:      document.getElementById('t-note').value.trim(),
-        status:    existing.status    || 'todo',
-        done:      existing.done      || false,
-        subtasks:  existing.subtasks  || [],
-        timeSpent: existing.timeSpent || 0
-    };
-
-    if (!data.tasks[taskProjId]) data.tasks[taskProjId] = [];
-
-    if (parentId && !editingTaskId) {
-        // Ajouter comme sous-tache de la tache parente
-        const parent = data.tasks[taskProjId].find(x => x.id === parentId);
-        if (parent) {
-            if (!parent.subtasks) parent.subtasks = [];
-            parent.subtasks.push(task);
-            await apiPost('/api/tasks', { projectId: taskProjId, task: parent });
-            closeModal('modal-task');
-            addActivity('Etape ajoutee : ' + task.name);
-            toast('Etape ajoutee dans "' + parent.name + '" !');
+    showConfirm(
+        'Supprimer ce projet ?',
+        (p ? '"' + p.name + '"' : '') + (tc ? ' et ses ' + tc + ' tache(s)' : ''),
+        async () => {
+            await apiDel('/api/projects?id=' + id);
+            data.projects = data.projects.filter(x => x.id !== id);
+            delete data.tasks[id];
+            addActivity('Projet supprime : ' + (p ? p.name : id));
+            toast('Projet supprime');
             renderAll();
-            return;
         }
-    }
-
-    // Tache independante (ou modification)
-    await apiPost('/api/tasks', { projectId: taskProjId, task });
-
-    if (editingTaskId) {
-        const i = data.tasks[taskProjId].findIndex(x => x.id === editingTaskId);
-        if (i >= 0) data.tasks[taskProjId][i] = task;
-    } else {
-        data.tasks[taskProjId].push(task);
-    }
-
-    closeModal('modal-task');
-    addActivity(editingTaskId ? 'Tache modifiee : ' + task.name : 'Tache creee : ' + task.name);
-    toast(editingTaskId ? 'Tache modifiee !' : 'Tache ajoutee !');
-    renderAll();
+    );
 }
 
 
-async function toggleTask(projId, taskId) {
-    const t = (data.tasks[projId] || []).find(x => x.id === taskId);
-    if (!t) return;
-
-    t.done   = !t.done;
-    t.status = t.done ? 'done' : 'todo';
-
-    // Propager aux sous-taches
-    setAllSubtasksDone(t.subtasks || [], t.done);
-
-    await apiPost('/api/tasks', { projectId: projId, task: t });
-    addActivity('Tache ' + (t.done ? 'terminee' : 'reouverte') + ' : ' + t.name);
-    renderAll();
-
-    // Animation flash vert si tache cochee
-    if (t.done) {
-        setTimeout(() => {
-            document.querySelectorAll('.btbl tbody tr.task-row').forEach(row => {
-                row.classList.add('just-done');
-                setTimeout(() => row.classList.remove('just-done'), 600);
-            });
-        }, 50);
-    }
-}
-
-/**
- * Supprime une tâche.
- * @param {string} projId - ID du projet
- * @param {string} taskId - ID de la tâche
- */
 async function deleteTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
-    await apiDel(`/api/tasks?projectId=${projId}&taskId=${taskId}`);
-    data.tasks[projId] = (data.tasks[projId] || []).filter(x => x.id !== taskId);
-    addActivity(`Tâche supprimée : ${t ? t.name : taskId}`);
-    toast('Tâche supprimée');
-    renderAll();
+    const name = t ? t.name : taskId;
+    showConfirm(
+        'Supprimer cette tache ?',
+        '"' + name + '"',
+        async () => {
+            await apiDel('/api/tasks?projectId=' + projId + '&taskId=' + taskId);
+            data.tasks[projId] = (data.tasks[projId] || []).filter(x => x.id !== taskId);
+            addActivity('Tache supprimee : ' + name);
+            toast('Tache supprimee');
+            renderAll();
+        }
+    );
 }
 
 
