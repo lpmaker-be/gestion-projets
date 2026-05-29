@@ -113,7 +113,7 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .btbl thead th { height: 32px; background: var(--bg); border-bottom: 2px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text2); text-align: left; padding: 0 10px; white-space: nowrap; position: relative; z-index: 0; text-transform: uppercase; letter-spacing: .4px; }
 .btbl tbody tr { height: 38px; border-bottom: 1px solid var(--border); background: var(--white); transition: background .1s; cursor: pointer; }
 .btbl tbody tr:hover { background: #f0f4ff; }
-.btbl tbody td { padding: 0 10px; font-size: 13px; color: var(--text); vertical-align: middle; white-space: nowrap; }
+.btbl tbody td { padding: 0 10px; font-size: 13px; color: var(--text); vertical-align: middle; white-space: nowrap; height: 38px; }
 .btbl tbody tr.row-done { opacity: .55; }
 .row-chk { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
 .tname-cell { display: flex; align-items: center; gap: 7px; max-width: 360px; }
@@ -245,7 +245,7 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .spopup.open { display: block; }
 .spopup-opt { padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 1px; }
 .spopup-opt:hover { filter: brightness(.9); }
-.cell-rel { position: relative; display: flex; align-items: center; }
+.cell-rel { position: relative; display: flex; align-items: center; height: 100%; }
 
 /* Chronometre */
 .tt-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 11px; cursor: pointer; color: var(--text2); display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
