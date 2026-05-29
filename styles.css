@@ -126,8 +126,8 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .dl-cell.overdue { color: var(--red);    font-weight: 600; }
 .dl-cell.soon    { color: var(--orange); font-weight: 600; }
 .add-row td { padding: 0 10px; height: 34px; background: var(--white); border-bottom: 1px solid var(--border); }
-.add-task-btn { background: none; border: none; color: var(--text3); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 0; }
-.add-task-btn:hover { color: var(--accent); }
+.add-task-btn { background: none; border: 1.5px dashed var(--border); color: var(--text2); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 6px; transition: all .15s; width: 100%; }
+.add-task-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,115,234,.04); }
 .add-proj-row { padding: 10px 16px; }
 .add-proj-btn { background: none; border: 1.5px dashed var(--border); color: var(--text3); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 6px; transition: all .15s; }
 .add-proj-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,115,234,.04); }
