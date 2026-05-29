@@ -178,7 +178,7 @@ function prioCls(p) {
 
 /** Retourne le libellé du type de projet (avec emoji) */
 function typeLabel(t) {
-    return { arduino: '🔌 Arduino/RPI', software: '💻 Logiciel', mixed: '⚙️ Mixte' }[t] || t;
+    return { arduino: '🔌 Arduino/RPI', software: '💻 Logiciel', mixed: '⚙️ Mixte', divers: '📦 Divers' }[t] || t;
 }
 
 /**
