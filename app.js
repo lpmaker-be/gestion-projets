@@ -59,6 +59,9 @@ let showDone = true;
 /** ID du projet en cours d'édition dans la modale (null = nouveau) */
 let editingProjId = null;
 
+/** ID du dernier projet actif (pour le raccourci T) */
+let currentProjId = null;
+
 /** ID de la tâche en cours d'édition dans la modale (null = nouvelle) */
 let editingTaskId = null;
 
@@ -527,7 +530,7 @@ function renderBoard() {
         // ── En-tête du projet ──────────────────────────────────────────
         html += `
         <div class="project-block">
-            <div class="proj-hdr">
+            <div class="proj-hdr" onmouseenter="currentProjId='${p.id}'">
                 <button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
                 <span class="proj-color" style="background:${color}"></span>
                 <input class="proj-name-inp"
@@ -1861,6 +1864,7 @@ function closeModal(id) {
  */
 function openProjectModal(id = null) {
     editingProjId = id;
+    if (id) currentProjId = id;
     document.getElementById('modal-proj-title').textContent = id ? 'Modifier le projet' : 'Nouveau projet';
 
     if (id) {
@@ -1895,6 +1899,7 @@ function openProjectModal(id = null) {
  */
 function openTaskModal(projId, taskId = null) {
     taskProjId    = projId;
+    currentProjId = projId;
     editingTaskId = taskId;
     document.getElementById('modal-task-title').textContent = taskId ? 'Modifier la tâche' : 'Nouvelle tâche';
 
@@ -2208,7 +2213,10 @@ document.addEventListener('keydown', e => {
         if (e.key === 't' || e.key === 'T') {
             e.preventDefault();
             const projs = getFilteredProjects();
-            if (projs.length > 0) openTaskModal(projs[0].id);
+            const target = currentProjId && projs.find(p => p.id === currentProjId)
+                ? currentProjId
+                : (projs.length > 0 ? projs[0].id : null);
+            if (target) openTaskModal(target);
             else toast('Cree un projet d abord (N)', true);
         }
         if (e.key === 'd' || e.key === 'D') { e.preventDefault(); setView('dashboard', null); }
