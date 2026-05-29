@@ -380,10 +380,17 @@ function getFilteredProjects() {
         // Filtre type
         if (typeF && p.type !== typeF) return false;
         // Filtre recherche textuelle (nom, description, composants)
+        // Recherche sur nom/desc/composants du projet ET sur les taches
+        const taskMatch = (data.tasks[p.id] || []).some(t =>
+            t.name.toLowerCase().includes(search) ||
+            (t.note || '').toLowerCase().includes(search) ||
+            (t.subtasks || []).some(st => st.name.toLowerCase().includes(search))
+        );
         if (search &&
             !p.name.toLowerCase().includes(search) &&
             !(p.desc       || '').toLowerCase().includes(search) &&
-            !(p.components || '').toLowerCase().includes(search)
+            !(p.components || '').toLowerCase().includes(search) &&
+            !taskMatch
         ) return false;
         return true;
     });
@@ -408,6 +415,24 @@ function filterTasks(tasks) {
     let t = [...tasks];
     if (prioFilter !== 'all') t = t.filter(x => x.priority === prioFilter);
     if (!showDone)            t = t.filter(x => !x.done);
+
+    // Tri selon le selecteur sort-by
+    const sortBy = document.getElementById('sort-by') ? document.getElementById('sort-by').value : 'created';
+    t.sort((a, b) => {
+        if (sortBy === 'deadline') {
+            // Taches sans deadline en dernier
+            if (!a.deadline && !b.deadline) return 0;
+            if (!a.deadline) return 1;
+            if (!b.deadline) return -1;
+            return a.deadline > b.deadline ? 1 : -1;
+        }
+        if (sortBy === 'priority') {
+            const po = { high: 0, med: 1, low: 2 };
+            return (po[a.priority] || 1) - (po[b.priority] || 1);
+        }
+        if (sortBy === 'name') return a.name.localeCompare(b.name);
+        return 0; // creation : garder l'ordre original
+    });
     return t;
 }
 
