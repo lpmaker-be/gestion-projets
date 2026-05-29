@@ -845,6 +845,13 @@ async function saveSubtask() {
         }
     }
 
+    // Si la tache etait terminee, elle repasse en cours
+    if (t.status === 'done' || t.done) {
+        t.status = 'prog';
+        t.done   = false;
+        toast('Tache repassee en cours car une etape a ete ajoutee');
+    }
+
     await apiPost('/api/tasks', { projectId: _subProjId, task: t });
     addActivity('Etape ajoutee : ' + newSub.name);
     closeModal('modal-subtask');
@@ -860,8 +867,22 @@ function toggleSubtask(projId, taskId, subId) {
     if (!t) return;
     const st = findSubtask(t.subtasks || [], subId);
     if (st) {
-        st.done = !st.done;
+        st.done   = !st.done;
         st.status = st.done ? 'done' : 'todo';
+
+        // Verifier si toutes les sous-taches sont terminees
+        const allSubs = t.subtasks || [];
+        const allDone = allSubs.length > 0 && allSubs.every(s => s.done);
+        if (allDone) {
+            t.done   = true;
+            t.status = 'done';
+            toast('Toutes les etapes terminees - tache marquee terminee !');
+        } else if (t.done || t.status === 'done') {
+            // Au moins une sous-tache non terminee -> repasser en cours
+            t.done   = false;
+            t.status = 'prog';
+        }
+
         apiPost('/api/tasks', { projectId: projId, task: t });
         renderAll();
     }
