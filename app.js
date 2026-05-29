@@ -433,7 +433,7 @@ function updateSummary() {
     const doneT    = allT.filter(t => t.done).length;
     const pct      = allT.length ? Math.round(doneT / allT.length * 100) : 0;
     const overdue  = allT.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date()).length;
-    const totalEst = allT.reduce((s, t) => s + (t.estimate || 0), 0);
+    const totalEst = allT.reduce((s, t) => s + totalEstimate(t), 0);
 
     document.getElementById('summary-bar').innerHTML = `
         <div class="sum-item">
@@ -593,7 +593,7 @@ function renderBoard() {
                         <td class="dl-cell ${pdl ? pdl.cls : ''}">${pdl ? pdl.str : '—'}</td>
                         <td></td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${allTasks.reduce((s, t) => s + (t.estimate || 0), 0)}h
+                            ${allTasks.reduce((s, t) => s + totalEstimate(t), 0)}h
                         </td>
                         <td></td>
                     </tr>`;
@@ -672,7 +672,7 @@ function renderBoard() {
                             </button>
                         </td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${t.estimate ? t.estimate + 'h' : '—'}
+                            ${totalEstimate(t) > 0 ? totalEstimate(t) + 'h' : '—'}
                         </td>
                         <td onclick="event.stopPropagation()">
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
@@ -1000,6 +1000,27 @@ function openSubtaskDetail(projId, taskId, subId, level) {
     document.getElementById('modal-detail').classList.add('open');
 }
 
+
+
+/**
+ * Calcule le temps estime total d'une tache + toutes ses sous-taches recursif.
+ * @param {object} task
+ * @returns {number} heures
+ */
+function totalEstimate(task) {
+    const own = parseFloat(task.estimate) || 0;
+    const subs = (task.subtasks || []).reduce((s, st) => s + totalEstimate(st), 0);
+    return own + subs;
+}
+
+/**
+ * Calcule le temps passe total d'une tache + sous-taches.
+ */
+function totalTimeSpent(task) {
+    const own = task.timeSpent || 0;
+    const subs = (task.subtasks || []).reduce((s, st) => s + totalTimeSpent(st), 0);
+    return own + subs;
+}
 
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
@@ -1400,8 +1421,8 @@ function renderDashboard() {
     const allT       = Object.values(data.tasks).flat();
     const doneT      = allT.filter(t => t.done).length;
     const overdueT   = allT.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date());
-    const totalEst   = allT.reduce((s, t) => s + (parseFloat(t.estimate) || 0), 0);
-    const totalSpent = allT.reduce((s, t) => s + (t.timeSpent || 0), 0);
+    const totalEst   = allT.reduce((s, t) => s + totalEstimate(t), 0);
+    const totalSpent = allT.reduce((s, t) => s + totalTimeSpent(t), 0);
 
     // Comptages priorités (tâches actives seulement)
     const pHigh  = allT.filter(t => t.priority === 'high' && !t.done).length;
@@ -1777,7 +1798,7 @@ function openTaskDetail(projId, taskId) {
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Estimation</div>
-                <div style="font-size:13px">${t.estimate ? t.estimate + 'h' : '—'}</div>
+                <div style="font-size:13px">${totalEstimate(t) > 0 ? totalEstimate(t) + 'h' : '—'}</div>
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Temps passé</div>
