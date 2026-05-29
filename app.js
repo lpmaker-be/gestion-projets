@@ -233,6 +233,7 @@ async function loadData() {
             if (!t.depends)   t.depends   = '';
             if (!t.start)     t.start     = '';
             if (!t.subtasks)  t.subtasks  = [];
+            if (!t.comments)  t.comments  = [];
             if (!t.status)    t.status    = t.done ? 'done' : 'todo';
         });
 
@@ -1222,6 +1223,70 @@ function setAllSubtasksDone(subtasks, done) {
     });
 }
 
+
+/* =============================================================================
+   COMMENTAIRES SUR LES TACHES
+   ============================================================================= */
+
+/**
+ * Ajoute un commentaire a une tache.
+ */
+async function addComment(projId, taskId) {
+    const textarea = document.getElementById('comment-input-' + taskId);
+    const text = textarea ? textarea.value.trim() : '';
+    if (!text) { toast('Ecris un commentaire !', true); return; }
+
+    const t = findTask(projId, taskId);
+    if (!t) return;
+
+    if (!t.comments) t.comments = [];
+    t.comments.push({
+        id:   genId(),
+        text,
+        date: new Date().toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        })
+    });
+
+    await apiPost('/api/tasks', { projectId: projId, task: t });
+    textarea.value = '';
+    toast('Commentaire ajoute !');
+    // Rerendre uniquement la section commentaires
+    openTaskDetail(projId, taskId);
+}
+
+/**
+ * Supprime un commentaire.
+ */
+async function deleteComment(projId, taskId, commentId) {
+    const t = findTask(projId, taskId);
+    if (!t || !t.comments) return;
+    t.comments = t.comments.filter(c => c.id !== commentId);
+    await apiPost('/api/tasks', { projectId: projId, task: t });
+    toast('Commentaire supprime');
+    openTaskDetail(projId, taskId);
+}
+
+/**
+ * Edite un commentaire existant.
+ */
+async function editComment(projId, taskId, commentId) {
+    const t = findTask(projId, taskId);
+    if (!t || !t.comments) return;
+    const comment = t.comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    const newText = prompt('Modifier le commentaire :', comment.text);
+    if (!newText || !newText.trim()) return;
+
+    comment.text = newText.trim();
+    comment.date += ' (modifie)';
+    await apiPost('/api/tasks', { projectId: projId, task: t });
+    toast('Commentaire modifie !');
+    openTaskDetail(projId, taskId);
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2033,6 +2098,38 @@ function openTaskDetail(projId, taskId) {
     `;
 
     // Boutons d'action de la modale détail
+    // Section commentaires
+    const comments = t.comments || [];
+    const commentsHtml = `
+        <div style="margin-top:16px">
+            <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+                Commentaires (${comments.length})
+            </div>
+            <div class="comment-list">
+                ${comments.length ? comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-date">${c.date}</span>
+                        <div class="comment-actions">
+                            <button onclick="editComment('${projId}','${taskId}','${c.id}')">✏️</button>
+                            <button onclick="deleteComment('${projId}','${taskId}','${c.id}')">🗑</button>
+                        </div>
+                    </div>
+                    <div class="comment-text">${escHtml(c.text)}</div>
+                </div>`).join('') : '<p style="font-size:12px;color:var(--text3);font-style:italic">Aucun commentaire</p>'}
+            </div>
+            <div class="comment-input-wrap">
+                <textarea id="comment-input-${taskId}"
+                          placeholder="Ajouter un commentaire, une note d'avancement..."
+                          onkeydown="if(event.ctrlKey && event.key==='Enter') addComment('${projId}','${taskId}')"></textarea>
+                <button class="btn btn-primary btn-sm" onclick="addComment('${projId}','${taskId}')">
+                    Envoyer
+                </button>
+            </div>
+        </div>`;
+
+    document.getElementById('det-body').innerHTML += commentsHtml;
+
     document.getElementById('det-del').onclick  = () => { closeModal('modal-detail'); deleteTask(projId, taskId); };
     document.getElementById('det-edit').onclick = () => openTaskModal(projId, taskId);
 
