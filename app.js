@@ -1313,6 +1313,23 @@ setInterval(() => {
     if (Object.values(timers).some(t => t.running)) renderAll();
 }, 5000);
 
+/** Sauvegarde automatique du chrono toutes les 60s si le navigateur se ferme */
+setInterval(async () => {
+    for (const [taskId, tm] of Object.entries(timers)) {
+        if (!tm.running) continue;
+        for (const [projId, tasks] of Object.entries(data.tasks)) {
+            const t = tasks.find(x => x.id === taskId);
+            if (t) {
+                const elapsed = Math.floor((Date.now() - tm.start) / 1000);
+                t.timeSpent = (t.timeSpent || 0) + elapsed;
+                tm.start = Date.now();
+                await apiPost('/api/tasks', { projectId: projId, task: t });
+                break;
+            }
+        }
+    }
+}, 60000);
+
 
 /* =============================================================================
    12. MODALES
