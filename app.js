@@ -1239,6 +1239,17 @@ function donutSvg(projs) {
     ];
     const cols  = ['#c4c4c4', '#fdab3d', '#00c875', '#e2445c'];
     const total = vals.reduce((a, b) => a + b, 0) || 1;
+    const r = 28, cx = 40, cy = 40;
+
+    // Si un seul segment = cercle plein
+    const nonZero = vals.filter(v => v > 0).length;
+    if (nonZero <= 1) {
+        const colIdx = vals.findIndex(v => v > 0);
+        const col = colIdx >= 0 ? cols[colIdx] : '#c4c4c4';
+        return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}"/>` +
+               `<circle cx="${cx}" cy="${cy}" r="16" fill="white"/>` +
+               `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#323338">${total}</text>`;
+    }
 
     let angle = -90;
     let segs  = '';
@@ -1247,24 +1258,20 @@ function donutSvg(projs) {
         const fraction = v / total;
         const sweep    = fraction * 360;
         if (fraction === 0) return;
-
-        const r  = 28, cx = 40, cy = 40;
-        const a1 = angle        * Math.PI / 180;
+        const a1 = angle * Math.PI / 180;
         const a2 = (angle + sweep) * Math.PI / 180;
         const x1 = cx + r * Math.cos(a1);
         const y1 = cy + r * Math.sin(a1);
         const x2 = cx + r * Math.cos(a2);
         const y2 = cy + r * Math.sin(a2);
-        const la = sweep > 180 ? 1 : 0;    // large-arc-flag
-
+        const la = sweep > 180 ? 1 : 0;
         segs += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${la},1 ${x2},${y2} Z" fill="${cols[i]}"/>`;
         angle += sweep;
     });
 
-    // Cercle central blanc + total
-    return segs + `
-        <circle cx="40" cy="40" r="16" fill="white"/>
-        <text x="40" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="#323338">${total}</text>`;
+    return segs +
+        `<circle cx="${cx}" cy="${cy}" r="16" fill="white"/>` +
+        `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#323338">${total}</text>`;
 }
 
 
