@@ -272,8 +272,10 @@
                     <input id="t-estimate" type="number" min="0" step="0.5" placeholder="ex : 2.5">
                 </div>
                 <div class="frow">
-                    <label>Dépend de (tâche parente)</label>
-                    <input id="t-depends" type="text" placeholder="Nom de la tâche parente">
+                    <label>Tache parente (optionnel)</label>
+                    <select id="t-depends">
+                        <option value="">-- Aucune (tache independante) --</option>
+                    </select>
                 </div>
             </div>
 

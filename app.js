@@ -679,7 +679,7 @@ function renderBoard() {
                         </td>
                         <td>
                             <div class="tname-cell">
-                                ${t.depends ? `<span style="font-size:10px;color:var(--text3)" title="Dépend de ${t.depends}">🔗</span>` : ''}
+                                ${t.depends ? `<span style="font-size:10px;color:var(--text3)" title="Sous-tache de ${(data.tasks[p.id]||[]).find(x=>x.id===t.depends)?.name || t.depends}">🔗</span>` : ''}
                                 <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
                                 ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">📝</span>` : ''}
                                 <button class="open-btn"
@@ -1938,6 +1938,19 @@ function openProjectModal(id = null) {
 function openTaskModal(projId, taskId = null) {
     taskProjId    = projId;
     currentProjId = projId;
+
+    // Remplir la liste des taches parentes possibles
+    const sel = document.getElementById('t-depends');
+    sel.innerHTML = '<option value="">-- Aucune (tache independante) --</option>';
+    if (taskId === null) {
+        // Seulement pour une nouvelle tache
+        (data.tasks[projId] || []).forEach(t => {
+            const opt = document.createElement('option');
+            opt.value       = t.id;
+            opt.textContent = t.name;
+            sel.appendChild(opt);
+        });
+    }
     editingTaskId = taskId;
     document.getElementById('modal-task-title').textContent = taskId ? 'Modifier la tâche' : 'Nouvelle tâche';
 
@@ -2174,7 +2187,7 @@ async function saveTask() {
         deadline:  document.getElementById('t-deadline').value,
         start:     document.getElementById('t-start').value,
         estimate:  parseFloat(document.getElementById('t-estimate').value) || 0,
-        depends:   document.getElementById('t-depends').value.trim(),
+        depends:   document.getElementById('t-depends').value || '',
         note:      document.getElementById('t-note').value.trim(),
         status:    existing.status    || 'todo',
         done:      existing.done      || false,
