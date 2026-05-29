@@ -923,23 +923,29 @@ function toggleSubtask(projId, taskId, subId) {
  * Supprime une sous-tache.
  */
 function deleteSubtask(projId, taskId, subId) {
-    if (!confirm('Supprimer cette etape ?')) return;
     const t = findTask(projId, taskId);
     if (!t) return;
+    const st = findSubtask(t.subtasks || [], subId);
+    const name = st ? st.name : 'cette etape';
 
-    const removeFromList = (list) => {
-        const idx = list.findIndex(x => x.id === subId);
-        if (idx >= 0) { list.splice(idx, 1); return true; }
-        for (const st of list) {
-            if (st.subtasks && removeFromList(st.subtasks)) return true;
+    showConfirm(
+        'Supprimer cette etape ?',
+        '"' + name + '"',
+        () => {
+            const removeFromList = (list) => {
+                const idx = list.findIndex(x => x.id === subId);
+                if (idx >= 0) { list.splice(idx, 1); return true; }
+                for (const s of list) {
+                    if (s.subtasks && removeFromList(s.subtasks)) return true;
+                }
+                return false;
+            };
+            removeFromList(t.subtasks || []);
+            apiPost('/api/tasks', { projectId: projId, task: t });
+            addActivity('Etape supprimee : ' + name);
+            renderAll();
         }
-        return false;
-    };
-
-    removeFromList(t.subtasks || []);
-    apiPost('/api/tasks', { projectId: projId, task: t });
-    addActivity('Etape supprimee');
-    renderAll();
+    );
 }
 
 /**
@@ -1285,6 +1291,27 @@ async function editComment(projId, taskId, commentId) {
     await apiPost('/api/tasks', { projectId: projId, task: t });
     toast('Commentaire modifie !');
     openTaskDetail(projId, taskId);
+}
+
+
+/**
+ * Affiche une modale de confirmation propre.
+ * @param {string}   msg      - Message principal
+ * @param {string}   sub      - Sous-message (ex: nom de l'element)
+ * @param {Function} onOk     - Callback si confirmation
+ * @param {string}   icon     - Emoji icone (defaut: warning)
+ * @param {string}   btnLabel - Label bouton OK (defaut: Supprimer)
+ */
+function showConfirm(msg, sub, onOk, icon='&#x26A0;&#xFE0F;', btnLabel='Supprimer') {
+    document.getElementById('confirm-msg').innerHTML  = msg;
+    document.getElementById('confirm-sub').innerHTML  = sub || '';
+    document.getElementById('confirm-icon').innerHTML = icon;
+    document.getElementById('confirm-ok-btn').textContent = btnLabel;
+    document.getElementById('confirm-ok-btn').onclick = () => {
+        closeModal('modal-confirm');
+        onOk();
+    };
+    document.getElementById('modal-confirm').classList.add('open');
 }
 
 function toggleCollapse(id) {
@@ -2247,17 +2274,22 @@ async function renameProj(id, name) {
  * @param {string} id - ID du projet
  */
 async function deleteProject(id) {
-    if (!confirm('Supprimer ce projet et toutes ses tâches ?')) return;
-
     const p = data.projects.find(x => x.id === id);
-    await apiDel(`/api/projects?id=${id}`);
+    const name = p ? p.name : id;
+    const taskCount = (data.tasks[id] || []).length;
 
-    data.projects = data.projects.filter(x => x.id !== id);
-    delete data.tasks[id];
-
-    addActivity(`Projet supprimé : ${p ? p.name : id}`);
-    toast('Projet supprimé');
-    renderAll();
+    showConfirm(
+        'Supprimer ce projet ?',
+        '"' + name + '"' + (taskCount ? ' et ses ' + taskCount + ' tache(s)' : ''),
+        async () => {
+            await apiDel('/api/projects?id=' + id);
+            data.projects = data.projects.filter(x => x.id !== id);
+            delete data.tasks[id];
+            addActivity('Projet supprime : ' + name);
+            toast('Projet supprime');
+            renderAll();
+        }
+    );
 }
 
 
@@ -2359,66 +2391,19 @@ async function toggleTask(projId, taskId) {
  */
 async function deleteTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
-    await apiDel(`/api/tasks?projectId=${projId}&taskId=${taskId}`);
-    data.tasks[projId] = (data.tasks[projId] || []).filter(x => x.id !== taskId);
-    addActivity(`Tâche supprimée : ${t ? t.name : taskId}`);
-    toast('Tâche supprimée');
-    renderAll();
-}
+    const name = t ? t.name : taskId;
 
-
-/* =============================================================================
-   15. INITIALISATION
-   ============================================================================= */
-
-/** Ferme toutes les modales avec la touche Échap */
-document.addEventListener('keydown', e => {
-    // Ignorer si on est dans un champ de saisie
-    const tag = document.activeElement.tagName;
-    const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-
-    // Echap : ferme toutes les modales
-    if (e.key === 'Escape') {
-        ['modal-project', 'modal-task', 'modal-detail', 'modal-subtask'].forEach(closeModal);
-        document.querySelectorAll('.spopup').forEach(x => x.remove());
-    }
-
-    // Raccourcis uniquement hors champ de saisie
-    if (!inInput) {
-        if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openProjectModal(); }
-        if (e.key === 't' || e.key === 'T') {
-            e.preventDefault();
-            const projs = getFilteredProjects();
-            const target = currentProjId && projs.find(p => p.id === currentProjId)
-                ? currentProjId
-                : (projs.length > 0 ? projs[0].id : null);
-            if (target) openTaskModal(target);
-            else toast('Cree un projet d abord (N)', true);
+    showConfirm(
+        'Supprimer cette tache ?',
+        '"' + name + '"',
+        async () => {
+            await apiDel('/api/tasks?projectId=' + projId + '&taskId=' + taskId);
+            data.tasks[projId] = (data.tasks[projId] || []).filter(x => x.id !== taskId);
+            addActivity('Tache supprimee : ' + name);
+            toast('Tache supprimee');
+            renderAll();
         }
-        if (e.key === 'd' || e.key === 'D') { e.preventDefault(); setView('dashboard', null); }
-        if (e.key === 'b' || e.key === 'B') { e.preventDefault(); setView('board', null); }
-        if (e.key === 'k' || e.key === 'K') { e.preventDefault(); setView('kanban', null); }
-        if (e.key === '?') { e.preventDefault(); toggleHelp(); }
-    }
-});
-
-/** Affiche/masque le panneau d'aide des raccourcis */
-function toggleHelp() {
-    const el = document.getElementById('modal-help');
-    // Mettre a jour le label T avec le nom du projet courant
-    const lbl = document.getElementById('help-t-label');
-    if (lbl) {
-        const projs = getFilteredProjects();
-        const proj = currentProjId
-            ? projs.find(p => p.id === currentProjId)
-            : projs[0];
-        lbl.textContent = proj
-            ? 'Nouvelle tache dans "' + proj.name + '"'
-            : 'Nouvelle tache (aucun projet)';
-    }
-    if (el.classList.contains('open')) closeModal('modal-help');
-    else el.classList.add('open');
+    );
 }
 
-/** Démarrage : chargement des données depuis le serveur */
-loadData();
+

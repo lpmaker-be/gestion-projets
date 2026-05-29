@@ -415,6 +415,29 @@
     </div>
 </div>
 
+
+<!-- MODAL CONFIRMATION -->
+<div class="modal-overlay" id="modal-confirm">
+    <div class="modal confirm-modal">
+        <div class="modal-hdr">
+            <h2 id="confirm-title">Confirmer</h2>
+            <button class="modal-x" onclick="closeModal('modal-confirm')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="confirm-icon" id="confirm-icon">&#x26A0;&#xFE0F;</div>
+            <div class="confirm-msg" id="confirm-msg"></div>
+            <div class="confirm-sub" id="confirm-sub"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-confirm')">Annuler</button>
+            <button class="btn btn-sm" id="confirm-ok-btn"
+                    style="background:var(--red);color:#fff;border:none">
+                Supprimer
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 
