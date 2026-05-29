@@ -229,6 +229,8 @@ async function loadData() {
             if (!t.timeSpent) t.timeSpent = 0;
             if (!t.depends)   t.depends   = '';
             if (!t.start)     t.start     = '';
+            if (!t.subtasks)  t.subtasks  = [];
+            if (!t.status)    t.status    = t.done ? 'done' : 'todo';
         });
 
         renderAll();
@@ -604,6 +606,41 @@ function renderBoard() {
                     ? Math.floor((Date.now() - timers[t.id].start) / 1000)
                     : 0);
 
+                // Rendu de la tache et de ses sous-taches
+                const renderSubtasks = (subtasks, level) => {
+                    if (!subtasks || !subtasks.length) return '';
+                    const indent = 32 + (level * 20);
+                    return subtasks.map(st => `
+                    <tr class="task-row subtask-row-${level}" onclick="openSubtaskDetail('${p.id}', '${t.id}', '${st.id}', ${level})">
+                        <td onclick="event.stopPropagation()">
+                            <input class="row-chk" type="checkbox" ${st.done ? 'checked' : ''}
+                                   onchange="toggleSubtask('${p.id}', '${t.id}', '${st.id}')">
+                        </td>
+                        <td>
+                            <div class="tname-cell" style="padding-left:${indent}px">
+                                <span style="color:var(--text3);margin-right:4px">${level === 1 ? '└' : '  └'}</span>
+                                <span class="tname-txt ${st.done ? 'done' : ''}">${escHtml(st.name)}</span>
+                                ${st.subtasks && st.subtasks.length ? '<span style="font-size:10px;color:var(--text3);margin-left:4px">('+st.subtasks.length+' etape'+(st.subtasks.length>1?'s':'')+')</span>' : ''}
+                                <button class="open-btn" style="border-color:#00c875;color:#00c875"
+                                        onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', '${st.id}')">
+                                    + Etape
+                                </button>
+                            </div>
+                        </td>
+                        <td class="cell-rel"><button class="pill ${statusCls(st.status||'todo')}" onclick="event.stopPropagation();openSubtaskStatusPicker('${p.id}','${t.id}','${st.id}',this)">${statusLabel(st.status||'todo')}</button></td>
+                        <td><span class="pill ${prioCls(st.priority||'low')}" style="height:18px;font-size:10px">${prioLabel(st.priority||'low')}</span></td>
+                        <td class="dl-cell">${st.deadline ? dlInfo(st.deadline)?.str || '' : '—'}</td>
+                        <td></td>
+                        <td style="font-size:12px;color:var(--text2)">${st.estimate ? st.estimate+'h' : '—'}</td>
+                        <td onclick="event.stopPropagation()">
+                            <button class="ic-btn" style="color:var(--red);font-size:12px"
+                                    onclick="deleteSubtask('${p.id}','${t.id}','${st.id}')">x</button>
+                        </td>
+                    </tr>
+                    ${level < 2 ? renderSubtasks(st.subtasks || [], level + 1) : ''}
+                    `).join('');
+                };
+
                 html += `
                     <tr class="task-row ${t.done ? 'row-done' : ''}" onclick="openTaskDetail('${p.id}', '${t.id}')">
                         <td onclick="event.stopPropagation()">
@@ -618,6 +655,10 @@ function renderBoard() {
                                 <button class="open-btn"
                                         onclick="event.stopPropagation(); openTaskDetail('${p.id}', '${t.id}')">
                                     Ouvrir
+                                </button>
+                                <button class="open-btn" style="margin-left:2px;border-color:#00c875;color:#00c875"
+                                        onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', null)">
+                                    + Etape
                                 </button>
                             </div>
                         </td>
@@ -638,6 +679,7 @@ function renderBoard() {
                                     onclick="deleteTask('${p.id}', '${t.id}')">✕</button>
                         </td>
                     </tr>`;
+                html += renderSubtasks(t.subtasks || [], 1);
             });
 
             html += `
@@ -719,6 +761,203 @@ function openTaskStatusPicker(projId, taskId, btn) {
     popup.style.left = Math.min(rect.left, window.innerWidth - pw - 8) + 'px';
     setTimeout(() => document.addEventListener('click', () => popup.remove(), { once: true }), 50);
 }
+
+
+/* =============================================================================
+   SOUS-TACHES
+   ============================================================================= */
+
+/** Genere un ID unique */
+function genSubId() { return 'st' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+
+/** Trouve une tache par ID (recherche recursive) */
+function findTask(projId, taskId) {
+    return (data.tasks[projId] || []).find(x => x.id === taskId);
+}
+
+/** Trouve une sous-tache dans l'arbre */
+function findSubtask(subtasks, subId) {
+    for (const st of subtasks) {
+        if (st.id === subId) return st;
+        if (st.subtasks) {
+            const found = findSubtask(st.subtasks, subId);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+/**
+ * Ouvre une modale pour ajouter une sous-tache.
+ * @param {string} projId  - ID projet
+ * @param {string} taskId  - ID tache parente
+ * @param {string|null} parentSubId - ID sous-tache parente (null = niveau 1)
+ */
+function addSubtask(projId, taskId, parentSubId) {
+    const name = prompt('Nom de la sous-tache / etape :');
+    if (!name || !name.trim()) return;
+
+    const t = findTask(projId, taskId);
+    if (!t) return;
+
+    const newSub = {
+        id:       genSubId(),
+        name:     name.trim(),
+        done:     false,
+        status:   'todo',
+        priority: 'med',
+        deadline: '',
+        estimate: 0,
+        note:     '',
+        subtasks: []
+    };
+
+    if (!parentSubId) {
+        // Niveau 1 : ajouter directement dans la tache
+        if (!t.subtasks) t.subtasks = [];
+        t.subtasks.push(newSub);
+    } else {
+        // Niveau 2 : ajouter dans la sous-tache parente
+        if (!t.subtasks) t.subtasks = [];
+        const parent = findSubtask(t.subtasks, parentSubId);
+        if (parent) {
+            if (!parent.subtasks) parent.subtasks = [];
+            parent.subtasks.push(newSub);
+        }
+    }
+
+    apiPost('/api/tasks', { projectId: projId, task: t });
+    addActivity('Etape ajoutee : ' + newSub.name);
+    renderAll();
+}
+
+/**
+ * Bascule l'etat done d'une sous-tache.
+ */
+function toggleSubtask(projId, taskId, subId) {
+    const t = findTask(projId, taskId);
+    if (!t) return;
+    const st = findSubtask(t.subtasks || [], subId);
+    if (st) {
+        st.done = !st.done;
+        st.status = st.done ? 'done' : 'todo';
+        apiPost('/api/tasks', { projectId: projId, task: t });
+        renderAll();
+    }
+}
+
+/**
+ * Supprime une sous-tache.
+ */
+function deleteSubtask(projId, taskId, subId) {
+    if (!confirm('Supprimer cette etape ?')) return;
+    const t = findTask(projId, taskId);
+    if (!t) return;
+
+    const removeFromList = (list) => {
+        const idx = list.findIndex(x => x.id === subId);
+        if (idx >= 0) { list.splice(idx, 1); return true; }
+        for (const st of list) {
+            if (st.subtasks && removeFromList(st.subtasks)) return true;
+        }
+        return false;
+    };
+
+    removeFromList(t.subtasks || []);
+    apiPost('/api/tasks', { projectId: projId, task: t });
+    addActivity('Etape supprimee');
+    renderAll();
+}
+
+/**
+ * Popup statut pour une sous-tache.
+ */
+function openSubtaskStatusPicker(projId, taskId, subId, btn) {
+    document.querySelectorAll('.spopup').forEach(x => x.remove());
+    const popup = document.createElement('div');
+    popup.className = 'spopup open';
+    [
+        ['todo',  's-todo',  'A faire'],
+        ['prog',  's-prog',  'En cours'],
+        ['done',  's-done',  'Termine'],
+        ['block', 's-block', 'Bloque']
+    ].forEach(([s, cls, l]) => {
+        const opt = document.createElement('div');
+        opt.className = 'spopup-opt pill ' + cls;
+        opt.style.display = 'block';
+        opt.style.textAlign = 'center';
+        opt.textContent = l;
+        opt.onclick = async () => {
+            const t = findTask(projId, taskId);
+            if (t) {
+                const st = findSubtask(t.subtasks || [], subId);
+                if (st) {
+                    st.status = s;
+                    st.done = (s === 'done');
+                    await apiPost('/api/tasks', { projectId: projId, task: t });
+                    renderAll();
+                }
+            }
+            popup.remove();
+        };
+        popup.appendChild(opt);
+    });
+    document.body.appendChild(popup);
+    const rect = btn.getBoundingClientRect();
+    popup.style.display = 'block';
+    const ph = popup.offsetHeight;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    popup.style.top = (spaceBelow < ph + 10 ? rect.top - ph - 4 : rect.bottom + 4) + 'px';
+    popup.style.left = Math.min(rect.left, window.innerWidth - popup.offsetWidth - 8) + 'px';
+    setTimeout(() => document.addEventListener('click', () => popup.remove(), { once: true }), 50);
+}
+
+/**
+ * Ouvre le detail d'une sous-tache (dans la modale detail).
+ */
+function openSubtaskDetail(projId, taskId, subId, level) {
+    const t = findTask(projId, taskId);
+    if (!t) return;
+    const st = findSubtask(t.subtasks || [], subId);
+    if (!st) return;
+
+    document.getElementById('det-title').textContent = st.name;
+    const dl = st.deadline ? dlInfo(st.deadline) : null;
+    document.getElementById('det-body').innerHTML = `
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">
+            Sous-etape de : <strong>${escHtml(t.name)}</strong>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+            <div>
+                <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:5px">Statut</div>
+                <span class="pill ${statusCls(st.status||'todo')}">${statusLabel(st.status||'todo')}</span>
+            </div>
+            <div>
+                <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:5px">Priorite</div>
+                <span class="pill ${prioCls(st.priority||'med')}">${prioLabel(st.priority||'med')}</span>
+            </div>
+            <div>
+                <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:5px">Deadline</div>
+                <div class="dl-cell ${dl?dl.cls:''}">${dl?dl.str:'Non definie'}</div>
+            </div>
+        </div>
+        ${st.note ? `<div><div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:5px">Notes</div>
+        <div style="background:var(--bg);border-radius:6px;padding:10px 12px;font-size:13px;line-height:1.6">${escHtml(st.note)}</div></div>` : ''}
+        ${st.subtasks && st.subtasks.length ? `
+        <div style="margin-top:12px">
+            <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:8px">Sous-etapes (${st.subtasks.length})</div>
+            ${st.subtasks.map(ss => `
+            <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+                <input type="checkbox" ${ss.done?'checked':''} onchange="toggleSubtask('${projId}','${taskId}','${ss.id}')" style="accent-color:var(--accent)">
+                <span style="font-size:13px;${ss.done?'text-decoration:line-through;color:var(--text3)':''}">${escHtml(ss.name)}</span>
+            </div>`).join('')}
+        </div>` : ''}
+    `;
+    document.getElementById('det-del').onclick = () => { closeModal('modal-detail'); deleteSubtask(projId, taskId, subId); };
+    document.getElementById('det-edit').onclick = () => { closeModal('modal-detail'); };
+    document.getElementById('modal-detail').classList.add('open');
+}
+
 
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
@@ -1674,6 +1913,7 @@ async function saveTask() {
         note:      document.getElementById('t-note').value.trim(),
         status:    existing.status    || 'todo',
         done:      existing.done      || false,
+        subtasks:  existing.subtasks  || [],
         timeSpent: existing.timeSpent || 0
     };
 

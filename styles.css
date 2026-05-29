@@ -259,3 +259,9 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 /* Indentation des taches sous le projet */
 .btbl tbody tr.task-row td:first-child { padding-left: 32px; }
 .btbl tbody tr.task-row .tname-cell { padding-left: 16px; border-left: 2px solid var(--border); }
+/* Sous-taches */
+.subtask-row-1 { background: #fafbff; }
+.subtask-row-2 { background: #f5f6fa; }
+.subtask-row-1:hover { background: #eef2ff; }
+.subtask-row-2:hover { background: #eef2ff; }
+.subtask-row-1 td, .subtask-row-2 td { font-size: 12px; }
