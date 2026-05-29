@@ -621,7 +621,7 @@ function renderBoard() {
                                 </button>
                             </div>
                         </td>
-                        <td></td>
+                        <td class="cell-rel"><button class="pill ${statusCls(t.status||'todo')}" onclick="event.stopPropagation();openTaskStatusPicker('${p.id}','${t.id}',this)">${statusLabel(t.status||'todo')}</button></td>
                         <td><span class="pill ${prioCls(t.priority)}">${prioLabel(t.priority)}</span></td>
                         <td class="dl-cell ${tdl ? tdl.cls : ''}">${tdl ? tdl.str : '—'}</td>
                         <td onclick="event.stopPropagation()">
@@ -1628,6 +1628,7 @@ async function saveTask() {
         estimate:  parseFloat(document.getElementById('t-estimate').value) || 0,
         depends:   document.getElementById('t-depends').value.trim(),
         note:      document.getElementById('t-note').value.trim(),
+        status:    existing.status    || 'todo',
         done:      existing.done      || false,
         timeSpent: existing.timeSpent || 0
     };
