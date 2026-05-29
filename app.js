@@ -1071,7 +1071,7 @@ function renderGantt() {
  * - Journal d'activité
  */
 function renderDashboard() {
-    const projs      = data.projects;
+    const projs      = getFilteredProjects();
     const allT       = Object.values(data.tasks).flat();
     const doneT      = allT.filter(t => t.done).length;
     const overdueT   = allT.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date());
