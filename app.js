@@ -545,6 +545,8 @@ function renderBoard() {
                 <div class="proj-actions">
                     <button class="btn btn-primary btn-sm" onclick="openTaskModal('${p.id}')" title="Ajouter une tache" style="padding:3px 10px;font-size:12px">+ Tache</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
+                    <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
+                            onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
                     <button class="ic-btn" style="color:var(--red)"
                             onclick="deleteProject('${p.id}')" title="Supprimer">🗑</button>
                 </div>
@@ -1021,6 +1023,163 @@ function totalTimeSpent(task) {
     const subs = (task.subtasks || []).reduce((s, st) => s + totalTimeSpent(st), 0);
     return own + subs;
 }
+
+
+/* =============================================================================
+   EXPORT PDF
+   ============================================================================= */
+
+/**
+ * Exporte un ou plusieurs projets en PDF via window.print().
+ * @param {string|null} projId - null = tous les projets
+ */
+function exportPDF(projId) {
+    const projs = projId
+        ? data.projects.filter(p => p.id === projId)
+        : getFilteredProjects();
+
+    if (!projs.length) { toast('Aucun projet a exporter', true); return; }
+
+    // Construire le contenu HTML du PDF
+    const rows = projs.map(p => {
+        const tasks = data.tasks[p.id] || [];
+        const totalEst = tasks.reduce((s, t) => s + totalEstimate(t), 0);
+        const totalSpent = tasks.reduce((s, t) => s + totalTimeSpent(t), 0);
+        const doneCnt = tasks.filter(t => t.done).length;
+        const pct = tasks.length ? Math.round(doneCnt / tasks.length * 100) : 0;
+        const dl = p.deadline ? dlInfo(p.deadline) : null;
+
+        // Rendu recursif des sous-taches
+        const renderSubHTML = (subtasks, level) => {
+            if (!subtasks || !subtasks.length) return '';
+            return subtasks.map(st => `
+                <tr class="pdf-subtask pdf-level-${level}">
+                    <td style="padding-left:${20 + level * 16}px">
+                        ${'&nbsp;&nbsp;'.repeat(level)}&#x2514; ${escHtml(st.name)}
+                        ${st.note ? `<div class="pdf-note">${escHtml(st.note)}</div>` : ''}
+                    </td>
+                    <td>${statusLabel(st.status || 'todo')}</td>
+                    <td>${prioLabel(st.priority || 'med').replace(/🔴|🟡|🟢/g,'').trim()}</td>
+                    <td>${st.deadline ? dlInfo(st.deadline)?.str || '' : '-'}</td>
+                    <td>${st.estimate ? st.estimate + 'h' : '-'}</td>
+                    <td>${st.timeSpent ? fmtTime(st.timeSpent) : '-'}</td>
+                </tr>
+                ${level < 2 ? renderSubHTML(st.subtasks || [], level + 1) : ''}
+            `).join('');
+        };
+
+        const taskRows = tasks.map(t => {
+            const tdl = t.deadline ? dlInfo(t.deadline) : null;
+            const est = totalEstimate(t);
+            const spent = totalTimeSpent(t);
+            return `
+                <tr class="pdf-task ${t.done ? 'pdf-done' : ''}">
+                    <td style="padding-left:16px">
+                        ${t.done ? '&#x2713; ' : '&#x25A1; '} ${escHtml(t.name)}
+                        ${t.note ? `<div class="pdf-note">${escHtml(t.note)}</div>` : ''}
+                    </td>
+                    <td>${statusLabel(t.status || 'todo')}</td>
+                    <td>${prioLabel(t.priority).replace(/🔴|🟡|🟢/g,'').trim()}</td>
+                    <td class="${tdl ? tdl.cls : ''}">${tdl ? tdl.str : '-'}</td>
+                    <td>${est > 0 ? est + 'h' : '-'}</td>
+                    <td>${spent > 0 ? fmtTime(spent) : '-'}</td>
+                </tr>
+                ${renderSubHTML(t.subtasks || [], 1)}
+            `;
+        }).join('');
+
+        return `
+        <div class="pdf-project">
+            <div class="pdf-project-header">
+                <div class="pdf-project-title">${escHtml(p.name)}</div>
+                <div class="pdf-project-meta">
+                    <span class="pdf-badge pdf-${p.status}">${statusLabel(p.status)}</span>
+                    <span class="pdf-badge pdf-prio-${p.priority}">${prioLabel(p.priority).replace(/🔴|🟡|🟢/g,'').trim()}</span>
+                    <span>${typeLabel(p.type).replace(/🔌|💻|⚙️/g,'').trim()}</span>
+                    ${dl ? `<span class="${dl.cls}">${dl.str}</span>` : ''}
+                    <span>Avancement : ${pct}% (${doneCnt}/${tasks.length} taches)</span>
+                    ${totalEst > 0 ? `<span>Estime : ${totalEst}h</span>` : ''}
+                    ${totalSpent > 0 ? `<span>Passe : ${fmtTime(totalSpent)}</span>` : ''}
+                </div>
+                ${p.desc ? `<div class="pdf-desc">${escHtml(p.desc)}</div>` : ''}
+                ${p.components ? `<div class="pdf-components">Composants : ${escHtml(p.components)}</div>` : ''}
+            </div>
+
+            ${tasks.length ? `
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th>Tache / Etape</th>
+                        <th>Statut</th>
+                        <th>Priorite</th>
+                        <th>Deadline</th>
+                        <th>Estime</th>
+                        <th>Passe</th>
+                    </tr>
+                </thead>
+                <tbody>${taskRows}</tbody>
+            </table>` : '<p class="pdf-no-tasks">Aucune tache</p>'}
+        </div>`;
+    }).join('');
+
+    const printContent = `
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>Export Projets - ${new Date().toLocaleDateString('fr-FR')}</title>
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+                body { color: #323338; font-size: 11pt; padding: 20px; }
+                h1 { font-size: 18pt; color: #0073ea; margin-bottom: 6px; }
+                .pdf-date { font-size: 9pt; color: #676879; margin-bottom: 20px; }
+                .pdf-project { margin-bottom: 30px; page-break-inside: avoid; }
+                .pdf-project-header { background: #f6f7fb; border-left: 4px solid #0073ea; padding: 10px 14px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+                .pdf-project-title { font-size: 14pt; font-weight: 700; color: #0073ea; margin-bottom: 6px; }
+                .pdf-project-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 9pt; color: #676879; margin-bottom: 4px; }
+                .pdf-desc { font-size: 9pt; color: #676879; margin-top: 6px; font-style: italic; }
+                .pdf-components { font-size: 9pt; color: #676879; margin-top: 4px; }
+                .pdf-badge { padding: 1px 6px; border-radius: 3px; font-size: 8pt; font-weight: 600; }
+                .pdf-todo  { background: #e2e2e2; color: #555; }
+                .pdf-prog  { background: #fdab3d; color: #fff; }
+                .pdf-done  { background: #00c875; color: #fff; }
+                .pdf-block { background: #e2445c; color: #fff; }
+                .pdf-prio-high { background: #e2445c; color: #fff; }
+                .pdf-prio-med  { background: #fdab3d; color: #fff; }
+                .pdf-prio-low  { background: #00c875; color: #fff; }
+                .pdf-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+                .pdf-table thead tr { background: #e6e9ef; }
+                .pdf-table th { padding: 6px 8px; text-align: left; font-weight: 600; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #c3c6d4; }
+                .pdf-table td { padding: 5px 8px; border-bottom: 1px solid #e6e9ef; vertical-align: top; }
+                .pdf-task td:first-child { font-weight: 500; }
+                .pdf-done td { color: #888; text-decoration: line-through; }
+                .pdf-subtask td { color: #555; font-size: 8.5pt; background: #fafbff; }
+                .pdf-level-2 td { color: #777; background: #f5f6fa; }
+                .pdf-note { font-size: 8pt; color: #676879; font-style: italic; margin-top: 2px; text-decoration: none; }
+                .pdf-no-tasks { font-size: 9pt; color: #c3c6d4; font-style: italic; padding: 8px; }
+                .overdue { color: #e2445c; font-weight: 600; }
+                .soon { color: #fdab3d; font-weight: 600; }
+                @media print {
+                    body { padding: 10px; }
+                    .pdf-project { page-break-inside: avoid; }
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Rapport de Projets</h1>
+            <div class="pdf-date">Exporte le ${new Date().toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</div>
+            ${rows}
+        </body>
+        </html>`;
+
+    // Ouvrir dans un nouvel onglet et imprimer
+    const win = window.open('', '_blank');
+    win.document.write(printContent);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 500);
+}
+
 
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
