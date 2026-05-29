@@ -116,6 +116,7 @@
             </select>
 
             <!-- Bouton nouveau projet -->
+            <button class="btn btn-secondary btn-sm" onclick="toggleHelp()" title="Raccourcis clavier (?)" style="padding:4px 10px;font-weight:700">?</button>
             <button class="btn btn-secondary btn-sm" onclick="exportPDF(null)" title="Exporter tous les projets en PDF" style="border-color:var(--red);color:var(--red)">&#128196; PDF</button>
             <button class="btn btn-primary btn-sm" onclick="openProjectModal()">+ Nouveau projet</button>
         </div>
@@ -355,6 +356,56 @@
         <div class="modal-footer">
             <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-subtask')">Annuler</button>
             <button class="btn btn-primary btn-sm" onclick="saveSubtask()">+ Ajouter</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL AIDE RACCOURCIS -->
+<div class="modal-overlay" id="modal-help">
+    <div class="modal" style="max-width:400px">
+        <div class="modal-hdr">
+            <h2>Raccourcis clavier</h2>
+            <button class="modal-x" onclick="closeModal('modal-help')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <table style="width:100%;border-collapse:collapse">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--border)">
+                        <th style="padding:6px 8px;text-align:left;font-size:11px;color:var(--text2);text-transform:uppercase">Touche</th>
+                        <th style="padding:6px 8px;text-align:left;font-size:11px;color:var(--text2);text-transform:uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">N</kbd></td>
+                        <td style="padding:8px;font-size:13px">Nouveau projet</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">T</kbd></td>
+                        <td style="padding:8px;font-size:13px">Nouvelle tache (1er projet)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">D</kbd></td>
+                        <td style="padding:8px;font-size:13px">Vue Dashboard</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">B</kbd></td>
+                        <td style="padding:8px;font-size:13px">Vue Tableau (Board)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">K</kbd></td>
+                        <td style="padding:8px;font-size:13px">Vue Kanban</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px"><kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;font-family:monospace">Echap</kbd></td>
+                        <td style="padding:8px;font-size:13px">Fermer la fenetre</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary btn-sm" onclick="closeModal('modal-help')">OK</button>
         </div>
     </div>
 </div>

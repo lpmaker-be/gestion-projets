@@ -2214,8 +2214,16 @@ document.addEventListener('keydown', e => {
         if (e.key === 'd' || e.key === 'D') { e.preventDefault(); setView('dashboard', null); }
         if (e.key === 'b' || e.key === 'B') { e.preventDefault(); setView('board', null); }
         if (e.key === 'k' || e.key === 'K') { e.preventDefault(); setView('kanban', null); }
+        if (e.key === '?') { e.preventDefault(); toggleHelp(); }
     }
 });
+
+/** Affiche/masque le panneau d'aide des raccourcis */
+function toggleHelp() {
+    const el = document.getElementById('modal-help');
+    if (el.classList.contains('open')) closeModal('modal-help');
+    else el.classList.add('open');
+}
 
 /** Démarrage : chargement des données depuis le serveur */
 loadData();
