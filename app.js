@@ -1209,6 +1209,19 @@ function exportPDF(projId) {
 }
 
 
+
+/**
+ * Marque recursivement toutes les sous-taches comme done/undone.
+ */
+function setAllSubtasksDone(subtasks, done) {
+    if (!subtasks) return;
+    subtasks.forEach(st => {
+        st.done   = done;
+        st.status = done ? 'done' : 'todo';
+        setAllSubtasksDone(st.subtasks, done);
+    });
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2195,7 +2208,12 @@ async function toggleTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
     if (!t) return;
 
-    t.done = !t.done;
+    t.done   = !t.done;
+    t.status = t.done ? 'done' : 'todo';
+
+    // Propager aux sous-taches
+    setAllSubtasksDone(t.subtasks || [], t.done);
+
     await apiPost('/api/tasks', { projectId: projId, task: t });
     addActivity('Tache ' + (t.done ? 'terminee' : 'reouverte') + ' : ' + t.name);
     renderAll();
