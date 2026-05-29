@@ -543,7 +543,7 @@ function renderBoard() {
                     <span class="mini-pb-txt">${pct}%</span>
                 </div>
                 <div class="proj-actions">
-                    <button class="ic-btn" onclick="openTaskModal('${p.id}')"    title="Ajouter tâche">＋</button>
+                    <button class="btn btn-primary btn-sm" onclick="openTaskModal('${p.id}')" title="Ajouter une tache" style="padding:3px 10px;font-size:12px">+ Tache</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:var(--red)"
                             onclick="deleteProject('${p.id}')" title="Supprimer">🗑</button>
