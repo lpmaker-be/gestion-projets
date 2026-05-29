@@ -265,3 +265,9 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .subtask-row-1:hover { background: #eef2ff; }
 .subtask-row-2:hover { background: #eef2ff; }
 .subtask-row-1 td, .subtask-row-2 td { font-size: 12px; }
+
+/* Ligne ajout tache - plus visible */
+.add-row { background: var(--white); }
+.add-row td { padding: 0 !important; }
+.add-task-btn { width: 100%; padding: 10px 16px !important; border-radius: 0 !important; border: none !important; border-top: 1px solid var(--border) !important; color: var(--accent) !important; font-weight: 500; font-size: 13px; justify-content: flex-start; }
+.add-task-btn:hover { background: rgba(0,115,234,.06) !important; }
