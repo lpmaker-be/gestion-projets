@@ -2229,6 +2229,17 @@ document.addEventListener('keydown', e => {
 /** Affiche/masque le panneau d'aide des raccourcis */
 function toggleHelp() {
     const el = document.getElementById('modal-help');
+    // Mettre a jour le label T avec le nom du projet courant
+    const lbl = document.getElementById('help-t-label');
+    if (lbl) {
+        const projs = getFilteredProjects();
+        const proj = currentProjId
+            ? projs.find(p => p.id === currentProjId)
+            : projs[0];
+        lbl.textContent = proj
+            ? 'Nouvelle tache dans "' + proj.name + '"'
+            : 'Nouvelle tache (aucun projet)';
+    }
     if (el.classList.contains('open')) closeModal('modal-help');
     else el.classList.add('open');
 }
