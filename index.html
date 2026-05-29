@@ -315,6 +315,49 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      TOAST — notification temporaire (bas d'écran)
      ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- MODAL SOUS-TACHE -->
+<div class="modal-overlay" id="modal-subtask">
+    <div class="modal" style="max-width:460px">
+        <div class="modal-hdr">
+            <h2 id="modal-sub-title">Nouvelle etape</h2>
+            <button class="modal-x" onclick="closeModal('modal-subtask')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="frow">
+                <label>Titre de l'etape</label>
+                <input id="sub-name" type="text" placeholder="Ex : Imprimer la piece, Souder le circuit...">
+            </div>
+            <div class="grid3">
+                <div class="frow">
+                    <label>Priorite</label>
+                    <select id="sub-priority">
+                        <option value="high">Haute</option>
+                        <option value="med" selected>Moyenne</option>
+                        <option value="low">Basse</option>
+                    </select>
+                </div>
+                <div class="frow">
+                    <label>Deadline</label>
+                    <input id="sub-deadline" type="date">
+                </div>
+                <div class="frow">
+                    <label>Estimation (h)</label>
+                    <input id="sub-estimate" type="number" min="0" step="0.5" placeholder="ex: 1.5">
+                </div>
+            </div>
+            <div class="frow">
+                <label>Notes</label>
+                <textarea id="sub-note" placeholder="Details, references..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-subtask')">Annuler</button>
+            <button class="btn btn-primary btn-sm" onclick="saveSubtask()">+ Ajouter</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 

@@ -793,41 +793,62 @@ function findSubtask(subtasks, subId) {
  * @param {string} taskId  - ID tache parente
  * @param {string|null} parentSubId - ID sous-tache parente (null = niveau 1)
  */
-function addSubtask(projId, taskId, parentSubId) {
-    const name = prompt('Nom de la sous-tache / etape :');
-    if (!name || !name.trim()) return;
+// Variables pour la modale sous-tache
+let _subProjId = null, _subTaskId = null, _subParentId = null;
 
+function addSubtask(projId, taskId, parentSubId) {
+    _subProjId   = projId;
+    _subTaskId   = taskId;
+    _subParentId = parentSubId;
+
+    // Titre de la modale
     const t = findTask(projId, taskId);
+    document.getElementById('modal-sub-title').textContent =
+        parentSubId ? 'Nouvelle sous-etape' : 'Nouvelle etape';
+    document.getElementById('sub-name').value     = '';
+    document.getElementById('sub-priority').value = 'med';
+    document.getElementById('sub-deadline').value = '';
+    document.getElementById('sub-estimate').value = '';
+    document.getElementById('sub-note').value     = '';
+    document.getElementById('modal-subtask').classList.add('open');
+    setTimeout(() => document.getElementById('sub-name').focus(), 100);
+}
+
+async function saveSubtask() {
+    const name = document.getElementById('sub-name').value.trim();
+    if (!name) { toast('Nom requis !', true); return; }
+
+    const t = findTask(_subProjId, _subTaskId);
     if (!t) return;
 
     const newSub = {
         id:       genSubId(),
-        name:     name.trim(),
+        name,
         done:     false,
         status:   'todo',
-        priority: 'med',
-        deadline: '',
-        estimate: 0,
-        note:     '',
+        priority: document.getElementById('sub-priority').value,
+        deadline: document.getElementById('sub-deadline').value,
+        estimate: parseFloat(document.getElementById('sub-estimate').value) || 0,
+        note:     document.getElementById('sub-note').value.trim(),
         subtasks: []
     };
 
-    if (!parentSubId) {
-        // Niveau 1 : ajouter directement dans la tache
+    if (!_subParentId) {
         if (!t.subtasks) t.subtasks = [];
         t.subtasks.push(newSub);
     } else {
-        // Niveau 2 : ajouter dans la sous-tache parente
         if (!t.subtasks) t.subtasks = [];
-        const parent = findSubtask(t.subtasks, parentSubId);
+        const parent = findSubtask(t.subtasks, _subParentId);
         if (parent) {
             if (!parent.subtasks) parent.subtasks = [];
             parent.subtasks.push(newSub);
         }
     }
 
-    apiPost('/api/tasks', { projectId: projId, task: t });
+    await apiPost('/api/tasks', { projectId: _subProjId, task: t });
     addActivity('Etape ajoutee : ' + newSub.name);
+    closeModal('modal-subtask');
+    toast('Etape ajoutee !');
     renderAll();
 }
 
