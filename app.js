@@ -234,6 +234,7 @@ async function loadData() {
         renderAll();
 
     } catch (e) {
+        console.error("ERREUR loadData:", e);
         toast('⚠️ Lance start.bat pour démarrer le serveur', true);
     }
 }
@@ -569,7 +570,7 @@ function renderBoard() {
                     <tbody>
 
                     <!-- Ligne résumé projet -->
-                    <tr style="background:#f5f7ff" onclick="openProjectModal('${p.id}')">
+                    <tr style="background:#f0f4ff;border-left:4px solid ${color}" onclick="openProjectModal('${p.id}')">
                         <td></td>
                         <td>
                             <div class="tname-cell">
@@ -1087,7 +1088,7 @@ function renderDashboard() {
     const projProg = projs.map(p => {
         const t = data.tasks[p.id] || [];
         const d = t.filter(x => x.done).length;
-        return { name: p.name, pct: t.length ? Math.round(d / t.length * 100) : 0, color: pcol(p.id) };
+        return { id: p.id, name: p.name, pct: t.length ? Math.round(d / t.length * 100) : 0, color: pcol(p.id) };
     }).sort((a, b) => b.pct - a.pct);
 
     let html = `<div class="dash-wrap">
@@ -1154,9 +1155,14 @@ function renderDashboard() {
             <div class="progress-list">
                 ${projProg.map(p => `
                 <div class="pl-row">
-                    <div class="pl-label">
-                        <span>${escHtml(p.name)}</span>
-                        <span style="color:var(--text2)">${p.pct}%</span>
+                    <div class="pl-label" style="align-items:center">
+                        <span style="flex:1;cursor:pointer" onclick="openProjectModal('${p.id}')">${escHtml(p.name)}</span>
+                        <span style="color:var(--text2);margin-right:8px">${p.pct}%</span>
+                        <button onclick="deleteProject('${p.id}')"
+                                title="Supprimer"
+                                style="background:none;border:none;cursor:pointer;color:#e2445c;font-size:14px;padding:0 4px">
+                            🗑
+                        </button>
                     </div>
                     <div class="pl-bar">
                         <div class="pl-fill" style="width:${p.pct}%;background:${p.color}"></div>

@@ -6,8 +6,8 @@ echo  ========================================
 echo   Gestionnaire de Projets - Demarrage
 echo  ========================================
 echo.
-echo  Dossier donnees : D:\claude\gestion_projets\
-echo  Adresse         : http://localhost:8742
+echo  Adresse : http://localhost:8742
+echo  Donnees : D:\Onedrive\Documents\Claude\gestion_projets\projets.json
 echo.
 echo  Ferme cette fenetre pour arreter le serveur
 echo.
