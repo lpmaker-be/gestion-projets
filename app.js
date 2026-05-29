@@ -2190,10 +2190,45 @@ async function deleteTask(projId, taskId) {
    15. INITIALISATION
    ============================================================================= */
 
-/** Ferme toutes les modales avec la touche Échap */
+/** Raccourcis clavier globaux */
 document.addEventListener('keydown', e => {
+    // Ignorer si on est dans un champ de saisie
+    const tag = document.activeElement.tagName;
+    const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
     if (e.key === 'Escape') {
-        ['modal-project', 'modal-task', 'modal-detail'].forEach(closeModal);
+        ['modal-project', 'modal-task', 'modal-detail', 'modal-subtask'].forEach(closeModal);
+        document.querySelectorAll('.spopup').forEach(x => x.remove());
+    }
+
+    if (!inInput) {
+        // N = Nouveau projet
+        if (e.key === 'n' || e.key === 'N') {
+            e.preventDefault();
+            openProjectModal();
+        }
+        // T = Nouvelle tache (sur le premier projet visible)
+        if (e.key === 't' || e.key === 'T') {
+            e.preventDefault();
+            const projs = getFilteredProjects();
+            if (projs.length > 0) openTaskModal(projs[0].id);
+            else toast('Aucun projet - cree un projet d'abord (N)', true);
+        }
+        // D = Dashboard
+        if (e.key === 'd' || e.key === 'D') {
+            e.preventDefault();
+            setView('dashboard', null);
+        }
+        // B = Tableau (Board)
+        if (e.key === 'b' || e.key === 'B') {
+            e.preventDefault();
+            setView('board', null);
+        }
+        // K = Kanban
+        if (e.key === 'k' || e.key === 'K') {
+            e.preventDefault();
+            setView('kanban', null);
+        }
     }
 });
 
