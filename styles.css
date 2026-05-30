@@ -411,3 +411,8 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .budget-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
 .budget-fill { height: 100%; border-radius: 4px; transition: width .4s; }
 .budget-over { background: var(--red) !important; }
+
+/* Tags dans tableau - limites en largeur */
+.tname-cell .tag { max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
+.tname-cell .tags-wrap { flex-shrink: 0; max-width: 200px; flex-wrap: nowrap; overflow: hidden; }
+.tname-cell .tname-txt { min-width: 80px; }
