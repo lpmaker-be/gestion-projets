@@ -581,6 +581,7 @@ function renderBoard() {
                 <div class="proj-actions">
                     <button class="btn btn-primary btn-sm" onclick="openTaskModal('${p.id}')" title="Ajouter une tache" style="padding:3px 10px;font-size:12px">+ Tache</button>
                     <button class="btn btn-secondary btn-sm" onclick="openComponents('${p.id}')" title="Composants" style="padding:3px 8px;font-size:11px">&#128295;</button>
+                    <button class="ic-btn" onclick="duplicateProject('${p.id}')" title="Dupliquer" style="font-size:11px">&#128260;</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
@@ -1613,6 +1614,61 @@ function openLightbox(src) {
 
 function closeLightbox() {
     document.getElementById('modal-lightbox').classList.remove('open');
+}
+
+/**
+ * Duplique un projet avec toutes ses taches et sous-taches.
+ */
+async function duplicateProject(id) {
+    const p = data.projects.find(x => x.id === id);
+    if (!p) return;
+
+    // Fonction recursive pour dupliquer les sous-taches avec nouveaux IDs
+    function dupSubtasks(subtasks) {
+        return (subtasks || []).map(st => ({
+            ...st,
+            id: genId(),
+            done: false,
+            status: 'todo',
+            subtasks: dupSubtasks(st.subtasks)
+        }));
+    }
+
+    // Nouveau projet
+    const newId = genId();
+    const newProj = {
+        ...p,
+        id:        newId,
+        name:      p.name + ' (copie)',
+        status:    'todo',
+        createdAt: Date.now()
+    };
+
+    // Dupliquer les taches
+    const oldTasks = data.tasks[id] || [];
+    const newTasks = oldTasks.map(t => ({
+        ...t,
+        id:        genId(),
+        done:      false,
+        status:    'todo',
+        timeSpent: 0,
+        comments:  [],
+        subtasks:  dupSubtasks(t.subtasks)
+    }));
+
+    // Sauvegarder
+    await apiPost('/api/projects', newProj);
+    data.projects.push(newProj);
+    data.tasks[newId] = newTasks;
+
+    // Sauvegarder chaque tache
+    for (const t of newTasks) {
+        await apiPost('/api/tasks', { projectId: newId, task: t });
+    }
+
+    addActivity('Projet duplique : ' + newProj.name);
+    toast('Projet duplique !');
+    renderAll();
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
