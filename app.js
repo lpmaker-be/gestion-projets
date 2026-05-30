@@ -658,7 +658,7 @@ function renderBoard() {
                     <tr class="task-row subtask-row-${level}" onclick="openSubtaskDetail('${p.id}', '${t.id}', '${st.id}', ${level})">
                         <td onclick="event.stopPropagation()">
                             <input class="row-chk" type="checkbox" ${st.done ? 'checked' : ''}
-                                   onchange="toggleSubtask('${p.id}', '${t.id}', '${st.id}')">
+                                   onclick="event.preventDefault(); toggleSubtask('${p.id}', '${t.id}', '${st.id}')">
                         </td>
                         <td>
                             <div class="tname-cell" style="padding-left:${indent}px">
