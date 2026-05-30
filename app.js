@@ -1561,6 +1561,45 @@ async function saveComponents() {
     closeModal('modal-components');
     renderAll();
 }
+
+function pickSchemaFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.getElementById('f-schema').value = file.name;
+    const preview = document.getElementById('f-schema-preview');
+    if (preview) {
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = url;
+            img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px';
+            img.alt = 'Schema';
+            preview.innerHTML = '';
+            preview.appendChild(img);
+        } else {
+            preview.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' Ko)';
+            preview.style.cssText = 'font-size:12px;color:var(--text2);margin-top:4px';
+        }
+    }
+}
+
+function updateSchemaPreview(url) {
+    const preview = document.getElementById('f-schema-preview');
+    if (!preview) return;
+    preview.innerHTML = '';
+    if (!url) return;
+    if (url.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i) || url.startsWith('blob:')) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px';
+        img.onerror = function() { this.style.display = 'none'; };
+        preview.appendChild(img);
+    } else {
+        preview.style.cssText = 'font-size:12px;color:var(--text2);margin-top:4px';
+        preview.textContent = url;
+    }
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2259,6 +2298,7 @@ function openProjectModal(id = null) {
     } else {
         // Remise à zéro du formulaire
         ['f-name', 'f-desc', 'f-components', 'f-schema'].forEach(i => document.getElementById(i).value = '');
+        updateSchemaPreview('');
         document.getElementById('f-type').value     = 'arduino';
         document.getElementById('f-status').value   = 'todo';
         document.getElementById('f-priority').value = 'med';

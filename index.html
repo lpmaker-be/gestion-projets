@@ -223,7 +223,12 @@
             </div>
             <div class="frow">
                 <label>Schema de cablage (URL ou chemin local)</label>
-                <input id="f-schema" type="text" placeholder="Ex: https://... ou C:\schemas\projet.png">
+                <div style="display:flex;gap:6px;align-items:center">
+                    <input id="f-schema" type="text" placeholder="Ex: https://... ou chemin local" style="flex:1">
+                    <input id="f-schema-file" type="file" accept="image/*,.pdf,.fzz,.kicad_sch" style="display:none" onchange="pickSchemaFile(this)">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('f-schema-file').click()">&#128193; Parcourir</button>
+                </div>
+                <div id="f-schema-preview" style="margin-top:8px"></div>
             </div>
             <div class="frow">
                 <label>Tags</label>
