@@ -1817,6 +1817,81 @@ async function enableNotifications() {
 
 // Verifier les rappels toutes les 30 secondes
 setInterval(checkReminders, 30000);
+
+/* === PIECES JOINTES === */
+
+function addAttachment(projId, taskId) {
+    var input = document.createElement('input');
+    input.type     = 'file';
+    input.accept   = 'image/*';
+    input.multiple = true;
+    input.onchange = async function() {
+        var files = Array.from(input.files);
+        if (!files.length) return;
+        var t = findTask(projId, taskId);
+        if (!t) return;
+        if (!t.attachments) t.attachments = [];
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var base64 = await new Promise(function(resolve) {
+                var reader = new FileReader();
+                reader.onload = function(e) { resolve(e.target.result); };
+                reader.readAsDataURL(file);
+            });
+            t.attachments.push({ id: genId(), name: file.name, data: base64, size: file.size });
+        }
+        await apiPost('/api/tasks', { projectId: projId, task: t });
+        toast(files.length + ' image(s) ajoutee(s) !');
+        openTaskDetail(projId, taskId);
+    };
+    input.click();
+}
+
+async function deleteAttachment(projId, taskId, attId) {
+    var t = findTask(projId, taskId);
+    if (!t || !t.attachments) return;
+    t.attachments = t.attachments.filter(function(a) { return a.id !== attId; });
+    await apiPost('/api/tasks', { projectId: projId, task: t });
+    toast('Image supprimee');
+    openTaskDetail(projId, taskId);
+}
+
+// Handlers globaux pour PJ (evite les quotes imbriquees)
+document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.att-del-btn');
+    if (btn) {
+        e.stopPropagation();
+        deleteAttachment(btn.dataset.proj, btn.dataset.task, btn.dataset.att);
+        return;
+    }
+    var addBtn = e.target.closest('.att-add-btn');
+    if (addBtn) {
+        addAttachment(addBtn.dataset.proj, addBtn.dataset.task);
+        return;
+    }
+    var img = e.target.closest('.att-thumb-img');
+    if (img) {
+        openLightbox(img.src);
+    }
+});
+
+function buildAttachmentsSection(projId, taskId, attachments) {
+    var atts = attachments || [];
+    var html = '<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">';
+    html += '<div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Images (' + atts.length + ')</div>';
+    html += '<div class="attachments-wrap">';
+    atts.forEach(function(a) {
+        html += '<div class="attachment-thumb">';
+        html += '<img class="att-thumb-img" src="' + a.data + '" alt="' + escHtml(a.name) + '" title="' + escHtml(a.name) + '">';
+        html += '<button class="att-del att-del-btn" data-proj="' + projId + '" data-task="' + taskId + '" data-att="' + a.id + '">x</button>';
+        html += '</div>';
+    });
+    // Bouton ajouter via data-attributes
+    html += '<button class="att-add-btn" data-proj="' + projId + '" data-task="' + taskId + '">';
+    html += '<span style="font-size:22px">+</span><span>Image</span></button>';
+    html += '</div></div>';
+    return html;
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

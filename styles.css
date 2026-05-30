@@ -437,3 +437,12 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .project-block.archived { opacity: .6; }
 .archived-banner { background: #f5f5f5; border-left: 4px solid #c4c4c4; padding: 6px 12px; font-size: 11px; color: #888; display: flex; align-items: center; justify-content: space-between; }
 body.dark .archived-banner { background: #2c2e33; color: #666; }
+
+/* Pieces jointes */
+.attachments-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.attachment-thumb { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: zoom-in; flex-shrink: 0; }
+.attachment-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.attachment-thumb .att-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,.6); color: #fff; border: none; border-radius: 3px; padding: 1px 5px; font-size: 10px; cursor: pointer; opacity: 0; transition: opacity .15s; }
+.attachment-thumb:hover .att-del { opacity: 1; }
+.att-add-btn { width: 80px; height: 80px; border: 2px dashed var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--text3); font-size: 11px; gap: 4px; transition: all .15s; background: none; }
+.att-add-btn:hover { border-color: var(--accent); color: var(--accent); }
