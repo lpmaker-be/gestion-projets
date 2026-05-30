@@ -7,7 +7,14 @@ Sert index.html, styles.css, app.js et l'API REST
 
 import http.server
 import json
+import io
 import webbrowser
+try:
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    EXCEL_OK = True
+except ImportError:
+    EXCEL_OK = False
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
@@ -90,6 +97,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send_file(filename, content_type)
         elif path == "/api/data":
             self._send_json(load_data())
+        elif path.startswith("/api/export-excel"):
+            self._export_excel()
+
         else:
             self.send_response(404)
             self.end_headers()

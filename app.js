@@ -620,6 +620,7 @@ function renderBoard() {
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
+                    <button class="btn btn-secondary btn-sm" onclick="exportExcel('${p.id}')" title="Exporter Excel" style="padding:3px 8px;font-size:11px;color:#1d6f42;border-color:#1d6f42">XLS</button>
                     <button class="ic-btn" style="color:var(--red)"
                             onclick="deleteProject('${p.id}')" title="Supprimer">🗑</button>
                 </div>
@@ -2101,6 +2102,18 @@ function closeSearchPopup() {
     var inp = document.getElementById('search-input');
     if (inp) inp.value = '';
     renderAll();
+}
+
+/* === EXPORT EXCEL === */
+function exportExcel(projId) {
+    var url = projId ? '/api/export-excel?projId=' + projId : '/api/export-excel';
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = projId ? 'projet.xlsx' : 'projets.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('Export Excel en cours...');
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
