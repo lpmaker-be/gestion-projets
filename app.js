@@ -697,6 +697,7 @@ function renderBoard() {
                                     ${t.depends ? `<span style="font-size:10px;color:var(--text3)">&#128279;</span>` : ''}
                                     <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
                                     ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">&#128221;</span>` : ''}
+                                    ${t.reminder && !t.done ? `<span class="note-ic" title="Rappel : ${t.reminder.replace('T',' ')}">&#128276;</span>` : ''}
                                     <button class="open-btn" onclick="event.stopPropagation(); openTaskDetail('${p.id}', '${t.id}')">Ouvrir</button>
                                     <button class="open-btn" style="border-color:#00c875;color:#00c875" onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', null)">+ Etape</button>
                                 </div>
@@ -1745,6 +1746,77 @@ function schemaLink(projId, schema) {
     var name = schema.replace(/.*[\/\\]/, '').substring(0, 25);
     return '<span style="font-size:11px;color:var(--text3);margin-left:8px" title="' + escHtml(schema) + '">&#128200; ' + escHtml(name) + '</span>';
 }
+
+/* === RAPPELS / NOTIFICATIONS === */
+
+/** Demander la permission de notifications */
+async function requestNotifPermission() {
+    if (!('Notification' in window)) {
+        toast('Notifications non supportees par ce navigateur', true);
+        return false;
+    }
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission === 'denied') {
+        toast('Notifications bloquees - autorise-les dans les parametres du navigateur', true);
+        return false;
+    }
+    const perm = await Notification.requestPermission();
+    return perm === 'granted';
+}
+
+/** Verifie les rappels toutes les minutes */
+function checkReminders() {
+    const now = new Date();
+    const allTasks = Object.values(data.tasks).flat();
+    allTasks.forEach(function(t) {
+        if (!t.reminder || t.done || t.reminderFired) return;
+        const remDate = new Date(t.reminder);
+        // Declencher si le rappel est dans la prochaine minute
+        if (remDate <= now && remDate > new Date(now - 60000)) {
+            fireReminder(t);
+        }
+    });
+}
+
+/** Declenche une notification pour une tache */
+async function fireReminder(task) {
+    task.reminderFired = true;
+
+    // Trouver le projet
+    var projId = null;
+    for (var pid in data.tasks) {
+        if (data.tasks[pid].some(function(t) { return t.id === task.id; })) {
+            projId = pid;
+            break;
+        }
+    }
+
+    // Toast dans l'appli
+    toast('Rappel : ' + task.name);
+
+    // Notification Windows via API
+    if (Notification.permission === 'granted') {
+        var proj = projId ? data.projects.find(function(p) { return p.id === projId; }) : null;
+        var notif = new Notification('Rappel - Gestionnaire de Projets', {
+            body: task.name + (proj ? ' (' + proj.name + ')' : ''),
+            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%230073ea"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="white">GP</text></svg>'
+        });
+        notif.onclick = function() {
+            window.focus();
+            if (projId) openTaskDetail(projId, task.id);
+        };
+        setTimeout(function() { notif.close(); }, 10000);
+    }
+}
+
+/** Activer les notifications */
+async function enableNotifications() {
+    const ok = await requestNotifPermission();
+    if (ok) toast('Notifications activees !');
+}
+
+// Verifier les rappels toutes les 30 secondes
+setInterval(checkReminders, 30000);
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2516,9 +2588,10 @@ function openTaskModal(projId, taskId = null) {
         document.getElementById('t-estimate').value = t.estimate  || '';
         document.getElementById('t-depends').value  = t.depends   || '';
         document.getElementById('t-note').value     = t.note      || '';
+        document.getElementById('t-reminder').value  = t.reminder  || '';
     } else {
         // Remise à zéro
-        ['t-name', 't-note', 't-depends'].forEach(i => document.getElementById(i).value = '');
+        ['t-name', 't-note', 't-depends', 't-reminder'].forEach(i => document.getElementById(i).value = '');
         document.getElementById('t-priority').value = 'med';
         document.getElementById('t-deadline').value = '';
         document.getElementById('t-start').value    = '';
@@ -2789,6 +2862,7 @@ async function saveTask() {
         estimate:  parseFloat(document.getElementById('t-estimate').value) || 0,
         depends:   parentId,
         note:      document.getElementById('t-note').value.trim(),
+        reminder:  document.getElementById('t-reminder').value || '',
         status:    existing.status    || 'todo',
         done:      existing.done      || false,
         subtasks:  existing.subtasks  || [],
