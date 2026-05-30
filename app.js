@@ -687,19 +687,15 @@ function renderBoard() {
                                    onchange="toggleTask('${p.id}', '${t.id}')">
                         </td>
                         <td>
-                            <div class="tname-cell">
-                                ${t.depends ? `<span style="font-size:10px;color:var(--text3)" title="Sous-tache de ${(data.tasks[p.id]||[]).find(x=>x.id===t.depends)?.name || t.depends}">🔗</span>` : ''}
-                                <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
-                                ${t.tags && t.tags.length ? `<div style="width:100%;margin-top:3px">${renderTags(t.tags, t.id, 'task', p.id)}</div>` : ''}
-                                ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">📝</span>` : ''}
-                                <button class="open-btn"
-                                        onclick="event.stopPropagation(); openTaskDetail('${p.id}', '${t.id}')">
-                                    Ouvrir
-                                </button>
-                                <button class="open-btn" style="margin-left:2px;border-color:#00c875;color:#00c875"
-                                        onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', null)">
-                                    + Etape
-                                </button>
+                            <div style="display:flex;flex-direction:column;min-width:0;max-width:400px">
+                                <div class="tname-cell">
+                                    ${t.depends ? `<span style="font-size:10px;color:var(--text3)">&#128279;</span>` : ''}
+                                    <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
+                                    ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">&#128221;</span>` : ''}
+                                    <button class="open-btn" onclick="event.stopPropagation(); openTaskDetail('${p.id}', '${t.id}')">Ouvrir</button>
+                                    <button class="open-btn" style="border-color:#00c875;color:#00c875" onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', null)">+ Etape</button>
+                                </div>
+                                ${t.tags && t.tags.length ? `<div style="display:flex;flex-wrap:wrap;gap:2px;margin-top:3px">${renderTags(t.tags, t.id, 'task', p.id)}</div>` : ''}
                             </div>
                         </td>
                         <td class="cell-rel"><button class="pill ${statusCls(t.status||'todo')}" onclick="event.stopPropagation();openTaskStatusPicker('${p.id}','${t.id}',this)">${statusLabel(t.status||'todo')}</button></td>
