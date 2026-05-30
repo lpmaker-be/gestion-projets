@@ -575,6 +575,7 @@ function renderBoard() {
                 </div>
                 <div class="proj-actions">
                     <button class="btn btn-primary btn-sm" onclick="openTaskModal('${p.id}')" title="Ajouter une tache" style="padding:3px 10px;font-size:12px">+ Tache</button>
+                    <button class="btn btn-secondary btn-sm" onclick="openComponents('${p.id}')" title="Composants" style="padding:3px 8px;font-size:11px">&#128295;</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
