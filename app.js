@@ -912,15 +912,25 @@ function toggleSubtask(projId, taskId, subId) {
         st.done   = !st.done;
         st.status = st.done ? 'done' : 'todo';
 
-        // Verifier si toutes les sous-taches sont terminees
-        const allSubs = t.subtasks || [];
-        const allDone = allSubs.length > 0 && allSubs.every(s => s.done);
+        // Si on coche une sous-tache, propager aux ses propres sous-taches
+        if (st.done) setAllSubtasksDone(st.subtasks || [], true);
+
+        // Verifier recursivement si TOUTES les sous-taches a tous les niveaux sont terminees
+        function allDoneRecursive(subtasks) {
+            if (!subtasks || !subtasks.length) return true;
+            return subtasks.every(function(s) {
+                return s.done && allDoneRecursive(s.subtasks);
+            });
+        }
+
+        const allDone = (t.subtasks || []).length > 0 && allDoneRecursive(t.subtasks);
+
         if (allDone) {
             t.done   = true;
             t.status = 'done';
-            toast('Toutes les etapes terminees - tache marquee terminee !');
+            toast('Toutes les etapes terminees !');
         } else if (t.done || t.status === 'done') {
-            // Au moins une sous-tache non terminee -> repasser en cours
+            // Au moins une etape non terminee -> repasser en cours
             t.done   = false;
             t.status = 'prog';
         }
@@ -930,9 +940,7 @@ function toggleSubtask(projId, taskId, subId) {
     }
 }
 
-/**
- * Supprime une sous-tache.
- */
+
 function deleteSubtask(projId, taskId, subId) {
     const _stObj = findSubtask(t ? (t.subtasks||[]) : [], subId);
     const _stName = _stObj ? _stObj.name : 'cette etape';
