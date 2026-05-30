@@ -2442,7 +2442,8 @@ function openProjectModal(id = null) {
         document.getElementById('f-deadline').value   = p.deadline   || '';
         document.getElementById('f-start').value      = p.start      || '';
         document.getElementById('f-components').value = p.components || '';
-        document.getElementById('f-schema').value      = p.schema      || '';
+        document.getElementById('f-schema').value = p.schema || '';
+        setTimeout(function() { updateSchemaPreview(p.schema || ''); }, 50);
         document.getElementById('f-budget-est').value  = p.budgetEst  || '';
         document.getElementById('f-budget-real').value = p.budgetReal || '';
         document.getElementById('f-desc').value       = p.desc       || '';
