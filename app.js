@@ -2017,7 +2017,7 @@ function onGlobalSearch(query) {
     if (!popup) return;
     var q = (query || '').trim().toLowerCase();
 
-    searchQuery = q;
+    // renderAll lit la valeur directement depuis getElementById('search')
     renderAll();
 
     if (!q || q.length < 2) { popup.style.display = 'none'; return; }
@@ -2081,7 +2081,6 @@ function closeSearchPopup() {
     if (popup) popup.style.display = 'none';
     var inp = document.getElementById('search-input');
     if (inp) inp.value = '';
-    searchQuery = '';
     renderAll();
 }
 function toggleCollapse(id) {
