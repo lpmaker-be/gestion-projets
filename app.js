@@ -2766,6 +2766,9 @@ function openTaskDetail(projId, taskId) {
     document.getElementById('det-body').innerHTML += commentsHtml;
 
     document.getElementById('det-body').innerHTML += buildTagWidget(taskId, projId, t.tags || []);
+    // Section pieces jointes
+    document.getElementById('det-body').innerHTML += buildAttachmentsSection(projId, taskId, t.attachments || []);
+
     document.getElementById('det-del').onclick  = () => { closeModal('modal-detail'); deleteTask(projId, taskId); };
     document.getElementById('det-edit').onclick = () => openTaskModal(projId, taskId);
 
