@@ -102,7 +102,10 @@
             <!-- Recherche textuelle -->
             <div class="search-wrap">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="search" placeholder="Rechercher..." oninput="renderAll()">
+<div class="search-wrap">
+                <input type="text" id="search" placeholder="Rechercher..." oninput="onGlobalSearch(this.value)" onfocus="onGlobalSearch(this.value)" style="width:100%" autocomplete="off">
+                <div id="search-popup" class="search-popup" style="display:none"></div>
+            </div>
             </div>
 
             <!-- Filtre par type -->

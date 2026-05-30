@@ -1989,6 +1989,101 @@ function removeProjLink(linkId) {
     refreshProjectLinksUI();
 }
 
+
+/* === RECHERCHE GLOBALE === */
+
+// Handler global pour les resultats de recherche
+document.addEventListener('click', function(e) {
+    var result = e.target.closest('.search-result');
+    if (result) {
+        closeSearchPopup();
+        setView('board', null);
+        return;
+    }
+    if (!e.target.closest('.search-wrap')) {
+        var popup = document.getElementById('search-popup');
+        if (popup) popup.style.display = 'none';
+    }
+});
+
+function hlText(text, q) {
+    if (!q || !text) return escHtml(text || '');
+    var safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escHtml(text).replace(new RegExp('(' + safe + ')', 'gi'), '<mark style="background:#fff3b0;border-radius:2px">$1</mark>');
+}
+
+function onGlobalSearch(query) {
+    var popup = document.getElementById('search-popup');
+    if (!popup) return;
+    var q = (query || '').trim().toLowerCase();
+
+    searchQuery = q;
+    renderAll();
+
+    if (!q || q.length < 2) { popup.style.display = 'none'; return; }
+
+    var out = '';
+    var total = 0;
+
+    // Projets
+    var projs = data.projects.filter(function(p) {
+        return p.name.toLowerCase().includes(q) || (p.desc || '').toLowerCase().includes(q);
+    });
+    if (projs.length) {
+        out += '<div class="search-popup-section">Projets (' + projs.length + ')</div>';
+        projs.slice(0, 5).forEach(function(p) {
+            out += '<div class="search-result">';
+            out += '<span class="sr-icon">&#128193;</span>';
+            out += '<div class="sr-main"><div class="sr-name">' + hlText(p.name, query) + '</div>';
+            if (p.desc) out += '<div class="sr-sub">' + hlText(p.desc.substring(0, 60), query) + '</div>';
+            out += '</div>';
+            out += '<span class="sr-badge pill ' + statusCls(p.status) + '">' + statusLabel(p.status) + '</span>';
+            out += '</div>';
+            total++;
+        });
+    }
+
+    // Taches et sous-taches
+    var tasks = [];
+    Object.keys(data.tasks).forEach(function(pid) {
+        var proj = data.projects.find(function(p) { return p.id === pid; });
+        if (!proj) return;
+        (data.tasks[pid] || []).forEach(function(t) {
+            if (t.name.toLowerCase().includes(q) || (t.note || '').toLowerCase().includes(q)) {
+                tasks.push({ t: t, proj: proj, parent: null });
+            }
+            (t.subtasks || []).forEach(function(st) {
+                if (st.name.toLowerCase().includes(q)) tasks.push({ t: st, proj: proj, parent: t });
+            });
+        });
+    });
+    if (tasks.length) {
+        out += '<div class="search-popup-section">Taches (' + tasks.length + ')</div>';
+        tasks.slice(0, 8).forEach(function(r) {
+            out += '<div class="search-result">';
+            out += '<span class="sr-icon">' + (r.t.done ? '&#9989;' : '&#9744;') + '</span>';
+            out += '<div class="sr-main"><div class="sr-name">' + hlText(r.t.name, query) + '</div>';
+            out += '<div class="sr-sub">' + escHtml(r.proj.name) + (r.parent ? ' > ' + escHtml(r.parent.name) : '') + '</div>';
+            out += '</div>';
+            if (r.t.priority) out += '<span class="sr-badge pill ' + prioCls(r.t.priority) + '">' + prioLabel(r.t.priority) + '</span>';
+            out += '</div>';
+            total++;
+        });
+    }
+
+    if (!total) out = '<div class="search-empty">Aucun resultat pour "' + escHtml(query) + '"</div>';
+    popup.innerHTML = out;
+    popup.style.display = 'block';
+}
+
+function closeSearchPopup() {
+    var popup = document.getElementById('search-popup');
+    if (popup) popup.style.display = 'none';
+    var inp = document.getElementById('search-input');
+    if (inp) inp.value = '';
+    searchQuery = '';
+    renderAll();
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

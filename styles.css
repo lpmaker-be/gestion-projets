@@ -454,3 +454,17 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .proj-link.ref { border-color: var(--accent); color: var(--accent); background: #e8f0fe; }
 .proj-link .link-del { opacity: .5; margin-left: 3px; cursor: pointer; }
 .proj-link .link-del:hover { opacity: 1; }
+
+/* Recherche globale popup */
+.search-popup { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.12); z-index: 200; max-height: 420px; overflow-y: auto; }
+.search-popup-section { padding: 8px 12px 4px; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; border-top: 1px solid var(--border); }
+.search-popup-section:first-child { border-top: none; }
+.search-result { display: flex; align-items: center; gap: 10px; padding: 8px 14px; cursor: pointer; transition: background .1s; }
+.search-result:hover { background: var(--bg); }
+.search-result .sr-icon { font-size: 14px; flex-shrink: 0; }
+.search-result .sr-main { flex: 1; min-width: 0; }
+.search-result .sr-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result .sr-sub  { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.search-result .sr-badge { font-size: 10px; flex-shrink: 0; }
+.search-empty { padding: 20px; text-align: center; font-size: 13px; color: var(--text3); }
+.search-wrap { position: relative; }
