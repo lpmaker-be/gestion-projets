@@ -2037,11 +2037,12 @@ function onGlobalSearch(query) {
 
     // Projets
     var projs = data.projects.filter(function(p) {
-        var prioMatch = prioLabel(p.priority).toLowerCase().includes(q);
-        var tagMatch  = (p.tags || []).some(function(t) { return t.toLowerCase().includes(q); });
+        var prioMatch   = prioLabel(p.priority).toLowerCase().includes(q);
+        var statusMatch = statusLabel(p.status).toLowerCase().includes(q);
+        var tagMatch    = (p.tags || []).some(function(t) { return t.toLowerCase().includes(q); });
         return p.name.toLowerCase().includes(q)
             || (p.desc || '').toLowerCase().includes(q)
-            || prioMatch || tagMatch;
+            || prioMatch || statusMatch || tagMatch;
     });
     if (projs.length) {
         out += '<div class="search-popup-section">Projets (' + projs.length + ')</div>';
@@ -2051,7 +2052,7 @@ function onGlobalSearch(query) {
             out += '<div class="sr-main"><div class="sr-name">' + hlText(p.name, query) + '</div>';
             if (p.desc) out += '<div class="sr-sub">' + hlText(p.desc.substring(0, 60), query) + '</div>';
             out += '</div>';
-            out += '<span class="sr-badge pill ' + statusCls(p.status) + '">' + statusLabel(p.status) + '</span>';
+            out += '<span class="sr-badge pill ' + statusCls(p.status) + '" onclick="event.stopPropagation()">' + statusLabel(p.status) + '</span>';
             out += '</div>';
             total++;
         });
@@ -2063,9 +2064,10 @@ function onGlobalSearch(query) {
         var proj = data.projects.find(function(p) { return p.id === pid; });
         if (!proj) return;
         (data.tasks[pid] || []).forEach(function(t) {
-            var tTagMatch  = (t.tags || []).some(function(tg) { return tg.toLowerCase().includes(q); });
-            var tPrioMatch = prioLabel(t.priority).toLowerCase().includes(q);
-            if (t.name.toLowerCase().includes(q) || (t.note || '').toLowerCase().includes(q) || tTagMatch || tPrioMatch) {
+            var tTagMatch    = (t.tags || []).some(function(tg) { return tg.toLowerCase().includes(q); });
+            var tPrioMatch   = prioLabel(t.priority).toLowerCase().includes(q);
+            var tStatusMatch = statusLabel(t.status || 'todo').toLowerCase().includes(q);
+            if (t.name.toLowerCase().includes(q) || (t.note || '').toLowerCase().includes(q) || tTagMatch || tPrioMatch || tStatusMatch) {
                 tasks.push({ t: t, proj: proj, parent: null });
             }
             (t.subtasks || []).forEach(function(st) {
@@ -2082,7 +2084,7 @@ function onGlobalSearch(query) {
             out += '<div class="sr-sub">' + escHtml(r.proj.name) + (r.parent ? ' > ' + escHtml(r.parent.name) : '') + '</div>';
             if (r.t.tags && r.t.tags.length) out += '<div style="margin-top:2px">' + r.t.tags.map(function(tg) { var c=tagColor(tg); return '<span style="background:'+c.bg+';color:'+c.fg+';padding:0 5px;border-radius:8px;font-size:10px">#'+tg+'</span>'; }).join(' ') + '</div>';
             out += '</div>';
-            if (r.t.priority) out += '<span class="sr-badge pill ' + prioCls(r.t.priority) + '">' + prioLabel(r.t.priority) + '</span>';
+            if (r.t.priority) out += '<span class="sr-badge pill ' + prioCls(r.t.priority) + '" onclick="event.stopPropagation()">' + prioLabel(r.t.priority) + '</span>';
             out += '</div>';
             total++;
         });
