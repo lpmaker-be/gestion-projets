@@ -567,6 +567,7 @@ function renderBoard() {
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
                 ${(p.components2||[]).length ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" onclick="event.stopPropagation();openComponents('${p.id}')" title="Voir les composants">🔧 ${(p.components2||[]).length} composant${(p.components2||[]).length>1?'s':''}</span>` : (p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : '')}
                 <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
+                ${p.schema ? `<a href="${escHtml(p.schema)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none" title="Voir le schema de cablage">&#128200; Schema</a>` : ''}
                 <div class="proj-prog">
                     <div class="mini-pb">
                         <div class="mini-pb-fill" style="width:${pct}%;background:${color}"></div>
@@ -2253,10 +2254,11 @@ function openProjectModal(id = null) {
         document.getElementById('f-deadline').value   = p.deadline   || '';
         document.getElementById('f-start').value      = p.start      || '';
         document.getElementById('f-components').value = p.components || '';
+        document.getElementById('f-schema').value      = p.schema      || '';
         document.getElementById('f-desc').value       = p.desc       || '';
     } else {
         // Remise à zéro du formulaire
-        ['f-name', 'f-desc', 'f-components'].forEach(i => document.getElementById(i).value = '');
+        ['f-name', 'f-desc', 'f-components', 'f-schema'].forEach(i => document.getElementById(i).value = '');
         document.getElementById('f-type').value     = 'arduino';
         document.getElementById('f-status').value   = 'todo';
         document.getElementById('f-priority').value = 'med';
@@ -2477,6 +2479,7 @@ async function saveProject() {
         deadline:   document.getElementById('f-deadline').value,
         start:      document.getElementById('f-start').value,
         components: document.getElementById('f-components').value.trim(),
+        schema:     document.getElementById('f-schema').value.trim(),
         desc:       document.getElementById('f-desc').value.trim(),
         tags:       [...editingProjTags],
         createdAt:  editingProjId
