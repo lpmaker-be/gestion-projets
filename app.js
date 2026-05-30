@@ -909,6 +909,17 @@ function toggleSubtask(projId, taskId, subId) {
     if (!t) return;
     const st = findSubtask(t.subtasks || [], subId);
     if (st) {
+        // Bloquer si on veut cocher mais les enfants ne sont pas tous termines
+        if (!st.done && st.subtasks && st.subtasks.length > 0) {
+            function allChildDone(subs) {
+                return (subs || []).every(function(s) { return s.done && allChildDone(s.subtasks); });
+            }
+            if (!allChildDone(st.subtasks)) {
+                toast('Terminer d abord toutes les sous-etapes !', true);
+                return;
+            }
+        }
+
         st.done   = !st.done;
         st.status = st.done ? 'done' : 'todo';
 
