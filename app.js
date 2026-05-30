@@ -2241,6 +2241,53 @@ function buildAdvancedStats(projs) {
     html += '</div></div>';
     return html;
 }
+
+/* === HISTORIQUE DES MODIFICATIONS === */
+
+async function openHistory() {
+    var resp = await fetch('/api/history');
+    var history = await resp.json();
+
+    var html = '';
+    if (!history.length) {
+        html = '<div style="text-align:center;padding:30px;color:var(--text3);font-style:italic">Aucune version sauvegardee</div>';
+    } else {
+        html = '<div style="font-size:12px;color:var(--text2);margin-bottom:12px">Les 5 dernieres versions sont conservees. Cliquer sur "Restaurer" pour revenir a une version anterieure.</div>';
+        history.forEach(function(snap, i) {
+            var isLast = i === 0;
+            var projCount = (snap.data.projects || []).length;
+            var taskCount = Object.values(snap.data.tasks || {}).flat().length;
+            html += '<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--' + (isLast ? 'white' : 'bg') + ')">';
+            html += '<div style="display:flex;align-items:center;justify-content:space-between">';
+            html += '<div>';
+            html += '<div style="font-size:13px;font-weight:600;color:var(--text)">' + (isLast ? 'Version actuelle' : 'Version ' + (i+1)) + '</div>';
+            html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">&#128197; ' + snap.date + ' &nbsp; &#128193; ' + projCount + ' projet(s) &nbsp; &#9989; ' + taskCount + ' tache(s)</div>';
+            html += '</div>';
+            if (!isLast) {
+                html += '<button class="btn btn-secondary btn-sm" onclick="restoreSnapshot(' + i + ')" style="flex-shrink:0">&#8635; Restaurer</button>';
+            } else {
+                html += '<span style="font-size:11px;color:var(--green);font-weight:600">&#9679; Actuelle</span>';
+            }
+            html += '</div></div>';
+        });
+    }
+
+    document.getElementById('hist-body').innerHTML = html;
+    document.getElementById('modal-history').classList.add('open');
+}
+
+async function restoreSnapshot(idx) {
+    if (!confirm('Restaurer cette version ? Les modifications actuelles seront perdues.')) return;
+    var resp = await fetch('/api/restore?idx=' + idx);
+    var result = await resp.json();
+    if (result.ok) {
+        closeModal('modal-history');
+        await loadData();
+        toast('Version du ' + result.date + ' restauree !');
+    } else {
+        toast('Erreur : ' + result.error, true);
+    }
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

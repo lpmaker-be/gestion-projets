@@ -130,6 +130,7 @@
             <button class="btn btn-secondary btn-sm" onclick="window.open('aide.html','_blank')" title="Documentation" style="padding:4px 10px">&#128214; Aide</button>
             <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleDark()" title="Mode sombre/clair"></button>
             <button class="btn btn-secondary btn-sm" onclick="enableNotifications()" title="Activer les rappels" style="padding:3px 8px;font-size:13px">&#128276;</button>
+            <button class="btn btn-secondary btn-sm" onclick="openHistory()" title="Historique des versions" style="padding:4px 10px">&#128336;</button>
             <button class="btn btn-secondary btn-sm" onclick="exportExcel(null)" title="Exporter tous les projets en Excel" style="border-color:#1d6f42;color:#1d6f42">&#128202; Excel</button>
             <button class="btn btn-secondary btn-sm" onclick="exportPDF(null)" title="Exporter tous les projets en PDF" style="border-color:var(--red);color:var(--red)">&#128196; PDF</button>
             <button class="btn btn-primary btn-sm" onclick="openProjectModal()">+ Nouveau projet</button>
@@ -530,6 +531,20 @@
         <div class="modal-footer">
             <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-confirm')">Annuler</button>
             <button class="btn btn-sm" id="confirm-ok-btn" style="background:var(--red);color:#fff;border:none">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HISTORIQUE -->
+<div class="modal-overlay" id="modal-history">
+    <div class="modal" style="max-width:560px">
+        <div class="modal-hdr">
+            <h2>&#128336; Historique des versions</h2>
+            <button class="modal-x" onclick="closeModal('modal-history')">&#x2715;</button>
+        </div>
+        <div class="modal-body" id="hist-body" style="max-height:400px;overflow-y:auto"></div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-history')">Fermer</button>
         </div>
     </div>
 </div>

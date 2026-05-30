@@ -8,6 +8,8 @@ Sert index.html, styles.css, app.js et l'API REST
 import http.server
 import json
 import io
+import datetime
+import copy
 import webbrowser
 try:
     import openpyxl
@@ -39,11 +41,36 @@ def ensure_data_dir():
             encoding="utf-8"
         )
 
+
+def load_history():
+    if os.path.exists(HIST_FILE):
+        with open(HIST_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+def save_snapshot(action='modification'):
+    """Sauvegarde un snapshot du JSON actuel dans l'historique."""
+    try:
+        data = load_data()
+        history = load_history()
+        snapshot = {
+            'date':   datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+            'action': action,
+            'data':   data
+        }
+        history.insert(0, snapshot)
+        history = history[:MAX_VERSIONS]  # Garder seulement les N derniers
+        with open(HIST_FILE, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Erreur snapshot: {e}")
+
 def load_data():
     ensure_data_dir()
     return json.loads(DATA_FILE.read_text(encoding="utf-8"))
 
 def save_data(data):
+    save_snapshot()
     ensure_data_dir()
     DATA_FILE.write_text(
         json.dumps(data, ensure_ascii=False, indent=2),
@@ -186,6 +213,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send_json(load_data())
         elif path.startswith("/api/export-excel"):
             self._export_excel()
+        elif path == "/api/history":
+            self._send_json(load_history())
+        elif path.startswith("/api/restore"):
+            self._restore_snapshot()
+
 
         else:
             self.send_response(404)
