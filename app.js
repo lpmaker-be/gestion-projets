@@ -567,6 +567,10 @@ function renderBoard() {
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
                 ${(p.components2||[]).length ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" onclick="event.stopPropagation();openComponents('${p.id}')" title="Voir les composants">🔧 ${(p.components2||[]).length} composant${(p.components2||[]).length>1?'s':''}</span>` : (p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : '')}
                 <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
+                ${(p.budgetEst || p.budgetReal) ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" title="Budget">
+                    &#128176; ${p.budgetReal ? p.budgetReal.toFixed(2) : '0'}/${p.budgetEst ? p.budgetEst.toFixed(2) : '?'} EUR
+                    ${p.budgetEst && p.budgetReal > p.budgetEst ? '<span style="color:var(--red)">&#x26A0;</span>' : ''}
+                </span>` : ''}
                 ${p.schema ? `<a href="${escHtml(p.schema)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none;cursor:pointer" title="Voir le schema - cliquer pour agrandir si image">&#128200; Schema</a>` : ''}
                 <div class="proj-prog">
                     <div class="mini-pb">
@@ -2108,6 +2112,28 @@ function renderDashboard() {
             </div>
         </div>
 
+        <!-- ── Budget projets (widget conditionnel) ── -->
+        ${data.projects.some(p => p.budgetEst || p.budgetReal) ? `
+        <div class="dash-widget">
+            <h3>&#128176; Budget projets</h3>
+            ${data.projects.filter(p => p.budgetEst || p.budgetReal).map(p => {
+                const compTotal = (p.components2||[]).reduce((s,c) => s + (c.qty||1)*(c.price||0), 0);
+                const real = p.budgetReal || compTotal;
+                const est  = p.budgetEst || 0;
+                const pct  = est > 0 ? Math.min(100, Math.round(real/est*100)) : 0;
+                const over = est > 0 && real > est;
+                return '<div style="margin-bottom:12px">'
+                    + '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'
+                    + '<span>' + escHtml(p.name) + '</span>'
+                    + '<span style="color:' + (over?'var(--red)':'var(--text2)') + ';font-weight:600">'
+                    + real.toFixed(2) + ' / ' + (est||'?') + ' EUR'
+                    + (over ? ' &#x26A0;' : '') + '</span></div>'
+                    + '<div class="budget-bar"><div class="budget-fill ' + (over?'budget-over':'') + '" style="width:' + pct + '%;background:' + (over?'var(--red)':pcol(p.id)) + '"></div></div>'
+                    + (compTotal > 0 ? '<div style="font-size:10px;color:var(--text3);margin-top:3px">Composants : ' + compTotal.toFixed(2) + ' EUR</div>' : '')
+                    + '</div>';
+            }).join('')}
+        </div>` : ''}
+
         <!-- ── Tâches en retard (widget conditionnel) ── -->
         ${overdueT.length ? `
         <div class="dash-widget">
@@ -2307,10 +2333,12 @@ function openProjectModal(id = null) {
         document.getElementById('f-start').value      = p.start      || '';
         document.getElementById('f-components').value = p.components || '';
         document.getElementById('f-schema').value      = p.schema      || '';
+        document.getElementById('f-budget-est').value  = p.budgetEst  || '';
+        document.getElementById('f-budget-real').value = p.budgetReal || '';
         document.getElementById('f-desc').value       = p.desc       || '';
     } else {
         // Remise à zéro du formulaire
-        ['f-name', 'f-desc', 'f-components', 'f-schema'].forEach(i => document.getElementById(i).value = '');
+        ['f-name', 'f-desc', 'f-components', 'f-schema', 'f-budget-est', 'f-budget-real'].forEach(i => document.getElementById(i).value = '');
         updateSchemaPreview('');
         document.getElementById('f-type').value     = 'arduino';
         document.getElementById('f-status').value   = 'todo';
@@ -2533,6 +2561,8 @@ async function saveProject() {
         start:      document.getElementById('f-start').value,
         components: document.getElementById('f-components').value.trim(),
         schema:     document.getElementById('f-schema').value.trim(),
+        budgetEst:  parseFloat(document.getElementById('f-budget-est').value)  || 0,
+        budgetReal: parseFloat(document.getElementById('f-budget-real').value) || 0,
         desc:       document.getElementById('f-desc').value.trim(),
         tags:       [...editingProjTags],
         createdAt:  editingProjId

@@ -406,3 +406,8 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .lightbox img { max-width:90vw; max-height:90vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
 .lightbox-close { position:absolute; top:16px; right:20px; color:#fff; font-size:28px; cursor:pointer; background:none; border:none; opacity:.7; }
 .lightbox-close:hover { opacity:1; }
+
+/* Budget */
+.budget-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+.budget-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+.budget-over { background: var(--red) !important; }
