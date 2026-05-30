@@ -912,9 +912,6 @@ function toggleSubtask(projId, taskId, subId) {
         st.done   = !st.done;
         st.status = st.done ? 'done' : 'todo';
 
-        // Si on coche une sous-tache, propager aux ses propres sous-taches
-        if (st.done) setAllSubtasksDone(st.subtasks || [], true);
-
         // Verifier recursivement si TOUTES les sous-taches a tous les niveaux sont terminees
         function allDoneRecursive(subtasks) {
             if (!subtasks || !subtasks.length) return true;
