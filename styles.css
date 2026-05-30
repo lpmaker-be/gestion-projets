@@ -318,3 +318,19 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .comment-input-wrap textarea { flex: 1; background: var(--white); border: 1.5px solid var(--border); color: var(--text); padding: 8px 11px; border-radius: 6px; font-size: 13px; outline: none; resize: none; min-height: 60px; font-family: Figtree, sans-serif; transition: border-color .15s; }
 .comment-input-wrap textarea:focus { border-color: var(--accent); }
 .comment-input-wrap button { align-self: flex-end; }
+
+/* Tags */
+.tag { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #e8f0fe; color: #0073ea; margin-right: 3px; margin-bottom: 2px; cursor: default; white-space: nowrap; }
+.tag .tag-del { cursor: pointer; opacity: .6; font-size: 10px; margin-left: 2px; }
+.tag .tag-del:hover { opacity: 1; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.tag-input-wrap { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.tag-input-wrap input { border: 1.5px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; outline: none; width: 140px; }
+.tag-input-wrap input:focus { border-color: var(--accent); }
+.tag-suggestion { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: var(--bg); border: 1.5px solid var(--border); cursor: pointer; color: var(--text2); transition: all .15s; }
+.tag-suggestion:hover { background: #e8f0fe; color: var(--accent); border-color: var(--accent); }
+.tag-colors { background: #e8f0fe; color: #0073ea; }
+.tag-colors-2 { background: #fff0e0; color: #e07000; }
+.tag-colors-3 { background: #e8ffe8; color: #008800; }
+.tag-colors-4 { background: #ffe8e8; color: #cc0000; }
+.tag-colors-5 { background: #f0e8ff; color: #7700cc; }

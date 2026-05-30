@@ -565,6 +565,7 @@ function renderBoard() {
                     onkeydown="if(event.key==='Enter') this.blur()">
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
                 ${p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : ''}
+                <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
                 <div class="proj-prog">
                     <div class="mini-pb">
                         <div class="mini-pb-fill" style="width:${pct}%;background:${color}"></div>
@@ -1285,6 +1286,124 @@ async function editComment(projId, taskId, commentId) {
     await apiPost('/api/tasks', { projectId: projId, task: t });
     toast('Commentaire modifie !');
     openTaskDetail(projId, taskId);
+}
+
+
+/* === TAGS === */
+const PRESET_TAGS = ['impression3D','electronique','mecanique','firmware','urgent','en-attente','test','debug','achat','documentation','prototype','v1.0'];
+const TAG_COLORS  = [
+    {bg:'#e8f0fe',fg:'#0073ea'},
+    {bg:'#fff0e0',fg:'#e07000'},
+    {bg:'#e8ffe8',fg:'#008800'},
+    {bg:'#ffe8e8',fg:'#cc0000'},
+    {bg:'#f0e8ff',fg:'#7700cc'},
+    {bg:'#e8fff8',fg:'#007755'}
+];
+
+function tagColor(tag) {
+    let h = 0;
+    for (let i = 0; i < tag.length; i++) h = tag.charCodeAt(i) + ((h << 5) - h);
+    return TAG_COLORS[Math.abs(h) % TAG_COLORS.length];
+}
+
+function renderTags(tags, entityId, entityType, projId) {
+    if (!tags || !tags.length) return '';
+    return tags.map(t => {
+        const c = tagColor(t);
+        return `<span class="tag" style="background:${c.bg};color:${c.fg}">#${escHtml(t)}`
+             + `<button class="tag-del" onclick="event.stopPropagation();removeTag('${entityType}','${entityId}','${t}','${projId||''}')">x</button></span>`;
+    }).join('');
+}
+
+function buildTagWidget(taskId, projId, tags) {
+    const tTags = tags || [];
+    const suggestions = PRESET_TAGS.filter(x => !tTags.includes(x)).slice(0, 8);
+    const inputId = 'tag-inp-' + taskId;
+    const dlId    = 'tag-dl-'  + taskId;
+
+    let html = '<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">';
+    html += '<div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Tags</div>';
+    html += '<div class="tags-wrap" style="margin-bottom:8px">' + renderTags(tTags, taskId, 'task', projId) + '</div>';
+
+    // Champ input + bouton ajouter
+    html += '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">';
+    html += `<input id="${inputId}" type="text" placeholder="Nouveau tag..." list="${dlId}" `;
+    html += `style="border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;outline:none;width:140px">`;
+    html += `<datalist id="${dlId}">` + PRESET_TAGS.map(t => `<option value="${t}">`).join('') + '</datalist>';
+
+    // Bouton utilise data-attrs pour eviter les quotes imbriquees
+    html += `<button class="btn btn-secondary btn-sm" data-tid="${taskId}" data-pid="${projId}" onclick="addTagFromInput(this)">+ Tag</button>`;
+    html += '</div>';
+
+    // Suggestions
+    if (suggestions.length) {
+        html += '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">';
+        suggestions.forEach(s => {
+            const c = tagColor(s);
+            html += `<span class="tag-suggestion" style="background:${c.bg};color:${c.fg};border-color:${c.fg}" `
+                  + `data-tid="${taskId}" data-pid="${projId}" data-tag="${s}" onclick="addTagFromSuggestion(this)">#${s}</span>`;
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+    return html;
+}
+
+// Helpers qui lisent les data-attrs pour eviter les quotes imbriquees
+function addTagFromInput(btn) {
+    const tid = btn.dataset.tid;
+    const pid = btn.dataset.pid;
+    const val = document.getElementById('tag-inp-' + tid).value;
+    addTag('task', tid, val, pid);
+}
+
+function addTagFromSuggestion(el) {
+    addTag('task', el.dataset.tid, el.dataset.tag, el.dataset.pid);
+}
+
+async function addTag(entityType, entityId, tagVal, projId) {
+    const tag = (tagVal || '').trim().toLowerCase().replace(/[^a-z0-9_\-.]/g, '');
+    if (!tag) { toast('Tag invalide !', true); return; }
+
+    if (entityType === 'project') {
+        const p = data.projects.find(x => x.id === entityId);
+        if (!p) return;
+        if (!p.tags) p.tags = [];
+        if (p.tags.includes(tag)) { toast('Tag deja present', true); return; }
+        p.tags.push(tag);
+        await apiPost('/api/projects', p);
+    } else {
+        const t = findTask(projId, entityId);
+        if (!t) return;
+        if (!t.tags) t.tags = [];
+        if (t.tags.includes(tag)) { toast('Tag deja present', true); return; }
+        t.tags.push(tag);
+        await apiPost('/api/tasks', { projectId: projId, task: t });
+    }
+    toast('#' + tag + ' ajoute !');
+    renderAll();
+    if (entityType === 'task' && document.getElementById('modal-detail').classList.contains('open')) {
+        setTimeout(() => openTaskDetail(projId, entityId), 100);
+    }
+}
+
+async function removeTag(entityType, entityId, tag, projId) {
+    if (entityType === 'project') {
+        const p = data.projects.find(x => x.id === entityId);
+        if (!p || !p.tags) return;
+        p.tags = p.tags.filter(t => t !== tag);
+        await apiPost('/api/projects', p);
+    } else {
+        const t = findTask(projId, entityId);
+        if (!t || !t.tags) return;
+        t.tags = t.tags.filter(x => x !== tag);
+        await apiPost('/api/tasks', { projectId: projId, task: t });
+    }
+    toast('#' + tag + ' supprime');
+    renderAll();
+    if (entityType === 'task' && document.getElementById('modal-detail').classList.contains('open')) {
+        setTimeout(() => openTaskDetail(projId, entityId), 100);
+    }
 }
 
 function toggleCollapse(id) {
@@ -2130,6 +2249,7 @@ function openTaskDetail(projId, taskId) {
 
     document.getElementById('det-body').innerHTML += commentsHtml;
 
+    document.getElementById('det-body').innerHTML += buildTagWidget(taskId, projId, t.tags || []);
     document.getElementById('det-del').onclick  = () => { closeModal('modal-detail'); deleteTask(projId, taskId); };
     document.getElementById('det-edit').onclick = () => openTaskModal(projId, taskId);
 
