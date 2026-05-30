@@ -463,7 +463,7 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .search-result:hover { background: var(--bg); }
 .search-result .sr-icon { font-size: 14px; flex-shrink: 0; }
 .search-result .sr-main { flex: 1; min-width: 0; }
-.search-result .sr-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result .sr-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: normal; overflow: visible; }
 .search-result .sr-sub  { font-size: 11px; color: var(--text2); margin-top: 1px; }
 .search-result .sr-badge { font-size: 10px; flex-shrink: 0; }
 .search-empty { padding: 20px; text-align: center; font-size: 13px; color: var(--text3); }
