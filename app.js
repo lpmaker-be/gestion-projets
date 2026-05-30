@@ -1996,8 +1996,18 @@ function removeProjLink(linkId) {
 document.addEventListener('click', function(e) {
     var result = e.target.closest('.search-result');
     if (result) {
+        var projId = result.dataset.projid;
+        var taskId = result.dataset.taskid;
         closeSearchPopup();
         setView('board', null);
+        if (projId && taskId) {
+            setTimeout(function() { openTaskDetail(projId, taskId); }, 200);
+        } else if (projId) {
+            setTimeout(function() {
+                var el = document.querySelector('[data-proj-id="' + projId + '"]');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+        }
         return;
     }
     if (!e.target.closest('.search-wrap')) {
@@ -2036,7 +2046,7 @@ function onGlobalSearch(query) {
     if (projs.length) {
         out += '<div class="search-popup-section">Projets (' + projs.length + ')</div>';
         projs.slice(0, 5).forEach(function(p) {
-            out += '<div class="search-result">';
+            out += '<div class="search-result" data-projid="' + p.id + '">';
             out += '<span class="sr-icon">&#128193;</span>';
             out += '<div class="sr-main"><div class="sr-name">' + hlText(p.name, query) + '</div>';
             if (p.desc) out += '<div class="sr-sub">' + hlText(p.desc.substring(0, 60), query) + '</div>';
@@ -2066,7 +2076,7 @@ function onGlobalSearch(query) {
     if (tasks.length) {
         out += '<div class="search-popup-section">Taches (' + tasks.length + ')</div>';
         tasks.slice(0, 8).forEach(function(r) {
-            out += '<div class="search-result">';
+            out += '<div class="search-result" data-projid="' + r.proj.id + '" data-taskid="' + r.t.id + '">';
             out += '<span class="sr-icon">' + (r.t.done ? '&#9989;' : '&#9744;') + '</span>';
             out += '<div class="sr-main"><div class="sr-name">' + hlText(r.t.name, query) + '</div>';
             out += '<div class="sr-sub">' + escHtml(r.proj.name) + (r.parent ? ' > ' + escHtml(r.parent.name) : '') + '</div>';
