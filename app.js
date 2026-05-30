@@ -929,7 +929,16 @@ function toggleSubtask(projId, taskId, subId) {
  * Supprime une sous-tache.
  */
 function deleteSubtask(projId, taskId, subId) {
-    if (!confirm('Supprimer cette etape ?')) return;
+    const _stObj = findSubtask(t ? (t.subtasks||[]) : [], subId);
+    const _stName = _stObj ? _stObj.name : 'cette etape';
+    if (!window.__delSubConfirmed) {
+        showConfirm('Supprimer cette etape ?', '"' + _stName + '"', function() {
+            window.__delSubConfirmed = true;
+            deleteSubtask(projId, taskId, subId);
+        });
+        return;
+    }
+    window.__delSubConfirmed = false;
     const t = findTask(projId, taskId);
     if (!t) return;
 
@@ -1669,6 +1678,16 @@ async function duplicateProject(id) {
     addActivity('Projet duplique : ' + newProj.name);
     toast('Projet duplique !');
     renderAll();
+}
+
+function showConfirm(msg, sub, onOk) {
+    document.getElementById('confirm-msg').textContent = msg;
+    document.getElementById('confirm-sub').textContent = sub || '';
+    document.getElementById('confirm-ok-btn').onclick  = function() {
+        closeModal('modal-confirm');
+        onOk();
+    };
+    document.getElementById('modal-confirm').classList.add('open');
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
@@ -2663,7 +2682,17 @@ async function renameProj(id, name) {
  * @param {string} id - ID du projet
  */
 async function deleteProject(id) {
-    if (!confirm('Supprimer ce projet et toutes ses tâches ?')) return;
+    if (!window.__delProjConfirmed) {
+        const _pObj = data.projects.find(function(x) { return x.id === id; });
+        const _tc   = (data.tasks[id] || []).length;
+        showConfirm(
+            'Supprimer ce projet ?',
+            (_pObj ? '"' + _pObj.name + '"' : '') + (_tc ? ' et ' + _tc + ' tache(s)' : ''),
+            function() { window.__delProjConfirmed = true; deleteProject(id); }
+        );
+        return;
+    }
+    window.__delProjConfirmed = false;
 
     const p = data.projects.find(x => x.id === id);
     await apiDel(`/api/projects?id=${id}`);
