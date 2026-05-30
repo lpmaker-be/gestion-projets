@@ -570,6 +570,7 @@ function renderBoard() {
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
                 ${(p.components2||[]).length ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" onclick="event.stopPropagation();openComponents('${p.id}')" title="Voir les composants">🔧 ${(p.components2||[]).length} composant${(p.components2||[]).length>1?'s':''}</span>` : (p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : '')}
                 <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
+                ${(p.links||[]).map(function(lk){ var tp=data.projects.find(function(x){return x.id===lk.targetId;}); if(!tp) return ''; return '<span class="proj-link '+( lk.type==="dep"?"dep":"ref")+'" onclick="event.stopPropagation();openProjectModal(\''+ tp.id +'\')">'+(lk.type==="dep"?"Depend de: ":"Ref: ")+escHtml(tp.name)+'</span>'; }).join('')}
                 ${(p.budgetEst || p.budgetReal) ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" title="Budget">
                     &#128176; ${p.budgetReal ? p.budgetReal.toFixed(2) : '0'}/${p.budgetEst ? p.budgetEst.toFixed(2) : '?'} EUR
                     ${p.budgetEst && p.budgetReal > p.budgetEst ? '<span style="color:var(--red)">&#x26A0;</span>' : ''}
@@ -1908,6 +1909,56 @@ function buildAttachmentsSection(projId, taskId, attachments) {
     html += '</div></div>';
     return html;
 }
+
+/* === LIENS ENTRE PROJETS === */
+var editingProjLinks = [];
+
+function refreshProjectLinksUI() {
+    var wrap = document.getElementById('f-links-wrap');
+    var sel  = document.getElementById('f-link-proj');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    editingProjLinks.forEach(function(lk) {
+        var target = data.projects.find(function(p) { return p.id === lk.targetId; });
+        if (!target) return;
+        var span = document.createElement('span');
+        span.className = 'proj-link ' + (lk.type === 'dep' ? 'dep' : 'ref');
+        span.textContent = (lk.type === 'dep' ? 'Depend de : ' : 'Ref : ') + target.name;
+        var del = document.createElement('span');
+        del.className = 'link-del';
+        del.textContent = ' x';
+        del.dataset.id = lk.id;
+        del.onclick = function() { removeProjLink(this.dataset.id); };
+        span.appendChild(del);
+        wrap.appendChild(span);
+    });
+    if (sel) {
+        var currentId = editingProjId;
+        var linked = editingProjLinks.map(function(l) { return l.targetId; });
+        sel.innerHTML = '<option value="">-- Choisir un projet --</option>';
+        data.projects.forEach(function(p) {
+            if (p.id === currentId || linked.includes(p.id)) return;
+            var opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = p.name;
+            sel.appendChild(opt);
+        });
+    }
+}
+
+function addProjectLink() {
+    var targetId = document.getElementById('f-link-proj').value;
+    var type     = document.getElementById('f-link-type').value;
+    if (!targetId) { toast('Choisir un projet !', true); return; }
+    editingProjLinks.push({ id: genId(), targetId: targetId, type: type });
+    refreshProjectLinksUI();
+}
+
+function removeProjLink(linkId) {
+    editingProjLinks = editingProjLinks.filter(function(l) { return l.id !== linkId; });
+    refreshProjectLinksUI();
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2639,8 +2690,10 @@ function openProjectModal(id = null) {
         document.getElementById('f-start').value    = '';
     }
 
-    editingProjTags = id ? [...((data.projects.find(x => x.id === id) || {}).tags || [])] : [];
+    editingProjTags  = id ? [...((data.projects.find(x => x.id === id) || {}).tags  || [])] : [];
+    editingProjLinks = id ? [...((data.projects.find(x => x.id === id) || {}).links || [])] : [];
     refreshProjectTagsUI();
+    refreshProjectLinksUI();
     document.getElementById('modal-project').classList.add('open');
     setTimeout(() => document.getElementById('f-name').focus(), 100);
 }
@@ -2861,6 +2914,7 @@ async function saveProject() {
         budgetReal: parseFloat(document.getElementById('f-budget-real').value) || 0,
         desc:       document.getElementById('f-desc').value.trim(),
         tags:       [...editingProjTags],
+        links:      [...editingProjLinks],
         createdAt:  editingProjId
             ? (data.projects.find(x => x.id === editingProjId) || {}).createdAt
             : Date.now()

@@ -446,3 +446,11 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .attachment-thumb:hover .att-del { opacity: 1; }
 .att-add-btn { width: 80px; height: 80px; border: 2px dashed var(--border); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--text3); font-size: 11px; gap: 4px; transition: all .15s; background: none; }
 .att-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Liens entre projets */
+.proj-link { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; margin-right: 4px; margin-bottom: 2px; border: 1px solid var(--border); background: var(--white); color: var(--text2); transition: all .15s; }
+.proj-link:hover { border-color: var(--accent); color: var(--accent); }
+.proj-link.dep { border-color: var(--orange); color: var(--orange); background: #fff4e0; }
+.proj-link.ref { border-color: var(--accent); color: var(--accent); background: #e8f0fe; }
+.proj-link .link-del { opacity: .5; margin-left: 3px; cursor: pointer; }
+.proj-link .link-del:hover { opacity: 1; }

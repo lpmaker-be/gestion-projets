@@ -248,6 +248,20 @@
                 <div id="f-schema-preview" style="margin-top:8px"></div>
             </div>
             <div class="frow">
+                <label>Liens avec d'autres projets</label>
+                <div id="f-links-wrap" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px"></div>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                    <select id="f-link-proj" style="flex:1;border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none">
+                        <option value="">-- Choisir un projet --</option>
+                    </select>
+                    <select id="f-link-type" style="border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none">
+                        <option value="dep">Depend de</option>
+                        <option value="ref">Reference</option>
+                    </select>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addProjectLink()">+ Lier</button>
+                </div>
+            </div>
+            <div class="frow">
                 <label>Tags</label>
                 <div id="f-tags-wrap" class="tags-wrap" style="margin-bottom:6px"></div>
                 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
