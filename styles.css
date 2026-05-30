@@ -432,3 +432,8 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .confirm-modal .modal-body { text-align: center; padding: 24px 22px 8px; }
 .confirm-msg { font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 6px; }
 .confirm-sub { font-size: 12px; color: var(--text2); font-style: italic; }
+
+/* Projets archives */
+.project-block.archived { opacity: .6; }
+.archived-banner { background: #f5f5f5; border-left: 4px solid #c4c4c4; padding: 6px 12px; font-size: 11px; color: #888; display: flex; align-items: center; justify-content: space-between; }
+body.dark .archived-banner { background: #2c2e33; color: #666; }

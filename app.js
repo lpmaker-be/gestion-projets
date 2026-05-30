@@ -44,6 +44,9 @@ let currentView = 'board';
 /** Filtre sidebar par statut projet */
 let sideFilter = 'all';
 
+/** Afficher les projets archives */
+let showArchived = false;
+
 /** Filtre sidebar par type de projet */
 let sideType = '';
 
@@ -582,6 +585,7 @@ function renderBoard() {
                     <button class="btn btn-primary btn-sm" onclick="openTaskModal('${p.id}')" title="Ajouter une tache" style="padding:3px 10px;font-size:12px">+ Tache</button>
                     <button class="btn btn-secondary btn-sm" onclick="openComponents('${p.id}')" title="Composants" style="padding:3px 8px;font-size:11px">&#128295;</button>
                     <button class="ic-btn" onclick="duplicateProject('${p.id}')" title="Dupliquer" style="font-size:11px">&#128260;</button>
+                    <button class="ic-btn" onclick="archiveProject('${p.id}')" title="${p.archived ? 'Restaurer' : 'Archiver'}" style="font-size:11px">${p.archived ? '&#128268;' : '&#128451;'}</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
@@ -1688,6 +1692,40 @@ function showConfirm(msg, sub, onOk) {
         onOk();
     };
     document.getElementById('modal-confirm').classList.add('open');
+}
+
+/**
+ * Archive ou desarchive un projet.
+ */
+async function archiveProject(id) {
+    const p = data.projects.find(x => x.id === id);
+    if (!p) return;
+    p.archived = !p.archived;
+    await apiPost('/api/projects', p);
+    addActivity((p.archived ? 'Projet archive : ' : 'Projet restaure : ') + p.name);
+    toast(p.archived ? 'Projet archive' : 'Projet restaure');
+    updateArchivedCount();
+    renderAll();
+}
+
+/**
+ * Affiche/masque les projets archives.
+ */
+function toggleShowArchived(el) {
+    showArchived = !showArchived;
+    el.classList.toggle('active', showArchived);
+    renderAll();
+}
+
+/**
+ * Met a jour le compteur d'archives dans la sidebar.
+ */
+function updateArchivedCount() {
+    const el = document.getElementById('sb-archived');
+    if (el) {
+        const cnt = data.projects.filter(p => p.archived).length;
+        el.textContent = '\u{1F4EB} Archives (' + cnt + ')';
+    }
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
