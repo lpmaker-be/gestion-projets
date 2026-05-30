@@ -567,7 +567,7 @@ function renderBoard() {
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
                 ${(p.components2||[]).length ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" onclick="event.stopPropagation();openComponents('${p.id}')" title="Voir les composants">🔧 ${(p.components2||[]).length} composant${(p.components2||[]).length>1?'s':''}</span>` : (p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : '')}
                 <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
-                ${p.schema ? `<a href="${escHtml(p.schema)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none" title="Voir le schema de cablage">&#128200; Schema</a>` : ''}
+                ${p.schema ? `<a href="${escHtml(p.schema)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none;cursor:pointer" title="Voir le schema - cliquer pour agrandir si image">&#128200; Schema</a>` : ''}
                 <div class="proj-prog">
                     <div class="mini-pb">
                         <div class="mini-pb-fill" style="width:${pct}%;background:${color}"></div>
@@ -1572,8 +1572,10 @@ function pickSchemaFile(input) {
         if (file.type.startsWith('image/')) {
             const img = document.createElement('img');
             img.src = url;
-            img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px';
+            img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px;cursor:zoom-in';
             img.alt = 'Schema';
+            img.title = 'Cliquer pour agrandir';
+            img.onclick = function() { openLightbox(this.src); };
             preview.innerHTML = '';
             preview.appendChild(img);
         } else {
@@ -1591,8 +1593,10 @@ function updateSchemaPreview(url) {
     if (url.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i) || url.startsWith('blob:')) {
         const img = document.createElement('img');
         img.src = url;
-        img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px';
+        img.style.cssText = 'max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border);margin-top:4px;cursor:zoom-in';
         img.onerror = function() { this.style.display = 'none'; };
+        img.title = 'Cliquer pour agrandir';
+        img.onclick = function() { openLightbox(this.src); };
         preview.appendChild(img);
     } else {
         preview.style.cssText = 'font-size:12px;color:var(--text2);margin-top:4px';
@@ -1600,6 +1604,15 @@ function updateSchemaPreview(url) {
     }
 }
 
+
+function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('modal-lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+    document.getElementById('modal-lightbox').classList.remove('open');
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

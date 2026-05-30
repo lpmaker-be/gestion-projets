@@ -399,3 +399,10 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .comp-table input { border: 1px solid transparent; background: transparent; width: 100%; font-size: 13px; color: var(--text); outline: none; padding: 2px 4px; border-radius: 4px; }
 .comp-table input:focus { border-color: var(--accent); background: var(--white); }
 .comp-total { display: flex; justify-content: flex-end; padding: 10px 10px 0; font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Lightbox image */
+.lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:999; align-items:center; justify-content:center; cursor:zoom-out; }
+.lightbox.open { display:flex; animation: fadeIn .2s ease; }
+.lightbox img { max-width:90vw; max-height:90vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.lightbox-close { position:absolute; top:16px; right:20px; color:#fff; font-size:28px; cursor:pointer; background:none; border:none; opacity:.7; }
+.lightbox-close:hover { opacity:1; }
