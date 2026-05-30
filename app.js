@@ -408,7 +408,37 @@ function getFilteredProjects() {
         return b.createdAt - a.createdAt;    // Par défaut : ordre de création décroissant
     });
 
-    return projs;
+    // Tri topologique : les projets dependants apres leurs dependances
+    var sorted = [];
+    var remaining = projs.slice();
+    var maxIter = projs.length * 2;
+    var iter = 0;
+    while (remaining.length > 0 && iter < maxIter) {
+        iter++;
+        var added = false;
+        for (var i = 0; i < remaining.length; i++) {
+            var p = remaining[i];
+            var deps = (p.links || []).filter(function(l) { return l.type === 'dep'; });
+            // Verifier que toutes les dependances sont deja dans sorted ou pas dans projs
+            var depsOk = deps.every(function(l) {
+                var inSorted = sorted.some(function(s) { return s.id === l.targetId; });
+                var inProjs  = projs.some(function(x) { return x.id === l.targetId; });
+                return inSorted || !inProjs;
+            });
+            if (depsOk) {
+                sorted.push(p);
+                remaining.splice(i, 1);
+                added = true;
+                break;
+            }
+        }
+        // Eviter boucle infinie si dependances circulaires
+        if (!added) {
+            sorted = sorted.concat(remaining);
+            break;
+        }
+    }
+    return sorted;
 }
 
 /**
