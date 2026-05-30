@@ -334,3 +334,58 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .tag-colors-3 { background: #e8ffe8; color: #008800; }
 .tag-colors-4 { background: #ffe8e8; color: #cc0000; }
 .tag-colors-5 { background: #f0e8ff; color: #7700cc; }
+
+/* ── Mode sombre ── */
+body.dark {
+    --bg:             #1a1b1e;
+    --white:          #25262b;
+    --sidebar:        #141517;
+    --sidebar-hover:  #1e1f24;
+    --sidebar-active: #0073ea;
+    --border:         #2c2e33;
+    --text:           #c1c2c5;
+    --text2:          #868e96;
+    --text3:          #4a4b50;
+    --accent:         #4dabf7;
+    --accent-h:       #339af0;
+    --green:          #51cf66;
+    --orange:         #ffa94d;
+    --red:            #ff6b6b;
+}
+
+body.dark .btbl tbody tr           { background: var(--white); }
+body.dark .btbl tbody tr:hover     { background: #2c2e33; }
+body.dark .btbl thead th           { background: #1a1b1e; }
+body.dark .proj-hdr                { background: var(--white); }
+body.dark .topbar                  { background: var(--white); }
+body.dark .view-tabs               { background: var(--white); }
+body.dark .filter-bar              { background: var(--white); }
+body.dark .summary-bar             { background: var(--white); }
+body.dark .modal                   { background: #25262b; }
+body.dark .frow input,
+body.dark .frow select,
+body.dark .frow textarea           { background: #1a1b1e; color: var(--text); }
+body.dark .k-card                  { background: var(--white); }
+body.dark .dash-widget             { background: var(--white); }
+body.dark .stat-box                { background: #1a1b1e; }
+body.dark .spopup                  { background: #25262b; }
+body.dark .cal-day                 { background: var(--white); }
+body.dark .cal-day.today           { background: #1c2333; }
+body.dark .gantt-body,
+body.dark .gantt-hdr               { background: var(--white); }
+body.dark .add-proj-row .add-proj-btn { background: none; }
+body.dark .sb-footer-text          { color: rgba(255,255,255,.15); }
+
+/* Bouton toggle dark/light */
+.dark-toggle {
+    width: 32px; height: 18px; border-radius: 9px;
+    background: var(--border); border: none; cursor: pointer;
+    position: relative; transition: background .2s; flex-shrink: 0;
+}
+.dark-toggle::after {
+    content: ''; position: absolute; width: 14px; height: 14px;
+    border-radius: 50%; background: #fff; top: 2px; left: 2px;
+    transition: transform .2s;
+}
+body.dark .dark-toggle             { background: var(--accent); }
+body.dark .dark-toggle::after      { transform: translateX(14px); }

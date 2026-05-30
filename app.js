@@ -1469,6 +1469,17 @@ function removeProjTag(tag) {
     editingProjTags = editingProjTags.filter(function(t) { return t !== tag; });
     refreshProjectTagsUI();
 }
+
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark') ? '1' : '0');
+}
+
+// Appliquer le mode sombre au chargement si preference sauvegardee
+if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark');
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
