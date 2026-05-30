@@ -389,3 +389,13 @@ body.dark .sb-footer-text          { color: rgba(255,255,255,.15); }
 }
 body.dark .dark-toggle             { background: var(--accent); }
 body.dark .dark-toggle::after      { transform: translateX(14px); }
+
+/* Composants */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.comp-table th { padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid var(--border); background: var(--bg); }
+.comp-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.comp-table tr:hover td { background: #f8f9ff; }
+body.dark .comp-table tr:hover td { background: #2c2e33; }
+.comp-table input { border: 1px solid transparent; background: transparent; width: 100%; font-size: 13px; color: var(--text); outline: none; padding: 2px 4px; border-radius: 4px; }
+.comp-table input:focus { border-color: var(--accent); background: var(--white); }
+.comp-total { display: flex; justify-content: flex-end; padding: 10px 10px 0; font-size: 13px; font-weight: 600; color: var(--text); }

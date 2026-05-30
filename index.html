@@ -427,6 +427,39 @@
     </div>
 </div>
 
+
+<!-- MODAL COMPOSANTS -->
+<div class="modal-overlay" id="modal-components">
+    <div class="modal" style="max-width:780px">
+        <div class="modal-hdr">
+            <h2 id="comp-title">Composants</h2>
+            <button class="modal-x" onclick="closeModal('modal-components')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div style="overflow-x:auto">
+                <table class="comp-table" id="comp-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width:180px">Composant</th>
+                            <th style="width:80px">Qte</th>
+                            <th style="min-width:140px">Fournisseur</th>
+                            <th style="width:90px">Prix unit.</th>
+                            <th style="min-width:160px">Lien URL</th>
+                            <th style="width:40px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="comp-tbody"></tbody>
+                </table>
+            </div>
+            <div class="comp-total" id="comp-total"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="addComponentRow()">+ Ajouter</button>
+            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-components')">Fermer</button>
+            <button class="btn btn-primary btn-sm" onclick="saveComponents()">Sauvegarder</button>
+        </div>
+    </div>
+</div>
 <div class="toast" id="toast"></div>
 
 

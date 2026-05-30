@@ -565,7 +565,7 @@ function renderBoard() {
                     onblur="renameProj('${p.id}', this.value)"
                     onkeydown="if(event.key==='Enter') this.blur()">
                 <span class="proj-tc">${allTasks.length} tâche${allTasks.length !== 1 ? 's' : ''}</span>
-                ${p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : ''}
+                ${(p.components2||[]).length ? `<span style="font-size:11px;color:var(--text3);margin-left:8px" onclick="event.stopPropagation();openComponents('${p.id}')" title="Voir les composants">🔧 ${(p.components2||[]).length} composant${(p.components2||[]).length>1?'s':''}</span>` : (p.components ? `<span style="font-size:11px;color:var(--text3);margin-left:8px">🔧 ${escHtml(p.components)}</span>` : '')}
                 <span style="margin-left:6px">${renderTags(p.tags||[], p.id, 'project', '')}</span>
                 <div class="proj-prog">
                     <div class="mini-pb">
@@ -1480,6 +1480,85 @@ if (localStorage.getItem('darkMode') === '1') {
     document.body.classList.add('dark');
 }
 
+
+/* === COMPOSANTS === */
+let _compProjId = null;
+
+function openComponents(projId) {
+    _compProjId = projId;
+    const p = data.projects.find(x => x.id === projId);
+    if (!p) return;
+    document.getElementById('comp-title').textContent = 'Composants : ' + p.name;
+    renderComponentRows(p.components2 || []);
+    document.getElementById('modal-components').classList.add('open');
+}
+
+function renderComponentRows(comps) {
+    const tbody = document.getElementById('comp-tbody');
+    tbody.innerHTML = '';
+    comps.forEach(function(c, i) {
+        tbody.appendChild(makeCompRow(c, i));
+    });
+    updateCompTotal();
+}
+
+function makeCompRow(c, idx) {
+    const tr = document.createElement('tr');
+    tr.dataset.idx = idx;
+    tr.innerHTML =
+        '<td><input type="text" placeholder="Ex: Arduino Mega" value="' + escHtml(c.name||'') + '" data-field="name" oninput="updateCompTotal()"></td>' +
+        '<td><input type="number" min="1" value="' + (c.qty||1) + '" data-field="qty" style="width:60px" oninput="updateCompTotal()"></td>' +
+        '<td><input type="text" placeholder="Ex: AliExpress" value="' + escHtml(c.supplier||'') + '" data-field="supplier"></td>' +
+        '<td><input type="number" min="0" step="0.01" value="' + (c.price||'') + '" placeholder="0.00" data-field="price" oninput="updateCompTotal()"> EUR</td>' +
+        '<td><input type="url" placeholder="https://..." value="' + escHtml(c.url||'') + '" data-field="url"></td>' +
+        '<td><button class="ic-btn" style="color:var(--red)" onclick="removeCompRow(this)">x</button></td>';
+    return tr;
+}
+
+function addComponentRow() {
+    const tbody = document.getElementById('comp-tbody');
+    const idx = tbody.children.length;
+    tbody.appendChild(makeCompRow({name:'',qty:1,supplier:'',price:'',url:''}, idx));
+}
+
+function removeCompRow(btn) {
+    btn.closest('tr').remove();
+    updateCompTotal();
+}
+
+function updateCompTotal() {
+    let total = 0;
+    document.querySelectorAll('#comp-tbody tr').forEach(function(tr) {
+        const qty   = parseFloat(tr.querySelector('[data-field="qty"]').value)   || 0;
+        const price = parseFloat(tr.querySelector('[data-field="price"]').value) || 0;
+        total += qty * price;
+    });
+    const el = document.getElementById('comp-total');
+    if (el) el.textContent = total > 0 ? 'Total : ' + total.toFixed(2) + ' EUR' : '';
+}
+
+async function saveComponents() {
+    const rows = [];
+    document.querySelectorAll('#comp-tbody tr').forEach(function(tr) {
+        const name = tr.querySelector('[data-field="name"]').value.trim();
+        if (!name) return;
+        rows.push({
+            name,
+            qty:      parseFloat(tr.querySelector('[data-field="qty"]').value)   || 1,
+            supplier: tr.querySelector('[data-field="supplier"]').value.trim(),
+            price:    parseFloat(tr.querySelector('[data-field="price"]').value) || 0,
+            url:      tr.querySelector('[data-field="url"]').value.trim()
+        });
+    });
+
+    const p = data.projects.find(x => x.id === _compProjId);
+    if (!p) return;
+    p.components2 = rows;
+    await apiPost('/api/projects', p);
+    toast('Composants sauvegardes !');
+    closeModal('modal-components');
+    renderAll();
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
