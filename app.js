@@ -684,6 +684,7 @@ function renderBoard() {
                             <div class="tname-cell">
                                 ${t.depends ? `<span style="font-size:10px;color:var(--text3)" title="Sous-tache de ${(data.tasks[p.id]||[]).find(x=>x.id===t.depends)?.name || t.depends}">🔗</span>` : ''}
                                 <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
+                                ${renderTags(t.tags||[], t.id, 'task', p.id)}
                                 ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">📝</span>` : ''}
                                 <button class="open-btn"
                                         onclick="event.stopPropagation(); openTaskDetail('${p.id}', '${t.id}')">
