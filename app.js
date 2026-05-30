@@ -574,7 +574,7 @@ function renderBoard() {
                     &#128176; ${p.budgetReal ? p.budgetReal.toFixed(2) : '0'}/${p.budgetEst ? p.budgetEst.toFixed(2) : '?'} EUR
                     ${p.budgetEst && p.budgetReal > p.budgetEst ? '<span style="color:var(--red)">&#x26A0;</span>' : ''}
                 </span>` : ''}
-                ${p.schema ? `${schemaLink(p.schema)}` : ''}
+                ${p.schema ? `${schemaLink(p.id, p.schema)}` : ''}
                 <div class="proj-prog">
                     <div class="mini-pb">
                         <div class="mini-pb-fill" style="width:${pct}%;background:${color}"></div>
@@ -1728,17 +1728,22 @@ function updateArchivedCount() {
     }
 }
 
-function schemaLink(schema) {
+// Stockage temporaire des schemas pour la lightbox
+var _schemaStore = {};
+
+function schemaLink(projId, schema) {
     if (!schema) return '';
     if (schema.startsWith('data:image')) {
-        return '<span style="font-size:11px;color:var(--accent);margin-left:8px;cursor:zoom-in" title="Cliquer pour agrandir" onclick="event.stopPropagation();openLightbox(\'' + schema.substring(0,50) + '\')" onclick="event.stopPropagation();openLightbox(this.dataset.s)" data-s="' + schema + '">\u{1F4C8} Schema</span>';
+        // Stocker le schema et utiliser l'ID projet comme cle
+        _schemaStore[projId] = schema;
+        return '<span style="font-size:11px;color:var(--accent);margin-left:8px;cursor:zoom-in" title="Cliquer pour agrandir" onclick="event.stopPropagation();openLightbox(_schemaStore[\''+projId+'\'])">&#128200; Schema</span>';
     }
     if (schema.startsWith('http')) {
-        return '<a href="' + escHtml(schema) + '" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none">\u{1F4C8} Schema</a>';
+        return '<a href="' + escHtml(schema) + '" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none">&#128200; Schema</a>';
     }
     // Fichier local - juste afficher le nom
-    var name = schema.replace(/.*[\\/]/, '').substring(0, 25);
-    return '<span style="font-size:11px;color:var(--text3);margin-left:8px" title="' + escHtml(schema) + '">\u{1F4C8} ' + escHtml(name) + '</span>';
+    var name = schema.replace(/.*[\/\\]/, '').substring(0, 25);
+    return '<span style="font-size:11px;color:var(--text3);margin-left:8px" title="' + escHtml(schema) + '">&#128200; ' + escHtml(name) + '</span>';
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
