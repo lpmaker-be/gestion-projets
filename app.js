@@ -58,6 +58,7 @@ let showDone = true;
 
 /** ID du projet en cours d'édition dans la modale (null = nouveau) */
 let editingProjId = null;
+let editingProjTags = [];
 
 /** ID du dernier projet actif (pour le raccourci T) */
 let currentProjId = null;
@@ -1406,6 +1407,67 @@ async function removeTag(entityType, entityId, tag, projId) {
     }
 }
 
+
+function refreshProjectTagsUI() {
+    const wrap = document.getElementById('f-tags-wrap');
+    const sugWrap = document.getElementById('f-tag-suggestions');
+    const dl = document.getElementById('f-tag-dl');
+    if (!wrap) return;
+
+    // Tags actuels
+    wrap.innerHTML = '';
+    editingProjTags.forEach(function(t) {
+        const c = tagColor(t);
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.style.cssText = 'background:' + c.bg + ';color:' + c.fg;
+        span.textContent = '#' + t;
+        const btn = document.createElement('button');
+        btn.className = 'tag-del';
+        btn.textContent = 'x';
+        btn.dataset.tag = t;
+        btn.onclick = function() { removeProjTag(this.dataset.tag); };
+        span.appendChild(btn);
+        wrap.appendChild(span);
+    });
+
+    // Suggestions
+    if (sugWrap) {
+        sugWrap.innerHTML = '';
+        PRESET_TAGS.filter(function(t) { return !editingProjTags.includes(t); }).slice(0, 8).forEach(function(s) {
+            const c = tagColor(s);
+            const el = document.createElement('span');
+            el.className = 'tag-suggestion';
+            el.style.cssText = 'background:' + c.bg + ';color:' + c.fg + ';border-color:' + c.fg;
+            el.textContent = '#' + s;
+            el.dataset.tag = s;
+            el.onclick = function() { addProjTag(this.dataset.tag); };
+            sugWrap.appendChild(el);
+        });
+    }
+
+    // Datalist
+    if (dl) dl.innerHTML = PRESET_TAGS.map(function(t) { return '<option value="' + t + '">'; }).join('');
+}
+
+function addProjTag(tag) {
+    const val = tag || (document.getElementById('f-tag-input').value || '').trim().toLowerCase().replace(/[^a-z0-9_\-.]/g, '');
+    if (!val) return;
+    if (!editingProjTags.includes(val)) editingProjTags.push(val);
+    const inp = document.getElementById('f-tag-input');
+    if (inp) inp.value = '';
+    refreshProjectTagsUI();
+}
+
+function addTagFromProjectModal() {
+    const val = (document.getElementById('f-tag-input').value || '').trim().toLowerCase().replace(/[^a-z0-9_\-.]/g, '');
+    if (val) addProjTag(val);
+}
+
+function removeProjTag(tag) {
+    editingProjTags = editingProjTags.filter(function(t) { return t !== tag; });
+    refreshProjectTagsUI();
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2110,6 +2172,8 @@ function openProjectModal(id = null) {
         document.getElementById('f-start').value    = '';
     }
 
+    editingProjTags = id ? [...((data.projects.find(x => x.id === id) || {}).tags || [])] : [];
+    refreshProjectTagsUI();
     document.getElementById('modal-project').classList.add('open');
     setTimeout(() => document.getElementById('f-name').focus(), 100);
 }
@@ -2322,6 +2386,7 @@ async function saveProject() {
         start:      document.getElementById('f-start').value,
         components: document.getElementById('f-components').value.trim(),
         desc:       document.getElementById('f-desc').value.trim(),
+        tags:       [...editingProjTags],
         createdAt:  editingProjId
             ? (data.projects.find(x => x.id === editingProjId) || {}).createdAt
             : Date.now()

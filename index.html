@@ -218,7 +218,18 @@
 
             <div class="frow">
                 <label>Description / Notes</label>
-                <textarea id="f-desc" placeholder="Objectifs, liens utiles, schéma..."></textarea>
+                <textarea id="f-desc" placeholder="Objectifs, liens utiles, schema..."></textarea>
+            </div>
+            <div class="frow">
+                <label>Tags</label>
+                <div id="f-tags-wrap" class="tags-wrap" style="margin-bottom:6px"></div>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                    <input id="f-tag-input" type="text" placeholder="Ajouter un tag..." list="f-tag-dl"
+                           style="border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;outline:none;width:160px">
+                    <datalist id="f-tag-dl"></datalist>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addTagFromProjectModal()">+ Tag</button>
+                </div>
+                <div id="f-tag-suggestions" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px"></div>
             </div>
         </div>
 
