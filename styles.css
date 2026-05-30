@@ -468,3 +468,14 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .search-result .sr-badge { font-size: 10px; flex-shrink: 0; }
 .search-empty { padding: 20px; text-align: center; font-size: 13px; color: var(--text3); }
 .search-wrap { position: relative; }
+
+/* Statistiques avancees */
+.stat-chart { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.stat-chart h3 { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+.stat-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.stat-bar-label { width: 130px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
+.stat-bar-track { flex: 1; height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; }
+.stat-bar-fill  { height: 100%; border-radius: 6px; transition: width .4s; }
+.stat-bar-val   { width: 40px; text-align: right; color: var(--text2); flex-shrink: 0; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 900px) { .stat-grid { grid-template-columns: 1fr; } }

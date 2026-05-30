@@ -785,7 +785,9 @@ function renderBoard() {
         </div>
     </div>`;
 
-    document.getElementById('content').innerHTML = html;
+    // Stats avancees en bas du dashboard
+    const dashEl = document.getElementById('content');
+    dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
 /**
@@ -2115,6 +2117,130 @@ function exportExcel(projId) {
     document.body.removeChild(a);
     toast('Export Excel en cours...');
 }
+
+/* === STATISTIQUES AVANCEES === */
+
+/**
+ * Construit le HTML des statistiques avancees pour le Dashboard.
+ */
+function buildAdvancedStats(projs) {
+    if (!projs || !projs.length) return '';
+
+    var allTasks = [];
+    projs.forEach(function(p) {
+        (data.tasks[p.id] || []).forEach(function(t) { allTasks.push({ t: t, p: p }); });
+    });
+
+    var html = '<div style="margin-top:20px"><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px">Statistiques avancees</div>';
+    html += '<div class="stat-grid">';
+
+    // ── 1. Temps passe par projet ─────────────────────────────────────
+    html += '<div class="stat-chart"><h3>Temps passe par projet (h)</h3>';
+    var timeByProj = projs.map(function(p) {
+        var pt = data.tasks[p.id] || [];
+        function sumTime(tasks) {
+            return tasks.reduce(function(s, t) {
+                return s + (t.timeSpent || 0) + sumTime(t.subtasks || []);
+            }, 0);
+        }
+        return { name: p.name, secs: sumTime(pt) };
+    }).filter(function(x) { return x.secs > 0; })
+      .sort(function(a, b) { return b.secs - a.secs; });
+
+    if (timeByProj.length === 0) {
+        html += '<div style="font-size:12px;color:var(--text3);font-style:italic">Aucun temps enregistre</div>';
+    } else {
+        var maxSecs = timeByProj[0].secs;
+        timeByProj.forEach(function(x) {
+            var h = (x.secs / 3600).toFixed(1);
+            var pct = Math.round(x.secs / maxSecs * 100);
+            html += '<div class="stat-bar-row">';
+            html += '<span class="stat-bar-label" title="' + escHtml(x.name) + '">' + escHtml(x.name.substring(0, 18)) + '</span>';
+            html += '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:var(--accent)"></div></div>';
+            html += '<span class="stat-bar-val">' + h + 'h</span>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+
+    // ── 2. Repartition taches par statut ──────────────────────────────
+    html += '<div class="stat-chart"><h3>Repartition des taches par statut</h3>';
+    var statusCount = { todo: 0, prog: 0, done: 0, block: 0 };
+    allTasks.forEach(function(x) { var s = x.t.status || (x.t.done ? 'done' : 'todo'); if (statusCount[s] !== undefined) statusCount[s]++; });
+    var totalT = allTasks.length || 1;
+    var statusColors = { todo: '#c4c4c4', prog: '#fdab3d', done: '#00c875', block: '#e2445c' };
+    var statusNames  = { todo: 'A faire', prog: 'En cours', done: 'Termine', block: 'Bloque' };
+    Object.keys(statusCount).forEach(function(s) {
+        var cnt = statusCount[s];
+        var pct = Math.round(cnt / totalT * 100);
+        html += '<div class="stat-bar-row">';
+        html += '<span class="stat-bar-label">' + statusNames[s] + '</span>';
+        html += '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:' + statusColors[s] + '"></div></div>';
+        html += '<span class="stat-bar-val">' + cnt + ' (' + pct + '%)</span>';
+        html += '</div>';
+    });
+    html += '</div>';
+
+    // ── 3. Repartition par type de projet ─────────────────────────────
+    html += '<div class="stat-chart"><h3>Projets par type</h3>';
+    var typeCount = {};
+    projs.forEach(function(p) { typeCount[p.type] = (typeCount[p.type] || 0) + 1; });
+    var typeColors = { arduino: '#0073ea', software: '#00c875', mixed: '#fdab3d', divers: '#9b59b6' };
+    var maxType = Math.max.apply(null, Object.values(typeCount)) || 1;
+    Object.keys(typeCount).forEach(function(type) {
+        var cnt = typeCount[type];
+        var pct = Math.round(cnt / maxType * 100);
+        var col = typeColors[type] || '#c4c4c4';
+        html += '<div class="stat-bar-row">';
+        html += '<span class="stat-bar-label">' + typeLabel(type).replace(/[^\w\s\/]/g, '').trim() + '</span>';
+        html += '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:' + col + '"></div></div>';
+        html += '<span class="stat-bar-val">' + cnt + '</span>';
+        html += '</div>';
+    });
+    html += '</div>';
+
+    // ── 4. Top taches en retard ───────────────────────────────────────
+    html += '<div class="stat-chart"><h3>Taches en retard</h3>';
+    var today = new Date(); today.setHours(0,0,0,0);
+    var late = allTasks.filter(function(x) {
+        return !x.t.done && x.t.deadline && new Date(x.t.deadline) < today;
+    }).sort(function(a, b) { return new Date(a.t.deadline) - new Date(b.t.deadline); }).slice(0, 6);
+
+    if (!late.length) {
+        html += '<div style="font-size:12px;color:var(--green);font-style:italic">Aucune tache en retard !</div>';
+    } else {
+        late.forEach(function(x) {
+            var days = Math.floor((today - new Date(x.t.deadline)) / 86400000);
+            html += '<div class="stat-bar-row">';
+            html += '<span class="stat-bar-label" title="' + escHtml(x.t.name) + '">' + escHtml(x.t.name.substring(0,18)) + '</span>';
+            html += '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:100%;background:var(--red);opacity:0.6"></div></div>';
+            html += '<span class="stat-bar-val" style="color:var(--red)">-' + days + 'j</span>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+
+    // ── 5. Avancement global SVG ──────────────────────────────────────
+    html += '<div class="stat-chart" style="grid-column:1/-1"><h3>Avancement global par projet</h3>';
+    html += '<div style="overflow-x:auto"><svg width="100%" height="' + (projs.length * 36 + 30) + '" viewBox="0 0 600 ' + (projs.length * 36 + 30) + '">';
+    projs.forEach(function(p, i) {
+        var pt = data.tasks[p.id] || [];
+        var done = pt.filter(function(t) { return t.done; }).length;
+        var total = pt.length;
+        var pct = total > 0 ? Math.round(done / total * 100) : 0;
+        var y = i * 36 + 10;
+        var barW = Math.round(pct * 4.2);
+        var col = pct === 100 ? '#00c875' : pct > 50 ? '#fdab3d' : '#0073ea';
+        html += '<text x="0" y="' + (y+13) + '" font-size="11" fill="var(--text2)" font-family="Figtree,sans-serif">' + escHtml(p.name.substring(0, 22)) + '</text>';
+        html += '<rect x="170" y="' + y + '" width="420" height="18" rx="4" fill="var(--bg)"/>';
+        if (barW > 0) html += '<rect x="170" y="' + y + '" width="' + barW + '" height="18" rx="4" fill="' + col + '"/>';
+        html += '<text x="598" y="' + (y+13) + '" font-size="11" fill="var(--text2)" text-anchor="end" font-family="Figtree,sans-serif">' + pct + '%</text>';
+    });
+    html += '</svg></div></div>';
+
+    html += '</div></div>';
+    return html;
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2209,7 +2335,9 @@ function renderKanban() {
     });
 
     html += '</div>';
-    document.getElementById('content').innerHTML = html;
+    // Stats avancees en bas du dashboard
+    const dashEl = document.getElementById('content');
+    dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
 /** Données du drag en cours */
@@ -2343,7 +2471,9 @@ function renderCalendar() {
     }
 
     html += `</div></div>`;
-    document.getElementById('content').innerHTML = html;
+    // Stats avancees en bas du dashboard
+    const dashEl = document.getElementById('content');
+    dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
 /** Navigue au mois suivant (+1) ou précédent (-1). */
@@ -2491,7 +2621,9 @@ function renderGantt() {
     });
 
     html += `</div></div>`;
-    document.getElementById('content').innerHTML = html;
+    // Stats avancees en bas du dashboard
+    const dashEl = document.getElementById('content');
+    dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
 
@@ -2683,7 +2815,9 @@ function renderDashboard() {
 
     </div>`;
 
-    document.getElementById('content').innerHTML = html;
+    // Stats avancees en bas du dashboard
+    const dashEl = document.getElementById('content');
+    dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
 /**
