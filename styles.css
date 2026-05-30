@@ -416,3 +416,9 @@ body.dark .comp-table tr:hover td { background: #2c2e33; }
 .tname-cell .tag { max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
 .tname-cell .tags-wrap { flex-shrink: 0; max-width: 200px; flex-wrap: nowrap; overflow: hidden; }
 .tname-cell .tname-txt { min-width: 80px; }
+
+/* Tags sous le nom de tache */
+.tname-cell { flex-wrap: wrap; }
+.tname-cell .tname-txt { width: 100%; min-width: 0; }
+.tname-cell .tag { margin-top: 2px; }
+.tname-cell .tags-wrap { max-width: none; flex-wrap: wrap; }
