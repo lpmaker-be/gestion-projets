@@ -277,7 +277,7 @@
             </div>
         </div>
 
-        <div class="tip"><strong>Rappels :</strong> Cliquer sur &#128276; dans la topbar pour autoriser les notifications. Ensuite definir une date/heure dans le champ "Rappel" d'une tache. La page doit rester ouverte.</div>
+        <div class="tip"><strong>Rappels :</strong> Cliquer sur &#128276; dans la topbar pour autoriser les notifications. Ensuite definir une date/heure dans le champ "Rappel" d'une tache. Avec le Service Worker actif, les rappels fonctionnent meme si la page est fermee (navigateur ouvert en arriere-plan).</div>
     </div>
 
     <!-- COMPOSANTS -->
@@ -383,6 +383,29 @@
                 </div>
             </div>
             <div class="card">
+                <div class="card-title">&#128276; Notifications push (Service Worker)</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#128276;</span><div>Cliquer sur &#128276; dans la topbar pour autoriser les notifications</div></li>
+                        <li><span class="icon">&#128336;</span><div>Le Service Worker verifie les rappels toutes les <strong>60 secondes</strong> en arriere-plan</div></li>
+                        <li><span class="icon">&#128187;</span><div>Fonctionne meme si la page est <strong>fermee</strong> (navigateur ouvert)</div></li>
+                        <li><span class="icon">&#128073;</span><div>Clic sur la notification → ouvre directement la tache concernee</div></li>
+                        <li><span class="icon">&#9881;</span><div>Dans Chrome : activer <strong>"Continuer l'execution des applis en arriere-plan"</strong> dans les parametres</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#127912; Themes de couleurs</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#127912;</span><div>Bouton &#127912; dans la topbar pour ouvrir le selecteur</div></li>
+                        <li><span class="icon">&#127744;</span><div>7 themes disponibles : Bleu, Violet, Vert, Rouge, Orange, Cyan, Gris</div></li>
+                        <li><span class="icon">&#128190;</span><div>Theme sauvegarde et applique automatiquement au prochain lancement</div></li>
+                        <li><span class="icon">&#127769;</span><div>Compatible avec le mode sombre</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
                 <div class="card-title">&#127769; Mode sombre</div>
                 <div class="card-body">Cliquer sur le <strong>toggle rond</strong> dans la topbar pour basculer entre mode clair et sombre. La preference est sauvegardee et restauree au prochain lancement.</div>
             </div>
@@ -422,6 +445,17 @@
                 </div>
             </div>
             <div class="card">
+                <div class="card-title">&#128424; Impression directe</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#128424;</span><div>Bouton &#128424; dans la topbar pour imprimer</div></li>
+                        <li><span class="icon">&#128065;</span><div>Tous les projets se deplient automatiquement avant l'impression</div></li>
+                        <li><span class="icon">&#128203;</span><div>Mise en page optimisee : sidebar et boutons masques, en-tetes repetes</div></li>
+                        <li><span class="icon">&#128196;</span><div>Fonctionne aussi pour sauvegarder en PDF via "Imprimer en PDF"</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
                 <div class="card-title">&#128190; Sauvegarde</div>
                 <div class="card-body">Toutes les donnees sont sauvegardees automatiquement dans <strong>projets.json</strong>. Ce fichier est sur OneDrive donc synchronise entre tes machines. Le chronometre se sauvegarde toutes les 60s automatiquement.</div>
             </div>
@@ -457,6 +491,8 @@
                         <li><span class="icon">&#128200;</span><div>Le <strong>schema local</strong> doit etre charge via Parcourir pour persister</div></li>
                         <li><span class="icon">&#128190;</span><div>Les images en base64 grossissent le fichier projets.json</div></li>
                         <li><span class="icon">&#128279;</span><div>Les fichiers locaux non-image ne peuvent pas etre affiches dans le navigateur</div></li>
+                        <li><span class="icon">&#128276;</span><div>Le Service Worker necessite que le <strong>navigateur soit ouvert</strong> en arriere-plan</div></li>
+                        <li><span class="icon">&#127760;</span><div>Mode hors-ligne : modifications sauvegardees en cache et synchronisees au retour du serveur</div></li>
                     </ul>
                 </div>
             </div>
