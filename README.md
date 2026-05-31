@@ -1,40 +1,70 @@
 # Gestionnaire de Projets
 
-Application web locale inspirée de Monday.com pour gérer des projets Arduino, Raspberry Pi et logiciels.
+Application web locale de gestion de projets inspirée de Monday.com, spécialisée pour les projets **Arduino**, **Raspberry Pi** et **logiciels**.
+
+![Version](https://img.shields.io/badge/version-2026--05--30-blue)
+
+## Démarrage
+
+1. Double-cliquer sur **`start.bat`**
+2. Le navigateur s'ouvre sur **http://localhost:8742**
+3. Ne pas fermer la fenêtre du serveur tant que l'appli est utilisée
 
 ## Fonctionnalités
 
-- **5 vues** : Tableau, Kanban, Calendrier, Timeline/Gantt, Dashboard
-- **Dashboard** avec statistiques, graphique donut, tâches en retard, suivi du temps
-- **Kanban** avec drag & drop
-- **Calendrier** mensuel avec deadlines et dates de début
-- **Timeline/Gantt** avec barres de durée
-- **Suivi du temps** par tâche (chronomètre intégré)
-- **Estimations** en heures
-- **Dépendances** entre tâches
-- **Composants/matériel** par projet (idéal Arduino/RPI)
-- **Filtres avancés** : priorité, statut, type, tri
-- **Sauvegarde locale** dans `projets.json`
+### Vues
+- **Tableau** — projets et tâches en lignes avec en-tête collant
+- **Kanban** — colonnes glissables par statut
+- **Calendrier** — deadlines sur une vue mensuelle
+- **Timeline/Gantt** — barres de durée des projets
+- **Dashboard** — statistiques globales + 5 graphiques avancés
 
-## Installation
+### Gestion des projets
+- Statut, priorité, type, dates, description
+- Tags/étiquettes colorées
+- Liste de composants (nom, quantité, fournisseur, prix, URL)
+- Schéma de câblage (image avec lightbox)
+- Budget estimé/réel avec suivi
+- Liens entre projets (dépendance/référence + tri topologique)
+- Dupliquer, archiver, exporter PDF/Excel
 
-1. Cloner le repo
-2. Copier les fichiers dans `D:\claude\gestion_projets\`
-3. Double-cliquer sur `start.bat`
-4. Le navigateur s'ouvre sur `http://localhost:8742`
+### Gestion des tâches
+- Sous-tâches sur 2 niveaux avec cascade de statuts
+- Chronomètre avec sauvegarde automatique
+- Commentaires horodatés
+- Pièces jointes images
+- Rappels avec notifications Windows
+- Tags
+
+### Outils
+- Recherche globale en temps réel (popup)
+- Mode sombre/clair
+- Raccourcis clavier (N/T/D/B/K/?)
+- Historique des versions avec restauration
+- Export PDF et Excel
+
+## Structure
+
+| Fichier | Rôle |
+|---------|------|
+| `index.html` | Structure HTML |
+| `styles.css` | Styles (clair + sombre) |
+| `app.js` | Logique applicative (118 fonctions) |
+| `server.py` | Serveur HTTP + API REST + export Excel |
+| `start.bat` | Lanceur Windows |
+| `aide.html` | Documentation utilisateur |
+| `DOCUMENTATION.md` | Documentation technique complète |
 
 ## Prérequis
 
 - Python 3.x
+- `openpyxl` (pour l'export Excel) : `pip install openpyxl`
 
-## Structure
+## Documentation
 
-```
-gestion_projets/
-├── index.html      # Interface web
-├── server.py       # Serveur Python local
-├── start.bat       # Lanceur Windows
-└── projets.json    # Données (créé automatiquement)
-```
+- **Utilisateur** : bouton 📖 Aide dans l'application
+- **Technique** : voir [DOCUMENTATION.md](DOCUMENTATION.md)
 
-> ⚠️ Le fichier `projets.json` est ignoré par git (données personnelles).
+---
+
+*Développé avec Claude — Philippe (lpmaker-be)*

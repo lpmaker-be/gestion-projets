@@ -1,25 +1,49 @@
 /**
  * =============================================================================
- * GESTIONNAIRE DE PROJETS — app.js
- * Inspiré de Monday.com
+ * GESTIONNAIRE DE PROJETS - app.js
+ * Inspire de Monday.com, specialise pour projets Arduino/RPi/logiciels
  * Auteur : Philippe (lpmaker-be)
  *
- * Structure :
- *   1. Configuration & état global
- *   2. Utilitaires (génération ID, formatage, couleurs)
- *   3. API — communication avec le serveur Python
- *   4. Navigation & filtres
- *   5. Rendu global (renderAll)
- *   6. Vue Tableau (board)
- *   7. Vue Kanban
- *   8. Vue Calendrier
- *   9. Vue Gantt / Timeline
- *  10. Vue Dashboard
- *  11. Chronomètre (time tracker)
- *  12. Modales — projets, tâches, détail
- *  13. Actions CRUD — projets
- *  14. Actions CRUD — tâches
- *  15. Initialisation
+ * ARCHITECTURE :
+ *   Frontend vanilla JS (aucun framework) <-> Serveur Python (server.py)
+ *   Donnees persistees dans projets.json via API REST
+ *   Voir DOCUMENTATION.md pour le detail complet
+ *
+ * STRUCTURE DU FICHIER :
+ *   1.  Utilitaires        : genId, escHtml, fmtTime, dlInfo, labels/couleurs
+ *   2.  Chargement donnees : loadData, migrateTask (migration recursive)
+ *   3.  API REST           : apiPost, apiDel
+ *   4.  Navigation/Filtres : setView, getFilteredProjects (+ tri topologique),
+ *                            filterTasks, filtres sidebar/priorite
+ *   5.  Rendu principal    : renderAll, renderBoard, updateSummary
+ *   6.  Sous-taches        : addSubtask, toggleSubtask (cascade + blocage),
+ *                            findTask, findSubtask, totalEstimate/TimeSpent
+ *   7.  Export PDF         : exportPDF (window.print)
+ *   8.  Commentaires       : addComment, editComment, deleteComment
+ *   9.  Tags               : renderTags, addTag, gestion projet et tache
+ *   10. Mode sombre        : toggleDark (localStorage)
+ *   11. Composants         : openComponents, saveComponents (+ total auto)
+ *   12. Schema cablage     : pickSchemaFile (base64), lightbox
+ *   13. Dupliquer/Archiver : duplicateProject, archiveProject
+ *   14. Notifications      : checkReminders, fireReminder (API navigateur)
+ *   15. Pieces jointes     : addAttachment, buildAttachmentsSection (base64)
+ *   16. Liens projets      : addProjectLink (dependance/reference)
+ *   17. Recherche globale  : onGlobalSearch (popup temps reel)
+ *   18. Export Excel       : exportExcel (via serveur openpyxl)
+ *   19. Stats avancees     : buildAdvancedStats (5 graphiques)
+ *   20. Historique         : openHistory, restoreSnapshot (5 versions)
+ *   21. Vues               : Kanban (drag&drop), Calendrier, Gantt, Dashboard
+ *   22. Chronometre        : toggleTimer (sauvegarde auto 60s)
+ *   23. Modales            : openTaskModal, saveTask, openProjectModal, etc.
+ *   24. CRUD               : saveProject, deleteProject, deleteTask
+ *   25. Raccourcis clavier : N/T/D/B/K/? + Echap
+ *   26. Initialisation     : loadData() au demarrage
+ *
+ * RACCOURCIS CLAVIER :
+ *   N = nouveau projet | T = nouvelle tache | D/B/K = vues
+ *   ? = aide | Echap = fermer modale
+ *
+ * MODELE DE DONNEES : voir DOCUMENTATION.md
  * =============================================================================
  */
 
