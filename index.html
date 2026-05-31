@@ -129,6 +129,7 @@
             <button class="btn btn-secondary btn-sm" onclick="toggleHelp()" title="Raccourcis clavier (?)" style="padding:4px 10px;font-weight:700">?</button>
             <button class="btn btn-secondary btn-sm" onclick="window.open('aide.html','_blank')" title="Documentation" style="padding:4px 10px">&#128214; Aide</button>
             <span id="online-indicator" title="Serveur connecte" style="width:10px;height:10px;border-radius:50%;background:#00c875;display:inline-block;flex-shrink:0;cursor:default"></span>
+            <button class="btn btn-secondary btn-sm" onclick="openThemePicker()" title="Theme de couleur" style="padding:3px 8px;font-size:13px">&#127912;</button>
             <button class="dark-toggle" id="dark-toggle-btn" onclick="toggleDark()" title="Mode sombre/clair"></button>
             <button class="btn btn-secondary btn-sm" onclick="enableNotifications()" title="Activer les rappels" style="padding:3px 8px;font-size:13px">&#128276;</button>
             <button class="btn btn-secondary btn-sm" onclick="openHistory()" title="Historique des versions" style="padding:4px 10px">&#128336;</button>
@@ -547,6 +548,31 @@
         <div class="modal-body" id="hist-body" style="max-height:400px;overflow-y:auto"></div>
         <div class="modal-footer">
             <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-history')">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL THEME -->
+<div class="modal-overlay" id="modal-theme">
+    <div class="modal" style="max-width:380px">
+        <div class="modal-hdr">
+            <h2>&#127912; Theme de couleur</h2>
+            <button class="modal-x" onclick="closeModal('modal-theme')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Choisir la couleur principale de l'interface :</p>
+            <div class="theme-picker">
+                <div class="theme-swatch" style="background:#0073ea" data-theme="blue"    title="Bleu (defaut)" onclick="applyTheme('blue')"></div>
+                <div class="theme-swatch" style="background:#7c3aed" data-theme="purple"  title="Violet"        onclick="applyTheme('purple')"></div>
+                <div class="theme-swatch" style="background:#059669" data-theme="green"   title="Vert"          onclick="applyTheme('green')"></div>
+                <div class="theme-swatch" style="background:#dc2626" data-theme="red"     title="Rouge"         onclick="applyTheme('red')"></div>
+                <div class="theme-swatch" style="background:#d97706" data-theme="orange"  title="Orange"        onclick="applyTheme('orange')"></div>
+                <div class="theme-swatch" style="background:#0891b2" data-theme="cyan"    title="Cyan"          onclick="applyTheme('cyan')"></div>
+                <div class="theme-swatch" style="background:#4b5563" data-theme="gray"    title="Gris"          onclick="applyTheme('gray')"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary btn-sm" onclick="closeModal('modal-theme')">OK</button>
         </div>
     </div>
 </div>

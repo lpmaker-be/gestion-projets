@@ -533,3 +533,54 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
         }
     }
 }
+
+/* ── Themes de couleurs ── */
+
+/* Bleu (defaut) */
+:root, [data-theme="blue"] {
+    --accent:   #0073ea;
+    --accent-h: #0060c0;
+    --sidebar:  #1f2d3d;
+}
+
+[data-theme="purple"] {
+    --accent:   #7c3aed;
+    --accent-h: #6d28d9;
+    --sidebar:  #2d1b4e;
+}
+
+[data-theme="green"] {
+    --accent:   #059669;
+    --accent-h: #047857;
+    --sidebar:  #1a3a2a;
+}
+
+[data-theme="red"] {
+    --accent:   #dc2626;
+    --accent-h: #b91c1c;
+    --sidebar:  #3a1a1a;
+}
+
+[data-theme="orange"] {
+    --accent:   #d97706;
+    --accent-h: #b45309;
+    --sidebar:  #3a2a10;
+}
+
+[data-theme="cyan"] {
+    --accent:   #0891b2;
+    --accent-h: #0e7490;
+    --sidebar:  #0f2a35;
+}
+
+[data-theme="gray"] {
+    --accent:   #4b5563;
+    --accent-h: #374151;
+    --sidebar:  #1f2937;
+}
+
+/* Modale selection theme */
+.theme-picker { display: flex; flex-wrap: wrap; gap: 10px; padding: 4px 0; }
+.theme-swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .15s, border-color .15s; }
+.theme-swatch:hover { transform: scale(1.15); }
+.theme-swatch.active { border-color: var(--text); }

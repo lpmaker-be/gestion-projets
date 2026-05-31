@@ -2428,6 +2428,31 @@ setInterval(async function() {
     }
 }, 10000);
 
+
+/* === THEMES DE COULEURS === */
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('gp_theme', theme);
+    // Mettre a jour les swatches actives
+    document.querySelectorAll('.theme-swatch').forEach(function(s) {
+        s.classList.toggle('active', s.dataset.theme === theme);
+    });
+}
+
+function openThemePicker() {
+    var current = localStorage.getItem('gp_theme') || 'blue';
+    document.querySelectorAll('.theme-swatch').forEach(function(s) {
+        s.classList.toggle('active', s.dataset.theme === current);
+    });
+    document.getElementById('modal-theme').classList.add('open');
+}
+
+// Appliquer le theme sauvegarde au demarrage
+(function() {
+    var saved = localStorage.getItem('gp_theme') || 'blue';
+    document.documentElement.setAttribute('data-theme', saved);
+})();
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
