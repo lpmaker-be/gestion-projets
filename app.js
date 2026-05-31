@@ -247,6 +247,8 @@ async function loadData() {
     try {
         const r = await fetch(`${API}/api/data`);
         data = await r.json();
+        try { localStorage.setItem('gp_cache', JSON.stringify(data)); } catch(e) {}
+        setOnlineStatus(true);
 
         // Migration : s'assurer que tous les projets ont les champs requis
         data.projects.forEach(p => {
@@ -293,12 +295,19 @@ async function loadData() {
  * @returns {Promise<object>}
  */
 async function apiPost(url, body) {
-    const r = await fetch(`${API}${url}`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body)
-    });
-    return r.json();
+    try {
+        const r = await fetch(`${API}${url}`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(body)
+        });
+        setOnlineStatus(true);
+        try { localStorage.setItem('gp_cache', JSON.stringify(data)); } catch(e) {}
+        return r.json();
+    } catch(e) {
+        setOnlineStatus(false);
+        try { localStorage.setItem('gp_cache', JSON.stringify(data)); } catch(e2) {}
+    }
 }
 
 /**
@@ -307,8 +316,15 @@ async function apiPost(url, body) {
  * @returns {Promise<object>}
  */
 async function apiDel(url) {
-    const r = await fetch(`${API}${url}`, { method: 'DELETE' });
-    return r.json();
+    try {
+        const r = await fetch(`${API}${url}`, { method: 'DELETE' });
+        setOnlineStatus(true);
+        try { localStorage.setItem('gp_cache', JSON.stringify(data)); } catch(e) {}
+        return r.json();
+    } catch(e) {
+        setOnlineStatus(false);
+        try { localStorage.setItem('gp_cache', JSON.stringify(data)); } catch(e2) {}
+    }
 }
 
 
@@ -2339,6 +2355,79 @@ function printView() {
     setView('board', null);
     setTimeout(function() { window.print(); }, 300);
 }
+
+/* === MODE HORS-LIGNE === */
+
+var _isOnline = true;
+
+/**
+ * Met a jour l'indicateur de connexion dans la topbar.
+ */
+function setOnlineStatus(online) {
+    if (_isOnline === online) return;
+    _isOnline = online;
+    var ind = document.getElementById('online-indicator');
+    if (!ind) return;
+    if (online) {
+        ind.title   = 'Serveur connecte';
+        ind.style.background = '#00c875';
+        // Synchroniser le cache avec le serveur
+        syncOfflineData();
+    } else {
+        ind.title   = 'Mode hors-ligne - modifications sauvegardees localement';
+        ind.style.background = '#e2445c';
+    }
+}
+
+/**
+ * Synchronise les donnees du cache vers le serveur quand il revient.
+ */
+async function syncOfflineData() {
+    try {
+        const cached = localStorage.getItem('gp_cache');
+        if (!cached) return;
+        const cachedData = JSON.parse(cached);
+
+        // Synchroniser tous les projets
+        for (const p of cachedData.projects || []) {
+            await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(p)
+            });
+        }
+        // Synchroniser toutes les taches
+        for (const [projId, tasks] of Object.entries(cachedData.tasks || {})) {
+            for (const t of tasks) {
+                await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId: projId, task: t })
+                });
+            }
+        }
+        toast('Synchronisation avec le serveur effectuee !');
+        localStorage.removeItem('gp_cache');
+    } catch(e) {
+        console.warn('Sync echouee:', e);
+    }
+}
+
+// Verifier la connexion toutes les 10 secondes
+setInterval(async function() {
+    try {
+        await fetch('/api/data', { method: 'HEAD' });
+        if (!_isOnline) {
+            _isOnline = false; // Forcer le changement
+            setOnlineStatus(true);
+            await loadData();
+            renderAll();
+        }
+    } catch(e) {
+        if (_isOnline) setOnlineStatus(false);
+    }
+}, 10000);
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
