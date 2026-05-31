@@ -2325,6 +2325,20 @@ async function restoreSnapshot(idx) {
         toast('Erreur : ' + result.error, true);
     }
 }
+
+/**
+ * Prepare la vue pour l'impression et lance window.print().
+ * Expand tous les projets et affiche toutes les taches.
+ */
+function printView() {
+    // Expand tous les projets
+    document.querySelectorAll('.project-block.collapsed').forEach(function(el) {
+        el.classList.remove('collapsed');
+    });
+    // Assurer la vue tableau
+    setView('board', null);
+    setTimeout(function() { window.print(); }, 300);
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
