@@ -226,20 +226,33 @@ async function loadData() {
 
         // Migration : s'assurer que tous les projets ont les champs requis
         data.projects.forEach(p => {
-            if (!p.start)      p.start      = '';
-            if (!p.components) p.components = '';
+            if (!p.start)       p.start       = '';
+            if (!p.components)  p.components  = '';
+            if (!p.tags)        p.tags        = [];
+            if (!p.links)       p.links       = [];
+            if (!p.components2) p.components2 = [];
+            if (!p.schema)      p.schema      = '';
+            if (!p.budgetEst)   p.budgetEst   = 0;
+            if (!p.budgetReal)  p.budgetReal  = 0;
+            if (p.archived === undefined) p.archived = false;
         });
 
         // Migration : s'assurer que toutes les tâches ont les champs requis
-        Object.values(data.tasks).flat().forEach(t => {
-            if (!t.estimate)  t.estimate  = 0;
-            if (!t.timeSpent) t.timeSpent = 0;
-            if (!t.depends)   t.depends   = '';
-            if (!t.start)     t.start     = '';
-            if (!t.subtasks)  t.subtasks  = [];
-            if (!t.comments)  t.comments  = [];
-            if (!t.status)    t.status    = t.done ? 'done' : 'todo';
-        });
+        // Migration recursive (taches + sous-taches)
+        function migrateTask(t) {
+            if (!t.estimate)    t.estimate    = 0;
+            if (!t.timeSpent)   t.timeSpent   = 0;
+            if (!t.depends)     t.depends     = '';
+            if (!t.start)       t.start       = '';
+            if (!t.subtasks)    t.subtasks    = [];
+            if (!t.comments)    t.comments    = [];
+            if (!t.tags)        t.tags        = [];
+            if (!t.reminder)    t.reminder    = '';
+            if (!t.attachments) t.attachments = [];
+            if (!t.status)      t.status      = t.done ? 'done' : 'todo';
+            (t.subtasks || []).forEach(migrateTask);
+        }
+        Object.values(data.tasks).flat().forEach(migrateTask);
 
         renderAll();
 
