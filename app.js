@@ -642,7 +642,7 @@ function renderBoard() {
 
         // ── En-tête du projet ──────────────────────────────────────────
         html += `
-        <div class="project-block">
+        <div class="project-block" data-proj-id="${p.id}">
             <div class="proj-hdr" onmouseenter="currentProjId='${p.id}'">
                 <button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
                 <span class="proj-color" style="background:${color}"></span>
@@ -671,6 +671,8 @@ function renderBoard() {
                     <button class="ic-btn" onclick="duplicateProject('${p.id}')" title="Dupliquer" style="font-size:11px">&#128260;</button>
                     <button class="ic-btn" onclick="archiveProject('${p.id}')" title="${p.archived ? 'Restaurer' : 'Archiver'}" style="font-size:11px">${p.archived ? '&#128268;' : '&#128451;'}</button>
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
+                    <button class="ic-btn" style="color:#555;font-size:11px"
+                            onclick="printView('${p.id}')" title="Imprimer ce projet">&#128424;</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
                     <button class="btn btn-secondary btn-sm" onclick="exportExcel('${p.id}')" title="Exporter Excel" style="padding:3px 8px;font-size:11px;color:#1d6f42;border-color:#1d6f42">XLS</button>
@@ -2347,14 +2349,36 @@ registerServiceWorker();
  * Prepare la vue pour l'impression et lance window.print().
  * Expand tous les projets et affiche toutes les taches.
  */
-function printView() {
-    // Expand tous les projets
-    document.querySelectorAll('.project-block.collapsed').forEach(function(el) {
-        el.classList.remove('collapsed');
-    });
-    // Assurer la vue tableau
-    setView('board', null);
-    setTimeout(function() { window.print(); }, 300);
+function printView(projId) {
+    if (projId) {
+        // Imprimer un seul projet - masquer les autres
+        setView('board', null);
+        setTimeout(function() {
+            // Ajouter une classe pour masquer les autres projets
+            document.querySelectorAll('.project-block').forEach(function(el) {
+                if (el.dataset.projId === projId) {
+                    el.classList.remove('collapsed');
+                    el.classList.add('print-only');
+                } else {
+                    el.classList.add('print-hide');
+                }
+            });
+            window.print();
+            // Restaurer apres impression
+            setTimeout(function() {
+                document.querySelectorAll('.project-block').forEach(function(el) {
+                    el.classList.remove('print-only', 'print-hide');
+                });
+            }, 1000);
+        }, 300);
+    } else {
+        // Imprimer tous les projets
+        document.querySelectorAll('.project-block.collapsed').forEach(function(el) {
+            el.classList.remove('collapsed');
+        });
+        setView('board', null);
+        setTimeout(function() { window.print(); }, 300);
+    }
 }
 
 /* === MODE HORS-LIGNE === */

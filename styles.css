@@ -584,3 +584,8 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .theme-swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .15s, border-color .15s; }
 .theme-swatch:hover { transform: scale(1.15); }
 .theme-swatch.active { border-color: var(--text); }
+
+@media print {
+    .print-hide { display: none !important; }
+    .print-only  { display: block !important; }
+}
