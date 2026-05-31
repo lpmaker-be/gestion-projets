@@ -30,6 +30,7 @@ STATIC_FILES = {
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js":     ("app.js",     "application/javascript; charset=utf-8"),
     "/aide.html":  ("aide.html",   "text/html; charset=utf-8"),
+    "/sw.js":       ("sw.js",       "application/javascript; charset=utf-8"),
 }
 
 

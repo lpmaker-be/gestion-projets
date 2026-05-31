@@ -2336,6 +2336,7 @@ async function restoreSnapshot(idx) {
     if (result.ok) {
         closeModal('modal-history');
         await loadData();
+registerServiceWorker();
         toast('Version du ' + result.date + ' restauree !');
     } else {
         toast('Erreur : ' + result.error, true);
@@ -2421,6 +2422,7 @@ setInterval(async function() {
             _isOnline = false; // Forcer le changement
             setOnlineStatus(true);
             await loadData();
+registerServiceWorker();
             renderAll();
         }
     } catch(e) {
@@ -2453,6 +2455,58 @@ function openThemePicker() {
     var saved = localStorage.getItem('gp_theme') || 'blue';
     document.documentElement.setAttribute('data-theme', saved);
 })();
+
+/* === SERVICE WORKER - NOTIFICATIONS PUSH === */
+
+/**
+ * Enregistre le Service Worker pour les notifications hors page.
+ */
+async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+        console.warn('Service Worker non supporte');
+        return;
+    }
+    try {
+        var reg = await navigator.serviceWorker.register('/sw.js');
+        console.log('Service Worker enregistre:', reg.scope);
+
+        // Ecouter les messages du Service Worker
+        navigator.serviceWorker.addEventListener('message', function(e) {
+            if (e.data.type === 'REMINDER_FIRED') {
+                // Marquer le rappel comme declenche
+                var taskId = e.data.taskId;
+                Object.values(data.tasks).flat().forEach(function(t) {
+                    if (t.id === taskId) {
+                        t.reminderFired = true;
+                        // Trouver le projet et sauvegarder
+                        for (var pid in data.tasks) {
+                            var found = data.tasks[pid].find(function(x) { return x.id === taskId; });
+                            if (found) {
+                                apiPost('/api/tasks', { projectId: pid, task: found });
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+            if (e.data.type === 'OPEN_TASK') {
+                // Ouvrir la modale de la tache concernee
+                var taskId = e.data.taskId;
+                for (var pid in data.tasks) {
+                    var t = data.tasks[pid].find(function(x) { return x.id === taskId; });
+                    if (t) {
+                        setView('board', null);
+                        setTimeout(function() { openTaskDetail(pid, taskId); }, 300);
+                        break;
+                    }
+                }
+            }
+        });
+    } catch(e) {
+        console.warn('Erreur enregistrement SW:', e);
+    }
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -3648,3 +3702,4 @@ function toggleHelp() {
 
 /** Démarrage : chargement des données depuis le serveur */
 loadData();
+registerServiceWorker();
