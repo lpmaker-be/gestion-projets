@@ -1837,55 +1837,33 @@ function showConfirm(msg, sub, onOk) {
 async function archiveProject(id) {
     const p = data.projects.find(x => x.id === id);
     if (!p) return;
-    p.archived = !p.archived;
-    await apiPost('/api/projects', p);
-    addActivity((p.archived ? 'Projet archive : ' : 'Projet restaure : ') + p.name);
-    toast(p.archived ? 'Projet archive' : 'Projet restaure');
-    updateArchivedCount();
+    const isArchived = !p.archived;
+
+    if (isArchived) {
+        // Archiver : zip + marquer archived
+        toast('Archivage en cours...');
+        const resp   = await fetch('/api/archive?projId=' + id, { method: 'POST' });
+        const result = await resp.json();
+        if (!result.ok) { toast('Erreur : ' + result.error, true); return; }
+        await loadData();
+        const size = result.size < 1048576
+            ? Math.round(result.size/1024) + ' Ko'
+            : (result.size/1048576).toFixed(1) + ' Mo';
+        toast('Projet archive (' + size + ') dans archives/' + result.zip);
+        addActivity('Projet archive : ' + p.name);
+    } else {
+        // Desarchiver : supprimer zip + marquer archived=false
+        const resp   = await fetch('/api/unarchive?projId=' + id, { method: 'POST' });
+        const result = await resp.json();
+        if (!result.ok) { toast('Erreur : ' + result.error, true); return; }
+        await loadData();
+        toast('Projet restaure et archive zip supprime !');
+        addActivity('Projet restaure : ' + p.name);
+    }
     renderAll();
 }
 
-/**
- * Affiche/masque les projets archives.
- */
-function toggleShowArchived(el) {
-    showArchived = !showArchived;
-    el.classList.toggle('active', showArchived);
-    renderAll();
-}
 
-/**
- * Met a jour le compteur d'archives dans la sidebar.
- */
-function updateArchivedCount() {
-    const el = document.getElementById('sb-archived');
-    if (el) {
-        const cnt = data.projects.filter(p => p.archived).length;
-        el.textContent = '\u{1F4EB} Archives (' + cnt + ')';
-    }
-}
-
-// Stockage temporaire des schemas pour la lightbox
-var _schemaStore = {};
-
-function schemaLink(projId, schema) {
-    if (!schema) return '';
-    if (schema.startsWith('data:image')) {
-        // Stocker le schema et utiliser l'ID projet comme cle
-        _schemaStore[projId] = schema;
-        return '<span style="font-size:11px;color:var(--accent);margin-left:8px;cursor:zoom-in" title="Cliquer pour agrandir" onclick="event.stopPropagation();openLightbox(_schemaStore[\''+projId+'\'])">&#128200; Schema</span>';
-    }
-    if (schema.startsWith('http')) {
-        return '<a href="' + escHtml(schema) + '" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent);margin-left:8px;text-decoration:none">&#128200; Schema</a>';
-    }
-    // Fichier local - juste afficher le nom
-    var name = schema.replace(/.*[\/\\]/, '').substring(0, 25);
-    return '<span style="font-size:11px;color:var(--text3);margin-left:8px" title="' + escHtml(schema) + '">&#128200; ' + escHtml(name) + '</span>';
-}
-
-/* === RAPPELS / NOTIFICATIONS === */
-
-/** Demander la permission de notifications */
 async function requestNotifPermission() {
     if (!('Notification' in window)) {
         toast('Notifications non supportees par ce navigateur', true);

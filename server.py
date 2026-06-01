@@ -23,7 +23,8 @@ from urllib.parse import urlparse, parse_qs
 
 BASE_DIR    = Path(r"D:\Onedrive\Documents\Claude\gestion_projets")
 DATA_DIR    = BASE_DIR / "data"
-LEGACY_FILE = BASE_DIR / "projets.json"
+LEGACY_FILE  = BASE_DIR / "projets.json"
+ARCHIVE_DIR  = BASE_DIR / "archives"
 HIST_FILE   = BASE_DIR / "historique.json"
 PORT      = 8742
 
@@ -294,6 +295,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send_json(load_data())
         elif path.startswith("/api/export-excel"):
             self._export_excel()
+        elif path == "/api/archives":
+            self._list_archives()
         elif path == "/api/history":
             self._send_json(load_history())
         elif path.startswith("/api/files/list"):
@@ -313,6 +316,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
 
         # Routes upload fichiers (multipart - traitement separe)
+        if parsed.path == "/api/archive":
+            self._archive_project()
+            return
+        if parsed.path == "/api/unarchive":
+            self._unarchive_project()
+            return
         if parsed.path == "/api/files/upload":
             self._upload_file()
             return
