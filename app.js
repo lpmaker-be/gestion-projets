@@ -2471,19 +2471,8 @@ setInterval(async function() {
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Retirer TOUTES les variables inline sur :root
-    var root = document.documentElement;
-    var style = root.style;
-    style.removeProperty('--accent');
-    style.removeProperty('--accent-h');
-    style.removeProperty('--sidebar');
-    // Vider la balise custom si elle existe
-    var el = document.getElementById('custom-theme-style');
-    if (el) el.textContent = '';
-    // Appliquer le theme
-    root.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
-    localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.theme === theme);
     });
@@ -2493,28 +2482,16 @@ function applyTheme(theme) {
 
 function openThemePicker() {
     var current = localStorage.getItem('gp_theme') || 'blue';
-    var hue     = localStorage.getItem('gp_custom_hue') || '210';
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
-        s.classList.toggle('active', s.dataset.theme === current && current !== 'custom');
+        s.classList.toggle('active', s.dataset.theme === current);
     });
-    var slider  = document.getElementById('hue-slider');
-    var preview = document.getElementById('hue-preview');
-    var label   = document.getElementById('hue-value');
-    if (slider)  slider.value = hue;
-    if (preview) preview.style.background = 'hsl(' + hue + ', 85%, 45%)';
-    if (label)   label.textContent = 'Teinte : ' + hue + 'deg';
     document.getElementById('modal-theme').classList.add('open');
 }
 
 // Appliquer le theme sauvegarde au demarrage
 (function() {
     var saved = localStorage.getItem('gp_theme') || 'blue';
-    if (saved === 'custom') {
-        var hue = localStorage.getItem('gp_custom_hue') || '210';
-        applyCustomTheme(hue);
-    } else {
-        document.documentElement.setAttribute('data-theme', saved);
-    }
+    document.documentElement.setAttribute('data-theme', saved);
 })();
 
 /* === SERVICE WORKER - NOTIFICATIONS PUSH === */
@@ -2581,51 +2558,21 @@ async function registerServiceWorker() {
 /**
  * Convertit une teinte HSL en couleur hex pour l'accent.
  */
-function hueToAccent(hue) {
-    // Saturation 85%, Luminosite 45% pour une couleur vive
-    return 'hsl(' + hue + ', 85%, 45%)';
-}
 
-function hueToSidebar(hue) {
-    return 'hsl(' + hue + ', 40%, 15%)';
-}
+
+
 
 /**
  * Applique une teinte personnalisee en preview.
  */
-function applyCustomHue(hue) {
-    // Uniquement mettre a jour le preview - pas les CSS globales
-    var accent  = hueToAccent(hue);
-    var preview = document.getElementById('hue-preview');
-    var label   = document.getElementById('hue-value');
-    if (preview) preview.style.background = accent;
-    if (label)   label.textContent = 'Teinte : ' + hue + 'deg';
-}
+
 
 /**
  * Confirme et applique la couleur personnalisee.
  */
-function confirmCustomHue() {
-    var hue = document.getElementById('hue-slider').value;
-    applyCustomTheme(hue);
-    localStorage.setItem('gp_theme',     'custom');
-    localStorage.setItem('gp_custom_hue', hue);
-    toast('Theme personnalise applique !');
-    closeModal('modal-theme');
-}
 
-function applyCustomTheme(hue) {
-    var root = document.documentElement;
-    // Retirer data-theme pour eviter conflit
-    root.removeAttribute('data-theme');
-    // Appliquer directement sur :root via style inline
-    root.style.setProperty('--accent',   'hsl(' + hue + ', 85%, 45%)');
-    root.style.setProperty('--accent-h', 'hsl(' + (parseInt(hue)+10) + ', 85%, 45%)');
-    root.style.setProperty('--sidebar',  'hsl(' + hue + ', 40%, 15%)');
-    // Vider la balise custom si elle existe
-    var el = document.getElementById('custom-theme-style');
-    if (el) el.textContent = '';
-}
+
+
 
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);

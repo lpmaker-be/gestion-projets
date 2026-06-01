@@ -572,19 +572,8 @@
                 <div class="theme-swatch" style="background:#4b5563" data-theme="gray"    title="Gris"          onclick="applyTheme('gray')"></div>
             </div>
         </div>
-        <hr class="theme-separator">
-        <div class="hue-slider-wrap">
-            <div class="hue-slider-label">
-                <span>Couleur personnalisee</span>
-                <span id="hue-value" style="font-weight:600;color:var(--accent)">Teinte : 210deg</span>
-            </div>
-            <input type="range" class="hue-slider" id="hue-slider" min="0" max="359" value="210"
-                   oninput="applyCustomHue(this.value)">
-            <div class="hue-preview" id="hue-preview"></div>
-        </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-theme')">Fermer</button>
-            <button class="btn btn-primary btn-sm" onclick="confirmCustomHue()">Appliquer</button>
+            <button class="btn btn-primary btn-sm" onclick="closeModal('modal-theme')">OK</button>
         </div>
     </div>
 </div>
