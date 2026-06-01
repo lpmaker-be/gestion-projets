@@ -38,11 +38,6 @@ STATIC_FILES = {
 
 def ensure_data_dir():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if False:  # Legacy - plus utilise
-        DATA_FILE.write_text(
-            json.dumps({"projects": [], "tasks": {}}, ensure_ascii=False, indent=2),
-            encoding="utf-8"
-        )
 
 
 def load_history():
