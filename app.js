@@ -525,6 +525,14 @@ function filterTasks(tasks) {
         if (sortBy === 'name') return a.name.localeCompare(b.name);
         return 0; // creation : garder l'ordre original
     });
+    // Mettre les taches terminees en bas (si showDone est actif)
+    if (showDone) {
+        t.sort(function(a, b) {
+            if (a.done && !b.done) return 1;
+            if (!a.done && b.done) return -1;
+            return 0;
+        });
+    }
     return t;
 }
 
