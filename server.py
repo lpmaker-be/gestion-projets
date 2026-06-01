@@ -114,8 +114,16 @@ def save_data(data):
     projects, tasks = data.get('projects',[]), data.get('tasks',{})
     existing_ids = {p['id'] for p in projects}
     for entry in DATA_DIR.iterdir():
-        if entry.is_dir() and entry.name not in existing_ids:
-            import shutil; shutil.rmtree(entry)
+        if not entry.is_dir(): continue
+        # Ne supprimer que si c'est un vrai dossier projet (contient projet.json)
+        pjson = entry / 'projet.json'
+        if not pjson.exists(): continue
+        try:
+            import json as _j
+            with open(pjson,'r',encoding='utf-8') as _f: _p = _j.load(_f)
+            if _p.get('id') not in existing_ids:
+                import shutil; shutil.rmtree(entry)
+        except: pass
     for p in projects:
         # Chercher si le dossier existe deja (par ID)
         existing = find_proj_dir(p['id'])
