@@ -1912,6 +1912,8 @@ async function archiveProject(id) {
         showArchived = false;
         var arcBtn2 = document.getElementById('sb-archived');
         if (arcBtn2) arcBtn2.classList.remove('active');
+        // Scroll vers le haut pour voir le projet restaure
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     renderAll();
 }
