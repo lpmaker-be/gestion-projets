@@ -14,42 +14,28 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Figtree, sans-serif; }
         body { background: var(--bg); color: var(--text); }
-
-        /* Header */
         .header { background: var(--sidebar); color: #fff; padding: 24px 40px; display: flex; align-items: center; gap: 16px; }
         .header .logo { width: 42px; height: 42px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
         .header h1 { font-size: 22px; font-weight: 700; }
         .header p { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 3px; }
         .header-version { margin-left: auto; font-size: 11px; color: rgba(255,255,255,.3); }
-
-        /* Navigation */
         .nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; gap: 4px; overflow-x: auto; }
         .nav a { padding: 12px 16px; font-size: 13px; color: var(--text2); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 500; }
         .nav a:hover { color: var(--text); }
         .nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-        /* Layout */
         .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-
-        /* Sections */
         .section { margin-bottom: 48px; }
         .section-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
         .section-desc { font-size: 14px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
-
-        /* Cards */
         .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
         .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
         .card-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .card-body { font-size: 13px; color: var(--text2); line-height: 1.7; }
-
-        /* Feature list */
         .feature-list { list-style: none; }
         .feature-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
         .feature-list li:last-child { border-bottom: none; }
         .feature-list li .icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
         .feature-list li strong { color: var(--text); }
-
-        /* Shortcuts table */
         .shortcuts { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
         .shortcuts table { width: 100%; border-collapse: collapse; }
         .shortcuts th { background: var(--bg); padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; border-bottom: 2px solid var(--border); }
@@ -57,37 +43,20 @@
         .shortcuts tr:last-child td { border-bottom: none; }
         .shortcuts tr:hover td { background: #f8f9ff; }
         kbd { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 12px; font-family: monospace; }
-
-        /* Badges */
         .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .badge-blue   { background: #e8f0fe; color: var(--accent); }
-        .badge-green  { background: #e6f9f0; color: var(--green); }
-        .badge-orange { background: #fff4e0; color: var(--orange); }
-        .badge-red    { background: #fde8ec; color: var(--red); }
-        .badge-grey   { background: #f0f0f0; color: #555; }
-
-        /* Steps */
+        .badge-blue { background: #e8f0fe; color: var(--accent); }
         .steps { counter-reset: step; }
         .step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
         .step-num { counter-increment: step; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
         .step-content { flex: 1; }
         .step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
         .step-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
-
-        /* Tips */
         .tip { background: #e8f4fd; border-left: 4px solid var(--accent); border-radius: 0 6px 6px 0; padding: 12px 16px; margin: 16px 0; font-size: 13px; color: var(--text2); line-height: 1.6; }
         .tip strong { color: var(--accent); }
         .warn { background: #fff4e0; border-left-color: var(--orange); }
         .warn strong { color: var(--orange); }
-
-        /* Footer */
         .footer { background: var(--white); border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-size: 12px; color: var(--text3); margin-top: 40px; }
-
-        /* Print */
-        @media print {
-            .nav { display: none; }
-            .section { page-break-inside: avoid; }
-        }
+        @media print { .nav { display: none; } .section { page-break-inside: avoid; } }
     </style>
 </head>
 <body>
@@ -98,7 +67,7 @@
         <h1>Gestionnaire de Projets</h1>
         <p>Documentation complete de toutes les fonctionnalites</p>
     </div>
-    <div class="header-version">Version 2026-05-30</div>
+    <div class="header-version">Version 2026-06-01</div>
 </div>
 
 <div class="nav">
@@ -106,6 +75,7 @@
     <a href="#vues">Vues</a>
     <a href="#projets">Projets</a>
     <a href="#taches">Taches</a>
+    <a href="#fichiers">Fichiers</a>
     <a href="#composants">Composants</a>
     <a href="#raccourcis">Raccourcis</a>
     <a href="#astuces">Astuces</a>
@@ -116,14 +86,13 @@
     <!-- DEMARRAGE -->
     <div class="section" id="demarrage">
         <div class="section-title">&#128640; Demarrage rapide</div>
-        <div class="section-desc">Gestionnaire de projets local inspire de Monday.com, specialise pour les projets Arduino, Raspberry Pi et logiciels.</div>
-
+        <div class="section-desc">Gestionnaire de projets local inspire de Monday.com, specialise pour les projets Arduino, Raspberry Pi, impression 3D et logiciels.</div>
         <div class="steps">
             <div class="step">
                 <div class="step-num">1</div>
                 <div class="step-content">
                     <div class="step-title">Lancer le serveur</div>
-                    <div class="step-desc">Double-cliquer sur <strong>start.bat</strong> dans le dossier du projet. Une fenetre noire s'ouvre — ne pas la fermer tant que tu utilises l'appli.</div>
+                    <div class="step-desc">Double-cliquer sur <strong>start.bat</strong>. Une fenetre noire s'ouvre — ne pas la fermer tant que tu utilises l'appli.</div>
                 </div>
             </div>
             <div class="step">
@@ -137,7 +106,7 @@
                 <div class="step-num">3</div>
                 <div class="step-content">
                     <div class="step-title">Creer un projet</div>
-                    <div class="step-desc">Cliquer sur <strong>+ Nouveau projet</strong> ou appuyer sur la touche <kbd>N</kbd></div>
+                    <div class="step-desc">Cliquer sur <strong>+ Nouveau projet</strong> ou appuyer sur <kbd>N</kbd>. Un dossier est cree automatiquement dans <strong>data/Nom du projet/</strong></div>
                 </div>
             </div>
             <div class="step">
@@ -148,35 +117,33 @@
                 </div>
             </div>
         </div>
-
-        <div class="tip"><strong>Conseil :</strong> Les donnees sont sauvegardees automatiquement dans <strong>projets.json</strong>. Ce fichier est synchronise via OneDrive si tu as configure ce chemin.</div>
+        <div class="tip"><strong>Structure des donnees :</strong> Chaque projet a son propre dossier dans <strong>data/Nom du projet/</strong> avec projet.json, taches.json et les sous-dossiers images/, stl/, cura/, docs/.</div>
     </div>
 
     <!-- VUES -->
     <div class="section" id="vues">
         <div class="section-title">&#128065; Les 5 vues</div>
         <div class="section-desc">Chaque vue offre une perspective differente sur tes projets et taches.</div>
-
         <div class="cards">
             <div class="card">
                 <div class="card-title">&#128203; Tableau <span class="badge badge-blue">B</span></div>
-                <div class="card-body">Vue principale. Affiche tous les projets avec leurs taches en lignes. Cliquer sur une tache pour ouvrir le detail. En-tete de projet collant pour faciliter la navigation.</div>
+                <div class="card-body">Vue principale. Affiche tous les projets avec leurs taches. Colonnes : Statut, Priorite, Deadline, Temps (chrono), Estime, Passe. En-tete de projet collant.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128193; Kanban <span class="badge badge-blue">K</span></div>
-                <div class="card-body">4 colonnes : A faire, En cours, Termine, Bloque. Glisser-deposer les projets entre les colonnes pour changer leur statut rapidement.</div>
+                <div class="card-body">4 colonnes : A faire, En cours, Termine, Bloque. Glisser-deposer les projets entre les colonnes.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128197; Calendrier</div>
-                <div class="card-body">Vue mensuelle avec les deadlines des projets et taches. Navigation mois par mois. Cliquer sur un evenement pour ouvrir le projet/tache.</div>
+                <div class="card-body">Vue mensuelle avec les deadlines. Navigation mois par mois. Cliquer sur un evenement pour ouvrir.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128200; Timeline / Gantt</div>
-                <div class="card-body">Barres horizontales representant la duree de chaque projet et tache. Ligne rouge = aujourd'hui. Necessite une date de debut et une deadline.</div>
+                <div class="card-body">Barres horizontales representant la duree. Ligne rouge = aujourd'hui. Necessite une date de debut et une deadline.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128202; Dashboard <span class="badge badge-blue">D</span></div>
-                <div class="card-body">Tableau de bord avec statistiques globales : statuts, priorites, avancement par projet, taches en retard, budget, suivi du temps et journal d'activite.</div>
+                <div class="card-body">Statistiques globales + 5 graphiques avances en bas : temps passe, statuts, types, retards, avancement SVG.</div>
             </div>
         </div>
     </div>
@@ -184,14 +151,13 @@
     <!-- PROJETS -->
     <div class="section" id="projets">
         <div class="section-title">&#128193; Gestion des projets</div>
-        <div class="section-desc">Chaque projet peut avoir des taches, des composants, un budget, un schema de cablage et des tags.</div>
-
+        <div class="section-desc">Chaque projet est stocke dans son propre dossier et peut avoir des taches, fichiers, composants, budget, schema et tags.</div>
         <div class="cards">
             <div class="card">
                 <div class="card-title">&#128221; Informations de base</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128065;</span><div><strong>Nom</strong> — Editable directement dans le tableau (clic sur le nom)</div></li>
+                        <li><span class="icon">&#128065;</span><div><strong>Nom</strong> — Aussi utilise comme nom de dossier dans data/</div></li>
                         <li><span class="icon">&#128230;</span><div><strong>Type</strong> — Arduino/RPI, Logiciel, Mixte, Divers</div></li>
                         <li><span class="icon">&#128308;</span><div><strong>Statut</strong> — A faire, En cours, Termine, Bloque (clic sur la pill)</div></li>
                         <li><span class="icon">&#127919;</span><div><strong>Priorite</strong> — Haute, Moyenne, Basse</div></li>
@@ -201,27 +167,37 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">&#9881; Actions disponibles</div>
+                <div class="card-title">&#9881; Boutons en-tete projet</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128260;</span><div><strong>Dupliquer</strong> — Copie le projet et toutes ses taches</div></li>
-                        <li><span class="icon">&#128451;</span><div><strong>Archiver</strong> — Masque le projet sans le supprimer. Visible via "Archives" dans la sidebar</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Exporter PDF</strong> — Export complet avec taches, sous-taches et notes</div></li>
-                        <li><span class="icon">&#128293;</span><div><strong>Supprimer</strong> — Suppression definitive avec confirmation</div></li>
+                        <li><span class="icon">&#128193;</span><div><strong>&#128193; Fichiers</strong> — Gestionnaire images/STL/Cura/docs</div></li>
+                        <li><span class="icon">&#128424;</span><div><strong>&#128424; Imprimer</strong> — Impression de ce projet uniquement</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>PDF</strong> — Export PDF du projet</div></li>
+                        <li><span class="icon">&#128202;</span><div><strong>XLS</strong> — Export Excel du projet</div></li>
+                        <li><span class="icon">&#128260;</span><div><strong>Dupliquer</strong> — Copie le projet avec toutes ses taches</div></li>
+                        <li><span class="icon">&#128451;</span><div><strong>Archiver</strong> — Masque sans supprimer</div></li>
+                        <li><span class="icon">&#9999;</span><div><strong>Modifier</strong> — Ouvre la modale edition</div></li>
+                        <li><span class="icon">&#128293;</span><div><strong>Supprimer</strong> — Suppression definitive</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
                 <div class="card-title">&#128200; Schema de cablage</div>
-                <div class="card-body">Dans la modale projet, champ "Schema de cablage". Utiliser le bouton <strong>Parcourir</strong> pour selectionner une image — elle est stockee en base64 et persiste. Cliquer sur "Schema" dans l'en-tete pour agrandir en lightbox.</div>
+                <div class="card-body">Dans la modale projet, champ "Schema de cablage". Bouton <strong>Parcourir</strong> pour selectionner une image. Cliquer sur "Schema" dans l'en-tete pour agrandir en lightbox.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128176; Budget</div>
-                <div class="card-body">Deux champs dans la modale : <strong>Budget estime</strong> et <strong>Budget reel</strong>. Le dashboard affiche un widget avec barre de progression et alerte si le budget est depasse. Le total des composants est additionne automatiquement.</div>
+                <div class="card-body">Champs <strong>Budget estime</strong> et <strong>Budget reel</strong> dans la modale. Widget dans le Dashboard avec barre de progression. Le total des composants est additionne automatiquement.</div>
             </div>
             <div class="card">
-                <div class="card-title">&#127991; Tags / Etiquettes</div>
-                <div class="card-body">Ajouter des tags dans la modale projet. Tags predefinies : impression3D, electronique, mecanique, firmware, urgent, test, debug, etc. Ou creer des tags personnalises. S'affichent dans l'en-tete du projet.</div>
+                <div class="card-title">&#127991; Tags et liens</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#127991;</span><div><strong>Tags</strong> — impression3D, electronique, mecanique, firmware, urgent...</div></li>
+                        <li><span class="icon">&#128279;</span><div><strong>Depend de</strong> (orange) — tri topologique automatique</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>Reference</strong> (bleu) — lien informel entre projets</div></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -229,33 +205,33 @@
     <!-- TACHES -->
     <div class="section" id="taches">
         <div class="section-title">&#9989; Gestion des taches</div>
-        <div class="section-desc">Les taches sont les etapes d'un projet. Elles peuvent avoir des sous-taches sur 2 niveaux.</div>
-
+        <div class="section-desc">Les taches ont deux niveaux de sous-taches. La colonne PASSE affiche le temps reel passe (chronometre).</div>
         <div class="cards">
             <div class="card">
                 <div class="card-title">&#128221; Champs d'une tache</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128221;</span><div><strong>Titre</strong> — Nom de la tache</div></li>
-                        <li><span class="icon">&#128308;</span><div><strong>Statut</strong> — A faire, En cours, Termine, Bloque (clic sur la pill dans le tableau)</div></li>
+                        <li><span class="icon">&#128308;</span><div><strong>Statut</strong> — clic sur la pill dans le tableau</div></li>
                         <li><span class="icon">&#127919;</span><div><strong>Priorite</strong> — Haute, Moyenne, Basse</div></li>
-                        <li><span class="icon">&#128197;</span><div><strong>Debut et Deadline</strong> — Dates de la tache</div></li>
-                        <li><span class="icon">&#8987;</span><div><strong>Estimation</strong> — Duree prevue en heures</div></li>
-                        <li><span class="icon">&#128276;</span><div><strong>Rappel</strong> — Notification Windows a une date/heure precise</div></li>
-                        <li><span class="icon">&#128279;</span><div><strong>Tache parente</strong> — Pour creer une sous-tache d'une tache existante</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Notes</strong> — Details techniques, references, liens</div></li>
-                        <li><span class="icon">&#127991;</span><div><strong>Tags</strong> — Etiquettes dans la modale detail</div></li>
+                        <li><span class="icon">&#128197;</span><div><strong>Debut / Deadline</strong></div></li>
+                        <li><span class="icon">&#8987;</span><div><strong>Estimation</strong> — format Xh YYmin</div></li>
+                        <li><span class="icon">&#128336;</span><div><strong>Chronometre</strong> — ▶ pour demarrer, colonne TEMPS</div></li>
+                        <li><span class="icon">&#128276;</span><div><strong>Rappel</strong> — Notification Windows date/heure</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>Notes</strong> — Details techniques</div></li>
+                        <li><span class="icon">&#127991;</span><div><strong>Tags</strong> — dans la modale detail</div></li>
+                        <li><span class="icon">&#128247;</span><div><strong>Pieces jointes</strong> — images base64, lightbox</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">&#128336; Chronometre</div>
+                <div class="card-title">&#128336; Chronometre et temps</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#9654;</span><div>Cliquer sur <strong>▶</strong> dans la colonne Temps pour demarrer</div></li>
-                        <li><span class="icon">&#9209;</span><div>Cliquer sur <strong>⏹</strong> pour arreter et sauvegarder</div></li>
-                        <li><span class="icon">&#128190;</span><div>Sauvegarde automatique toutes les 60 secondes</div></li>
-                        <li><span class="icon">&#128202;</span><div>Total visible dans le Dashboard (Suivi du temps)</div></li>
+                        <li><span class="icon">&#9654;</span><div>Colonne <strong>TEMPS</strong> : bouton ▶ pour demarrer</div></li>
+                        <li><span class="icon">&#9209;</span><div>Bouton ⏹ pour arreter et sauvegarder</div></li>
+                        <li><span class="icon">&#128190;</span><div>Sauvegarde auto toutes les 60 secondes</div></li>
+                        <li><span class="icon">&#128200;</span><div>Colonne <strong>PASSE</strong> : total reel (chrono + sous-taches)</div></li>
+                        <li><span class="icon">&#128202;</span><div>Total visible dans la barre du bas et le Dashboard</div></li>
                     </ul>
                 </div>
             </div>
@@ -263,39 +239,76 @@
                 <div class="card-title">&#128196; Sous-taches (2 niveaux)</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#10133;</span><div>Survol une tache → bouton <strong>+ Etape</strong> vert</div></li>
-                        <li><span class="icon">&#128279;</span><div>Ou choisir une tache parente dans la modale</div></li>
-                        <li><span class="icon">&#9989;</span><div>Cocher la tache parente coche toutes les sous-taches</div></li>
-                        <li><span class="icon">&#128308;</span><div>Toutes les sous-taches terminees = tache parente terminee automatiquement</div></li>
-                        <li><span class="icon">&#10133;</span><div>Ajouter une etape a une tache terminee la repasse en cours</div></li>
+                        <li><span class="icon">&#10133;</span><div>Survol tache → bouton <strong>+ Etape</strong> vert</div></li>
+                        <li><span class="icon">&#9989;</span><div>Cocher la parente coche toutes les sous-taches</div></li>
+                        <li><span class="icon">&#128308;</span><div>Toutes les sous-taches terminees = parente terminee auto</div></li>
+                        <li><span class="icon">&#9888;</span><div>Impossible de cocher la parente si sous-taches non finies</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">&#128172; Commentaires</div>
-                <div class="card-body">Dans la modale detail d'une tache (bouton "Ouvrir" au survol) : section Commentaires en bas avec date/heure automatique. Modifier ou supprimer chaque commentaire. Ctrl+Entree pour envoyer rapidement.</div>
+                <div class="card-title">&#128172; Commentaires et pieces jointes</div>
+                <div class="card-body">Dans la modale detail (bouton "Ouvrir" au survol) : commentaires horodates avec edit/suppression. Ctrl+Entree pour envoyer. Pieces jointes images avec lightbox et multi-selection.</div>
             </div>
         </div>
+        <div class="tip"><strong>Rappels :</strong> Autoriser les notifications via &#128276; dans la topbar. Avec le Service Worker, les rappels fonctionnent meme si la page est fermee (navigateur ouvert en arriere-plan).</div>
+    </div>
 
-        <div class="tip"><strong>Rappels :</strong> Cliquer sur &#128276; dans la topbar pour autoriser les notifications. Ensuite definir une date/heure dans le champ "Rappel" d'une tache. Avec le Service Worker actif, les rappels fonctionnent meme si la page est fermee (navigateur ouvert en arriere-plan).</div>
+    <!-- FICHIERS -->
+    <div class="section" id="fichiers">
+        <div class="section-title">&#128193; Gestionnaire de fichiers</div>
+        <div class="section-desc">Chaque projet a son propre dossier avec 4 sous-dossiers pour stocker les fichiers physiquement sur le disque.</div>
+        <div class="cards">
+            <div class="card">
+                <div class="card-title">&#128193; Structure des dossiers</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#128247;</span><div><strong>images/</strong> — Photos, captures, visuels du projet</div></li>
+                        <li><span class="icon">&#128684;</span><div><strong>stl/</strong> — Fichiers STL pour impression 3D</div></li>
+                        <li><span class="icon">&#9881;</span><div><strong>cura/</strong> — Profils et projets Ultimaker Cura</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>docs/</strong> — Autres documents (PDF, textes...)</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#8679; Ouvrir le gestionnaire</div>
+                <div class="card-body">Dans l'en-tete du projet, cliquer sur le bouton <strong>&#128193;</strong> bleu. Une modale s'ouvre avec 4 onglets correspondant aux sous-dossiers.</div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#8679; Upload de fichiers</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#128073;</span><div>Selectionner l'onglet du type de fichier (Images, STL, Cura, Docs)</div></li>
+                        <li><span class="icon">&#8679;</span><div>Cliquer sur la zone pointillee ou glisser-deposer</div></li>
+                        <li><span class="icon">&#128248;</span><div>Multi-selection possible</div></li>
+                        <li><span class="icon">&#128247;</span><div>Les images s'affichent en miniature cliquable (lightbox)</div></li>
+                        <li><span class="icon">&#8595;</span><div>Bouton de telechargement pour chaque fichier</div></li>
+                        <li><span class="icon">&#128465;</span><div>Bouton de suppression pour chaque fichier</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#128193; Acces direct au dossier</div>
+                <div class="card-body">Les fichiers sont stockes dans <strong>data/Nom du projet/images/</strong> etc. Tu peux y acceder directement depuis l'Explorateur Windows pour copier/coller des fichiers manuellement.</div>
+            </div>
+        </div>
     </div>
 
     <!-- COMPOSANTS -->
     <div class="section" id="composants">
         <div class="section-title">&#128295; Liste de composants</div>
-        <div class="section-desc">Chaque projet Arduino/RPI peut avoir une liste de composants avec quantite, fournisseur, prix et lien.</div>
-
+        <div class="section-desc">Chaque projet peut avoir une liste de composants avec quantite, fournisseur, prix et lien.</div>
         <div class="cards">
             <div class="card">
                 <div class="card-title">&#128295; Acceder aux composants</div>
-                <div class="card-body">Dans l'en-tete du projet, cliquer sur le bouton &#128295; pour ouvrir la vue composants. Un compteur s'affiche quand des composants sont definis.</div>
+                <div class="card-body">Dans l'en-tete du projet, cliquer sur le bouton &#128295;. Un compteur s'affiche quand des composants sont definis.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128203; Champs par composant</div>
                 <div class="card-body">
                     <ul class="feature-list">
                         <li><span class="icon">&#128221;</span><div><strong>Nom</strong> — Ex: Arduino Mega 2560</div></li>
-                        <li><span class="icon">&#128290;</span><div><strong>Quantite</strong> — Nombre de pieces</div></li>
+                        <li><span class="icon">&#128290;</span><div><strong>Quantite</strong></div></li>
                         <li><span class="icon">&#127979;</span><div><strong>Fournisseur</strong> — Ex: AliExpress, Amazon</div></li>
                         <li><span class="icon">&#128176;</span><div><strong>Prix unitaire</strong> — En EUR</div></li>
                         <li><span class="icon">&#128279;</span><div><strong>Lien URL</strong> — Lien direct vers le produit</div></li>
@@ -304,7 +317,7 @@
             </div>
             <div class="card">
                 <div class="card-title">&#128176; Total automatique</div>
-                <div class="card-body">Le total est calcule automatiquement (quantite x prix) et affiche en bas de la liste. Ce total est aussi visible dans le widget Budget du Dashboard.</div>
+                <div class="card-body">Total calcule automatiquement (quantite x prix) visible en bas de la liste et dans le widget Budget du Dashboard.</div>
             </div>
         </div>
     </div>
@@ -313,7 +326,6 @@
     <div class="section" id="raccourcis">
         <div class="section-title">&#9875; Raccourcis clavier</div>
         <div class="section-desc">Ces raccourcis fonctionnent quand le curseur n'est pas dans un champ de saisie.</div>
-
         <div class="shortcuts">
             <table>
                 <thead>
@@ -324,60 +336,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><kbd>N</kbd></td>
-                        <td>Nouveau projet</td>
-                        <td style="font-size:12px;color:#676879">Ouvre la modale de creation de projet</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>T</kbd></td>
-                        <td>Nouvelle tache</td>
-                        <td style="font-size:12px;color:#676879">Dans le projet courant (dernier survole ou clique)</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>D</kbd></td>
-                        <td>Vue Dashboard</td>
-                        <td style="font-size:12px;color:#676879">Tableau de bord global</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>B</kbd></td>
-                        <td>Vue Tableau</td>
-                        <td style="font-size:12px;color:#676879">Vue Board principale</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>K</kbd></td>
-                        <td>Vue Kanban</td>
-                        <td style="font-size:12px;color:#676879">Vue colonnes glissables</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>?</kbd></td>
-                        <td>Aide raccourcis</td>
-                        <td style="font-size:12px;color:#676879">Affiche la liste des raccourcis dans l'appli</td>
-                    </tr>
-                    <tr>
-                        <td><kbd>Echap</kbd></td>
-                        <td>Fermer</td>
-                        <td style="font-size:12px;color:#676879">Ferme toute modale ou popup ouverte</td>
-                    </tr>
+                    <tr><td><kbd>N</kbd></td><td>Nouveau projet</td><td style="font-size:12px;color:#676879">Ouvre la modale de creation</td></tr>
+                    <tr><td><kbd>T</kbd></td><td>Nouvelle tache</td><td style="font-size:12px;color:#676879">Dans le projet courant (dernier survole)</td></tr>
+                    <tr><td><kbd>D</kbd></td><td>Vue Dashboard</td><td style="font-size:12px;color:#676879">Tableau de bord global</td></tr>
+                    <tr><td><kbd>B</kbd></td><td>Vue Tableau</td><td style="font-size:12px;color:#676879">Vue Board principale</td></tr>
+                    <tr><td><kbd>K</kbd></td><td>Vue Kanban</td><td style="font-size:12px;color:#676879">Vue colonnes glissables</td></tr>
+                    <tr><td><kbd>?</kbd></td><td>Aide raccourcis</td><td style="font-size:12px;color:#676879">Liste des raccourcis dans l'appli</td></tr>
+                    <tr><td><kbd>Echap</kbd></td><td>Fermer</td><td style="font-size:12px;color:#676879">Ferme toute modale ouverte</td></tr>
                 </tbody>
             </table>
         </div>
-
-        <div class="tip" style="margin-top:16px"><strong>Astuce :</strong> Dans la topbar, le bouton <strong>?</strong> affiche aussi les raccourcis directement dans l'application.</div>
+        <div class="tip" style="margin-top:16px"><strong>Astuce :</strong> Le bouton <strong>?</strong> dans la topbar affiche aussi les raccourcis directement dans l'appli.</div>
     </div>
 
     <!-- ASTUCES -->
     <div class="section" id="astuces">
         <div class="section-title">&#128161; Astuces et conseils</div>
-
         <div class="cards">
+            <div class="card">
+                <div class="card-title">&#128269; Recherche globale</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">&#128269;</span><div>Recherche en temps reel dans un popup</div></li>
+                        <li><span class="icon">&#128193;</span><div>Cherche dans les <strong>projets</strong> (nom, description)</div></li>
+                        <li><span class="icon">&#9989;</span><div>Cherche dans les <strong>taches et sous-taches</strong></div></li>
+                        <li><span class="icon">&#127991;</span><div>Cherche aussi dans les <strong>tags</strong> et <strong>priorites</strong></div></li>
+                        <li><span class="icon">&#128308;</span><div>Cherche dans les <strong>statuts</strong> (tape "en cours", "termine"...)</div></li>
+                        <li><span class="icon">&#128073;</span><div>Clic sur un resultat → projet/tache correspondant</div></li>
+                    </ul>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-title">&#128202; Filtres et tri</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128269;</span><div>La <strong>barre de recherche</strong> cherche dans les noms de projets, taches ET sous-taches</div></li>
-                        <li><span class="icon">&#128308;</span><div>La <strong>sidebar</strong> filtre par statut (A faire, En cours...) ou par type (Arduino, Logiciel...)</div></li>
-                        <li><span class="icon">&#128203;</span><div>Le <strong>tri</strong> (Deadline/Priorite/Nom) s'applique aussi aux taches dans chaque projet</div></li>
+                        <li><span class="icon">&#128308;</span><div>Sidebar : filtre par statut ou type de projet</div></li>
+                        <li><span class="icon">&#128203;</span><div>Tri Deadline/Priorite/Nom sur les taches</div></li>
                         <li><span class="icon">&#9989;</span><div>Bouton <strong>Terminees</strong> pour masquer les taches cochees</div></li>
                     </ul>
                 </div>
@@ -386,11 +380,11 @@
                 <div class="card-title">&#128276; Notifications push (Service Worker)</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128276;</span><div>Cliquer sur &#128276; dans la topbar pour autoriser les notifications</div></li>
-                        <li><span class="icon">&#128336;</span><div>Le Service Worker verifie les rappels toutes les <strong>60 secondes</strong> en arriere-plan</div></li>
-                        <li><span class="icon">&#128187;</span><div>Fonctionne meme si la page est <strong>fermee</strong> (navigateur ouvert)</div></li>
-                        <li><span class="icon">&#128073;</span><div>Clic sur la notification → ouvre directement la tache concernee</div></li>
-                        <li><span class="icon">&#9881;</span><div>Dans Chrome : activer <strong>"Continuer l'execution des applis en arriere-plan"</strong> dans les parametres</div></li>
+                        <li><span class="icon">&#128276;</span><div>Cliquer sur &#128276; dans la topbar pour autoriser</div></li>
+                        <li><span class="icon">&#128336;</span><div>Verifie les rappels toutes les <strong>60 secondes</strong></div></li>
+                        <li><span class="icon">&#128187;</span><div>Fonctionne si la page est fermee (navigateur ouvert)</div></li>
+                        <li><span class="icon">&#128073;</span><div>Clic sur la notification → ouvre directement la tache</div></li>
+                        <li><span class="icon">&#9881;</span><div>Edge/Chrome : activer "Continuer en arriere-plan"</div></li>
                     </ul>
                 </div>
             </div>
@@ -398,26 +392,25 @@
                 <div class="card-title">&#127912; Themes de couleurs</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#127912;</span><div>Bouton &#127912; dans la topbar pour ouvrir le selecteur</div></li>
-                        <li><span class="icon">&#127744;</span><div>7 themes disponibles : Bleu, Violet, Vert, Rouge, Orange, Cyan, Gris</div></li>
-                        <li><span class="icon">&#128190;</span><div>Theme sauvegarde et applique automatiquement au prochain lancement</div></li>
+                        <li><span class="icon">&#127912;</span><div>Bouton &#127912; dans la topbar</div></li>
+                        <li><span class="icon">&#127744;</span><div>7 pastilles : Bleu, Violet, Vert, Rouge, Orange, Cyan, Gris</div></li>
+                        <li><span class="icon">&#128190;</span><div>Theme sauvegarde et restaure au prochain lancement</div></li>
                         <li><span class="icon">&#127769;</span><div>Compatible avec le mode sombre</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
                 <div class="card-title">&#127769; Mode sombre</div>
-                <div class="card-body">Cliquer sur le <strong>toggle rond</strong> dans la topbar pour basculer entre mode clair et sombre. La preference est sauvegardee et restauree au prochain lancement.</div>
+                <div class="card-body">Toggle rond dans la topbar pour basculer clair/sombre. Preference sauvegardee automatiquement.</div>
             </div>
             <div class="card">
                 <div class="card-title">&#128336; Historique des versions</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128336;</span><div>Bouton <strong>&#128336;</strong> dans la topbar pour ouvrir l'historique</div></li>
+                        <li><span class="icon">&#128336;</span><div>Bouton &#128336; dans la topbar</div></li>
                         <li><span class="icon">&#128190;</span><div>Sauvegarde automatique a chaque modification</div></li>
-                        <li><span class="icon">5&#65039;&#8419;</span><div>Les <strong>5 dernieres versions</strong> sont conservees</div></li>
-                        <li><span class="icon">&#8635;</span><div>Cliquer sur <strong>Restaurer</strong> pour revenir a une version anterieure</div></li>
-                        <li><span class="icon">&#9888;</span><div>La restauration ecrase la version actuelle</div></li>
+                        <li><span class="icon">5&#65039;&#8419;</span><div>Les <strong>5 dernieres versions</strong> conservees</div></li>
+                        <li><span class="icon">&#8635;</span><div><strong>Restaurer</strong> pour revenir en arriere</div></li>
                     </ul>
                 </div>
             </div>
@@ -425,49 +418,34 @@
                 <div class="card-title">&#128202; Statistiques avancees</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128202;</span><div>Visibles en bas du <strong>Dashboard</strong></div></li>
-                        <li><span class="icon">&#8987;</span><div><strong>Temps passe</strong> par projet (barres)</div></li>
-                        <li><span class="icon">&#128308;</span><div><strong>Repartition</strong> des taches par statut</div></li>
-                        <li><span class="icon">&#128193;</span><div><strong>Projets</strong> par type (Arduino, Logiciel...)</div></li>
-                        <li><span class="icon">&#128308;</span><div><strong>Taches en retard</strong> avec nombre de jours</div></li>
-                        <li><span class="icon">&#128200;</span><div><strong>Avancement global</strong> par projet en SVG</div></li>
+                        <li><span class="icon">&#128202;</span><div>En bas du <strong>Dashboard</strong></div></li>
+                        <li><span class="icon">&#8987;</span><div>Temps passe par projet</div></li>
+                        <li><span class="icon">&#128308;</span><div>Repartition taches par statut</div></li>
+                        <li><span class="icon">&#128193;</span><div>Projets par type</div></li>
+                        <li><span class="icon">&#128308;</span><div>Taches en retard avec nombre de jours</div></li>
+                        <li><span class="icon">&#128200;</span><div>Avancement global par projet</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">&#128196; Export PDF</div>
+                <div class="card-title">&#128202; Exports</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128196;</span><div>Bouton <strong>PDF</strong> dans la topbar : exporte tous les projets visibles</div></li>
-                        <li><span class="icon">&#128196;</span><div>Bouton <strong>PDF</strong> dans l'en-tete d'un projet : exporte ce projet uniquement</div></li>
-                        <li><span class="icon">&#128208;</span><div>Inclut taches, sous-taches, statuts, deadlines, temps estime/passe et notes</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>PDF</strong> topbar : tous les projets visibles</div></li>
+                        <li><span class="icon">&#128202;</span><div><strong>Excel</strong> topbar : tous les projets (onglet global + un onglet par projet)</div></li>
+                        <li><span class="icon">&#128424;</span><div><strong>Impression</strong> topbar : tous les projets</div></li>
+                        <li><span class="icon">&#128424;</span><div><strong>Impression</strong> par projet : ce projet uniquement</div></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">&#128424; Impression directe</div>
+                <div class="card-title">&#127760; Mode hors-ligne</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128424;</span><div>Bouton &#128424; dans la topbar pour imprimer</div></li>
-                        <li><span class="icon">&#128065;</span><div>Tous les projets se deplient automatiquement avant l'impression</div></li>
-                        <li><span class="icon">&#128203;</span><div>Mise en page optimisee : sidebar et boutons masques, en-tetes repetes</div></li>
-                        <li><span class="icon">&#128196;</span><div>Fonctionne aussi pour sauvegarder en PDF via "Imprimer en PDF"</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128190; Sauvegarde</div>
-                <div class="card-body">Toutes les donnees sont sauvegardees automatiquement dans <strong>projets.json</strong>. Ce fichier est sur OneDrive donc synchronise entre tes machines. Le chronometre se sauvegarde toutes les 60s automatiquement.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128640; Workflow recommande</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">1&#65039;&#8419;</span><div>Creer le projet avec type, priorite et deadline</div></li>
-                        <li><span class="icon">2&#65039;&#8419;</span><div>Ajouter les composants et le schema</div></li>
-                        <li><span class="icon">3&#65039;&#8419;</span><div>Decomposer en taches principales puis en etapes</div></li>
-                        <li><span class="icon">4&#65039;&#8419;</span><div>Utiliser le chronometre pour tracker le temps</div></li>
-                        <li><span class="icon">5&#65039;&#8419;</span><div>Suivre l'avancement dans le Dashboard</div></li>
+                        <li><span class="icon">&#128994;</span><div>Point <strong>vert</strong> dans la topbar = serveur connecte</div></li>
+                        <li><span class="icon">&#128308;</span><div>Point <strong>rouge</strong> = hors-ligne, cache local actif</div></li>
+                        <li><span class="icon">&#128190;</span><div>Modifications sauvegardees en cache localStorage</div></li>
+                        <li><span class="icon">&#8635;</span><div>Synchronisation automatique au retour du serveur</div></li>
                     </ul>
                 </div>
             </div>
@@ -475,11 +453,22 @@
                 <div class="card-title">&#128279; Liens entre projets</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#9999;</span><div>Dans la modale <strong>&#9998; Modifier</strong> d'un projet, section "Liens avec d'autres projets"</div></li>
-                        <li><span class="icon">&#128279;</span><div><strong>Depend de</strong> (orange) — ce projet ne peut demarrer que si l'autre est avance</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Reference</strong> (bleu) — lien informel entre deux projets connexes</div></li>
-                        <li><span class="icon">&#8595;</span><div>Les projets dependants s'affichent automatiquement <strong>en dessous</strong> de leurs dependances dans le tableau</div></li>
-                        <li><span class="icon">&#128065;</span><div>Les liens sont visibles dans l'en-tete du projet, cliquables pour ouvrir le projet lie</div></li>
+                        <li><span class="icon">&#128279;</span><div><strong>Depend de</strong> (orange) — tri topologique auto</div></li>
+                        <li><span class="icon">&#128196;</span><div><strong>Reference</strong> (bleu) — lien informel</div></li>
+                        <li><span class="icon">&#128065;</span><div>Liens visibles dans l'en-tete du projet, cliquables</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">&#128640; Workflow recommande</div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">1&#65039;&#8419;</span><div>Creer le projet avec type, priorite, deadline</div></li>
+                        <li><span class="icon">2&#65039;&#8419;</span><div>Uploader les images, STL, fichiers Cura</div></li>
+                        <li><span class="icon">3&#65039;&#8419;</span><div>Ajouter les composants et le schema de cablage</div></li>
+                        <li><span class="icon">4&#65039;&#8419;</span><div>Decomposer en taches puis en etapes</div></li>
+                        <li><span class="icon">5&#65039;&#8419;</span><div>Utiliser le chronometre pour tracker le temps</div></li>
+                        <li><span class="icon">6&#65039;&#8419;</span><div>Suivre l'avancement dans le Dashboard</div></li>
                     </ul>
                 </div>
             </div>
@@ -487,12 +476,9 @@
                 <div class="card-title">&#9888; Limitations connues</div>
                 <div class="card-body">
                     <ul class="feature-list">
-                        <li><span class="icon">&#128276;</span><div>Les <strong>rappels</strong> necessitent que la page reste ouverte</div></li>
-                        <li><span class="icon">&#128200;</span><div>Le <strong>schema local</strong> doit etre charge via Parcourir pour persister</div></li>
-                        <li><span class="icon">&#128190;</span><div>Les images en base64 grossissent le fichier projets.json</div></li>
-                        <li><span class="icon">&#128279;</span><div>Les fichiers locaux non-image ne peuvent pas etre affiches dans le navigateur</div></li>
-                        <li><span class="icon">&#128276;</span><div>Le Service Worker necessite que le <strong>navigateur soit ouvert</strong> en arriere-plan</div></li>
-                        <li><span class="icon">&#127760;</span><div>Mode hors-ligne : modifications sauvegardees en cache et synchronisees au retour du serveur</div></li>
+                        <li><span class="icon">&#128276;</span><div>Service Worker necessite le navigateur ouvert</div></li>
+                        <li><span class="icon">&#128190;</span><div>Images en pieces jointes stockees en base64 dans taches.json</div></li>
+                        <li><span class="icon">&#128193;</span><div>Les fichiers STL/Cura/images sont stockes physiquement dans data/</div></li>
                     </ul>
                 </div>
             </div>
@@ -508,21 +494,13 @@
 </div>
 
 <script>
-    // Navigation active au scroll
     const sections = document.querySelectorAll('.section');
     const navLinks = document.querySelectorAll('.nav a');
-
     window.addEventListener('scroll', function() {
         let current = '';
-        sections.forEach(s => {
-            if (window.scrollY >= s.offsetTop - 80) current = s.id;
-        });
-        navLinks.forEach(a => {
-            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-        });
+        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+        navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
     });
-
-    // Smooth scroll
     navLinks.forEach(a => {
         a.addEventListener('click', function(e) {
             e.preventDefault();
