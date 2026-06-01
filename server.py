@@ -549,8 +549,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._export_excel()
         elif path == "/api/archives":
             self._list_archives()
-        elif path == "/api/tasks/reorder":
-            self._reorder_tasks()
         elif path == "/api/history":
             self._send_json(load_history())
         elif path.startswith("/api/files/list"):
@@ -578,6 +576,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/unarchive":
             self._unarchive_project()
+            return
+        if parsed.path == "/api/tasks/reorder":
+            self._reorder_tasks()
             return
         if parsed.path == "/api/files/upload":
             self._upload_file()
