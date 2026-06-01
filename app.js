@@ -2472,9 +2472,13 @@ registerServiceWorker();
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
+    // Retirer les custom properties si on revient a un theme predefini
+    document.documentElement.style.removeProperty('--accent');
+    document.documentElement.style.removeProperty('--accent-h');
+    document.documentElement.style.removeProperty('--sidebar');
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
-    // Mettre a jour les swatches actives
+    localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.theme === theme);
     });
@@ -2482,16 +2486,30 @@ function applyTheme(theme) {
 
 function openThemePicker() {
     var current = localStorage.getItem('gp_theme') || 'blue';
+    var hue     = localStorage.getItem('gp_custom_hue') || '210';
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
-        s.classList.toggle('active', s.dataset.theme === current);
+        s.classList.toggle('active', s.dataset.theme === current && current !== 'custom');
     });
+    var slider  = document.getElementById('hue-slider');
+    var preview = document.getElementById('hue-preview');
+    var label   = document.getElementById('hue-value');
+    if (slider)  slider.value = hue;
+    if (preview) preview.style.background = 'hsl(' + hue + ', 85%, 45%)';
+    if (label)   label.textContent = 'Teinte : ' + hue + 'deg';
     document.getElementById('modal-theme').classList.add('open');
 }
 
 // Appliquer le theme sauvegarde au demarrage
 (function() {
     var saved = localStorage.getItem('gp_theme') || 'blue';
-    document.documentElement.setAttribute('data-theme', saved);
+    if (saved === 'custom') {
+        var hue     = localStorage.getItem('gp_custom_hue') || '210';
+        document.documentElement.style.setProperty('--accent',   'hsl(' + hue + ', 85%, 45%)');
+        document.documentElement.style.setProperty('--accent-h', 'hsl(' + (parseInt(hue)+10) + ', 85%, 45%)');
+        document.documentElement.style.setProperty('--sidebar',  'hsl(' + hue + ', 40%, 15%)');
+    } else {
+        document.documentElement.setAttribute('data-theme', saved);
+    }
 })();
 
 /* === SERVICE WORKER - NOTIFICATIONS PUSH === */
@@ -2545,6 +2563,53 @@ async function registerServiceWorker() {
     }
 }
 
+
+/**
+ * Convertit une teinte HSL en couleur hex pour l'accent.
+ */
+function hueToAccent(hue) {
+    // Saturation 85%, Luminosite 45% pour une couleur vive
+    return 'hsl(' + hue + ', 85%, 45%)';
+}
+
+function hueToSidebar(hue) {
+    return 'hsl(' + hue + ', 40%, 15%)';
+}
+
+/**
+ * Applique une teinte personnalisee en preview.
+ */
+function applyCustomHue(hue) {
+    var accent  = hueToAccent(hue);
+    var preview = document.getElementById('hue-preview');
+    var label   = document.getElementById('hue-value');
+    if (preview) preview.style.background = accent;
+    if (label)   label.textContent = 'Teinte : ' + hue + 'deg';
+    // Deselectionner les swatches predefinies
+    document.querySelectorAll('.theme-swatch').forEach(function(s) {
+        s.classList.remove('active');
+    });
+}
+
+/**
+ * Confirme et applique la couleur personnalisee.
+ */
+function confirmCustomHue() {
+    var hue = document.getElementById('hue-slider').value;
+    var accent  = hueToAccent(hue);
+    var sidebar = hueToSidebar(hue);
+
+    // Appliquer via CSS custom properties
+    document.documentElement.style.setProperty('--accent',   accent);
+    document.documentElement.style.setProperty('--accent-h', hueToAccent(parseInt(hue) + 10));
+    document.documentElement.style.setProperty('--sidebar',  sidebar);
+    document.documentElement.removeAttribute('data-theme');
+
+    localStorage.setItem('gp_theme',     'custom');
+    localStorage.setItem('gp_custom_hue', hue);
+    toast('Theme personnalise applique !');
+    closeModal('modal-theme');
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

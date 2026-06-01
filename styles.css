@@ -589,3 +589,11 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
     .print-hide { display: none !important; }
     .print-only  { display: block !important; }
 }
+
+/* Curseur teinte personnalisee */
+.hue-slider-wrap { margin-top: 14px; }
+.hue-slider-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.hue-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 18px; border-radius: 9px; outline: none; cursor: pointer; background: linear-gradient(to right, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff0080, #ff0000); border: 1px solid var(--border); }
+.hue-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid #333; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.hue-preview { width: 100%; height: 36px; border-radius: 6px; margin-top: 8px; transition: background .1s; border: 1px solid var(--border); }
+.theme-separator { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
