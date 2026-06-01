@@ -206,7 +206,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_file(self, filename, content_type):
-        filepath = DATA_DIR / filename
+        filepath = BASE_DIR / filename
         if not filepath.exists():
             self.send_response(404)
             self.end_headers()
