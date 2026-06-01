@@ -619,3 +619,9 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .file-actions { display: flex; gap: 4px; flex-shrink: 0; }
 .file-upload-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; margin-bottom: 12px; transition: border-color .15s; }
 .file-upload-zone:hover { border-color: var(--accent); }
+
+/* Transition douce pour le rendu */
+#content { transition: opacity 0.08s ease; }
+#content.rendering { opacity: 0.85; }
+.project-block { animation: none !important; }
+.task-row { transition: background 0.15s, opacity 0.15s; }

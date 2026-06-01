@@ -603,6 +603,8 @@ function updateSummary() {
  * Point d'entrée principal du rendu — dispatch vers la vue active.
  */
 function renderAll() {
+    const el = document.getElementById('content');
+    if (el) el.classList.add('rendering');
     updateSideCounts();
     updateSummary();
 
