@@ -875,19 +875,31 @@ function renderBoard() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            // Barre d'actions archives
+            html += '<div id="archives-section" style="margin:24px 0 8px">';
+            html += '<div style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:10px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            // Bouton supprimer selection
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">'
+                  + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">'
+                  + '<input type="checkbox" id="arc-select-all" onchange="toggleAllArchives(this.checked)" style="cursor:pointer"> Tout selectionner</label>'
+                  + '<div style="flex:1"></div>'
+                  + '<button class="btn btn-sm" id="arc-del-sel-btn" onclick="deleteSelectedArchives()" '
+                  + 'style="color:var(--red);font-size:12px;display:none">&#128465; Supprimer la selection</button>'
+                  + '</div>';
+            // Lignes archives
             archived.forEach(function(p) {
-                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
-                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px">'
+                      + '<div class="proj-hdr" style="background:var(--bg);gap:10px">'
+                      + '<input type="checkbox" class="arc-chk" data-arcid="' + p.id + '" data-arcname="' + escHtml(p.name) + '" onchange="updateArcDelBtn()" style="cursor:pointer;flex-shrink:0">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto;display:flex;gap:6px">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
-                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
+            html += '</div>';
         }
     }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
@@ -2784,6 +2796,55 @@ async function deleteArchive(projId, projName) {
         }
     );
 }
+
+/**
+ * Coche/decoche toutes les archives.
+ */
+function toggleAllArchives(checked) {
+    document.querySelectorAll('.arc-chk').forEach(function(chk) { chk.checked = checked; });
+    updateArcDelBtn();
+}
+
+/**
+ * Met a jour la visibilite du bouton Supprimer la selection.
+ */
+function updateArcDelBtn() {
+    var checked = document.querySelectorAll('.arc-chk:checked');
+    var btn = document.getElementById('arc-del-sel-btn');
+    var all = document.getElementById('arc-select-all');
+    var total = document.querySelectorAll('.arc-chk');
+    if (btn) btn.style.display = checked.length ? 'inline-flex' : 'none';
+    if (all) all.indeterminate = checked.length > 0 && checked.length < total.length;
+    if (all) all.checked = total.length > 0 && checked.length === total.length;
+}
+
+/**
+ * Supprime toutes les archives cochees.
+ */
+function deleteSelectedArchives() {
+    var checked = Array.from(document.querySelectorAll('.arc-chk:checked'));
+    if (!checked.length) return;
+    var names = checked.map(function(c) { return c.dataset.arcname; }).join(', ');
+    showConfirm(
+        'Supprimer ' + checked.length + ' archive(s) ?',
+        names,
+        async function() {
+            for (var chk of checked) {
+                var resp = await fetch('/api/delete-archive?projId=' + chk.dataset.arcid, { method: 'POST' });
+                await resp.json();
+            }
+            await loadData();
+            var remaining = data.projects.filter(function(p) { return p.archived; });
+            if (!remaining.length) {
+                showArchived = false;
+                var arcBtn = document.getElementById('sb-archived');
+                if (arcBtn) arcBtn.classList.remove('active');
+            }
+            toast(checked.length + ' archive(s) supprimee(s)');
+            renderAll();
+        }
+    );
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -2884,19 +2945,31 @@ function renderKanban() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            // Barre d'actions archives
+            html += '<div id="archives-section" style="margin:24px 0 8px">';
+            html += '<div style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:10px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            // Bouton supprimer selection
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">'
+                  + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">'
+                  + '<input type="checkbox" id="arc-select-all" onchange="toggleAllArchives(this.checked)" style="cursor:pointer"> Tout selectionner</label>'
+                  + '<div style="flex:1"></div>'
+                  + '<button class="btn btn-sm" id="arc-del-sel-btn" onclick="deleteSelectedArchives()" '
+                  + 'style="color:var(--red);font-size:12px;display:none">&#128465; Supprimer la selection</button>'
+                  + '</div>';
+            // Lignes archives
             archived.forEach(function(p) {
-                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
-                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px">'
+                      + '<div class="proj-hdr" style="background:var(--bg);gap:10px">'
+                      + '<input type="checkbox" class="arc-chk" data-arcid="' + p.id + '" data-arcname="' + escHtml(p.name) + '" onchange="updateArcDelBtn()" style="cursor:pointer;flex-shrink:0">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto;display:flex;gap:6px">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
-                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
+            html += '</div>';
         }
     }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
@@ -3040,19 +3113,31 @@ function renderCalendar() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            // Barre d'actions archives
+            html += '<div id="archives-section" style="margin:24px 0 8px">';
+            html += '<div style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:10px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            // Bouton supprimer selection
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">'
+                  + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">'
+                  + '<input type="checkbox" id="arc-select-all" onchange="toggleAllArchives(this.checked)" style="cursor:pointer"> Tout selectionner</label>'
+                  + '<div style="flex:1"></div>'
+                  + '<button class="btn btn-sm" id="arc-del-sel-btn" onclick="deleteSelectedArchives()" '
+                  + 'style="color:var(--red);font-size:12px;display:none">&#128465; Supprimer la selection</button>'
+                  + '</div>';
+            // Lignes archives
             archived.forEach(function(p) {
-                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
-                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px">'
+                      + '<div class="proj-hdr" style="background:var(--bg);gap:10px">'
+                      + '<input type="checkbox" class="arc-chk" data-arcid="' + p.id + '" data-arcname="' + escHtml(p.name) + '" onchange="updateArcDelBtn()" style="cursor:pointer;flex-shrink:0">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto;display:flex;gap:6px">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
-                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
+            html += '</div>';
         }
     }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
@@ -3209,19 +3294,31 @@ function renderGantt() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            // Barre d'actions archives
+            html += '<div id="archives-section" style="margin:24px 0 8px">';
+            html += '<div style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:10px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            // Bouton supprimer selection
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">'
+                  + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">'
+                  + '<input type="checkbox" id="arc-select-all" onchange="toggleAllArchives(this.checked)" style="cursor:pointer"> Tout selectionner</label>'
+                  + '<div style="flex:1"></div>'
+                  + '<button class="btn btn-sm" id="arc-del-sel-btn" onclick="deleteSelectedArchives()" '
+                  + 'style="color:var(--red);font-size:12px;display:none">&#128465; Supprimer la selection</button>'
+                  + '</div>';
+            // Lignes archives
             archived.forEach(function(p) {
-                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
-                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px">'
+                      + '<div class="proj-hdr" style="background:var(--bg);gap:10px">'
+                      + '<input type="checkbox" class="arc-chk" data-arcid="' + p.id + '" data-arcname="' + escHtml(p.name) + '" onchange="updateArcDelBtn()" style="cursor:pointer;flex-shrink:0">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto;display:flex;gap:6px">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
-                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
+            html += '</div>';
         }
     }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
@@ -3428,19 +3525,31 @@ function renderDashboard() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            // Barre d'actions archives
+            html += '<div id="archives-section" style="margin:24px 0 8px">';
+            html += '<div style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:10px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            // Bouton supprimer selection
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">'
+                  + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer">'
+                  + '<input type="checkbox" id="arc-select-all" onchange="toggleAllArchives(this.checked)" style="cursor:pointer"> Tout selectionner</label>'
+                  + '<div style="flex:1"></div>'
+                  + '<button class="btn btn-sm" id="arc-del-sel-btn" onclick="deleteSelectedArchives()" '
+                  + 'style="color:var(--red);font-size:12px;display:none">&#128465; Supprimer la selection</button>'
+                  + '</div>';
+            // Lignes archives
             archived.forEach(function(p) {
-                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
-                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px">'
+                      + '<div class="proj-hdr" style="background:var(--bg);gap:10px">'
+                      + '<input type="checkbox" class="arc-chk" data-arcid="' + p.id + '" data-arcname="' + escHtml(p.name) + '" onchange="updateArcDelBtn()" style="cursor:pointer;flex-shrink:0">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto;display:flex;gap:6px">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
-                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
+            html += '</div>';
         }
     }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
