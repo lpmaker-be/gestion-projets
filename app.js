@@ -776,7 +776,7 @@ function renderBoard() {
                     <tr class="task-row ${t.done ? 'row-done' : ''}" onclick="openTaskDetail('${p.id}', '${t.id}')">
                         <td onclick="event.stopPropagation()">
                             <input class="row-chk" type="checkbox" ${t.done ? 'checked' : ''}
-                                   onchange="toggleTask('${p.id}', '${t.id}')">
+                                   onclick="event.preventDefault(); toggleTask('${p.id}', '${t.id}')">
                         </td>
                         <td>
                             <div style="display:flex;flex-direction:column;min-width:0;max-width:400px">
