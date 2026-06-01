@@ -736,7 +736,9 @@ function renderBoard() {
                         <td style="font-size:12px;color:var(--text2)">
                             ${fmtEstimate(allTasks.reduce((s, t) => s + totalEstimate(t), 0))}
                         </td>
-                        <td></td>
+                        <td style="font-size:12px;color:var(--green);font-weight:500">
+                            ${fmtTime(allTasks.reduce((s, t) => s + totalTimeSpent(t), 0)) || '—'}
+                        </td>
                     </tr>`;
 
             // Lignes de tâches
