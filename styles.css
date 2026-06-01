@@ -626,3 +626,10 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .project-block { animation: none !important; }
 .task-row { transition: background 0.15s, opacity 0.15s; }
 
+
+/* Drag & drop */
+.proj-drag-handle, .task-drag-handle { cursor: grab; color: var(--text3); font-size: 14px; padding: 0 4px; flex-shrink: 0; opacity: 0; transition: opacity .15s; }
+.proj-hdr:hover .proj-drag-handle,
+.task-row:hover .task-drag-handle { opacity: 1; }
+.drag-ghost { opacity: 0.4; background: var(--accent) !important; }
+.task-tbody { display: table-row-group; }

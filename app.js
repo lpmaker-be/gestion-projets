@@ -254,6 +254,7 @@ async function loadData() {
         data.projects.forEach(p => {
             if (!p.start)       p.start       = '';
             if (!p.components)  p.components  = '';
+            if (p.order === undefined) p.order = 999;
             if (!p.tags)        p.tags        = [];
             if (!p.links)       p.links       = [];
             if (!p.components2) p.components2 = [];
@@ -266,6 +267,7 @@ async function loadData() {
         // Migration : s'assurer que toutes les tâches ont les champs requis
         // Migration recursive (taches + sous-taches)
         function migrateTask(t) {
+            if (t.order === undefined) t.order = 999;
             if (!t.estimate)    t.estimate    = 0;
             if (!t.timeSpent)   t.timeSpent   = 0;
             if (!t.depends)     t.depends     = '';
@@ -455,6 +457,10 @@ function getFilteredProjects() {
         return true;
     });
 
+    // Tri par ordre manuel en priorite si pas de tri specifique
+    if (!sortBy || sortBy === 'created') {
+        projs.sort(function(a, b) { return (a.order !== undefined ? a.order : 999) - (b.order !== undefined ? b.order : 999); });
+    }
     // Tri
     projs.sort((a, b) => {
         if (sortBy === 'deadline')  return (a.deadline || '9999') > (b.deadline || '9999') ? 1 : -1;
@@ -665,6 +671,7 @@ function renderBoard() {
         html += `
         <div class="project-block" data-proj-id="${p.id}">
             <div class="proj-hdr" onmouseenter="currentProjId='${p.id}'">
+                <span class="proj-drag-handle" title="Deplacer le projet">&#8942;&#8942;</span>
                 <button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
                 <span class="proj-color" style="background:${color}"></span>
                 <input class="proj-name-inp"
@@ -724,13 +731,14 @@ function renderBoard() {
                             <th style="width:50px"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="task-tbody" data-proj-id="${p.id}">
 
                     <!-- Ligne résumé projet -->
                     <tr style="background:#f0f4ff;border-left:4px solid ${color}" onclick="openProjectModal('${p.id}')">
                         <td></td>
                         <td>
                             <div class="tname-cell">
+                                <span class="task-drag-handle" title="Deplacer">&#8942;&#8942;</span>
                                 <span style="font-weight:700;color:${color}">${escHtml(p.name)}</span>
                                 <span style="font-size:10px;background:#eee;color:#666;padding:1px 5px;border-radius:3px;font-weight:600">
                                     ${typeLabel(p.type)}
@@ -800,7 +808,7 @@ function renderBoard() {
                 };
 
                 html += `
-                    <tr class="task-row ${t.done ? 'row-done' : ''}" data-task-row="${t.id}" onclick="openTaskDetail('${p.id}', '${t.id}')">
+                    <tr class="task-row ${t.done ? 'row-done' : ''}" data-task-row="${t.id}" data-proj-id="${p.id}" onclick="openTaskDetail('${p.id}', '${t.id}')">
                         <td onclick="event.stopPropagation()">
                             <input class="row-chk" type="checkbox" ${t.done ? 'checked' : ''}
                                    data-task-chk="${t.id}" onclick="event.preventDefault(); toggleTask('${p.id}', '${t.id}')">
@@ -808,6 +816,7 @@ function renderBoard() {
                         <td>
                             <div style="display:flex;flex-direction:column;min-width:0;max-width:400px">
                                 <div class="tname-cell">
+                                <span class="task-drag-handle" title="Deplacer">&#8942;&#8942;</span>
                                     ${t.depends ? `<span style="font-size:10px;color:var(--text3)">&#128279;</span>` : ''}
                                     <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
                                     ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">&#128221;</span>` : ''}
@@ -847,7 +856,7 @@ function renderBoard() {
 
                 <!-- Bouton ajout rapide de tâche -->
                 <table class="btbl">
-                    <tbody>
+                    <tbody class="task-tbody" data-proj-id="${p.id}">
                         <tr class="add-row">
                             <td colspan="8">
                                 <button class="add-task-btn" onclick="openTaskModal('${p.id}')">
@@ -2846,6 +2855,78 @@ function deleteSelectedArchives() {
         }
     );
 }
+
+/* === DRAG & DROP REORDONNEMENT === */
+
+var _projSortable = null;
+var _taskSortables = {};
+
+/**
+ * Initialise Sortable sur les projets et les listes de taches.
+ */
+function initSortable() {
+    if (typeof Sortable === 'undefined') return;
+
+    // Drag & drop des projets
+    var projContainer = document.getElementById('content');
+    if (projContainer && !_projSortable) {
+        _projSortable = Sortable.create(projContainer, {
+            handle: '.proj-drag-handle',
+            animation: 150,
+            ghostClass: 'drag-ghost',
+            onEnd: function(evt) {
+                // Recalculer l'ordre des projets
+                var blocks = projContainer.querySelectorAll('.project-block[data-proj-id]');
+                var updates = [];
+                blocks.forEach(function(el, i) {
+                    var pid = el.dataset.projId;
+                    var proj = data.projects.find(function(p) { return p.id === pid; });
+                    if (proj) {
+                        proj.order = i;
+                        updates.push(proj);
+                    }
+                });
+                // Sauvegarder tous les projets mis a jour
+                Promise.all(updates.map(function(p) {
+                    return apiPost('/api/projects', p);
+                })).then(function() {
+                    toast('Ordre des projets sauvegarde');
+                });
+            }
+        });
+    }
+
+    // Drag & drop des taches dans chaque projet
+    document.querySelectorAll('.task-tbody[data-proj-id]').forEach(function(tbody) {
+        var pid = tbody.dataset.projId;
+        if (_taskSortables[pid]) return;
+        _taskSortables[pid] = Sortable.create(tbody, {
+            handle: '.task-drag-handle',
+            animation: 150,
+            ghostClass: 'drag-ghost',
+            filter: '.subtask-row-1, .subtask-row-2',
+            onEnd: function(evt) {
+                var tasks = data.tasks[pid] || [];
+                var rows = tbody.querySelectorAll('tr.task-row:not(.subtask-row-1):not(.subtask-row-2)');
+                var orderedIds = Array.from(rows).map(function(r) { return r.dataset.taskRow; });
+                // Reordonner le tableau de taches
+                var newTasks = [];
+                orderedIds.forEach(function(tid, i) {
+                    var t = tasks.find(function(x) { return x.id === tid; });
+                    if (t) { t.order = i; newTasks.push(t); }
+                });
+                // Ajouter les taches non trouvees (sous-taches orphelines)
+                tasks.forEach(function(t) {
+                    if (!newTasks.find(function(x) { return x.id === t.id; })) newTasks.push(t);
+                });
+                data.tasks[pid] = newTasks;
+                apiPost('/api/tasks/reorder', { projectId: pid, tasks: newTasks });
+                toast('Ordre des taches sauvegarde');
+            }
+        });
+    });
+}
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

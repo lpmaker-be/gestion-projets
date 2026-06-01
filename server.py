@@ -38,6 +38,7 @@ STATIC_FILES = {
     "/sw.js":       ("sw.js",       "application/javascript; charset=utf-8"),
     "/favicon.svg": ("favicon.svg", "image/svg+xml"),
     "/morphdom.min.js": ("morphdom.min.js", "application/javascript"),
+    "/sortable.min.js": ("sortable.min.js", "application/javascript"),
 }
 
 
@@ -548,6 +549,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._export_excel()
         elif path == "/api/archives":
             self._list_archives()
+        elif path == "/api/tasks/reorder":
+            self._reorder_tasks()
         elif path == "/api/history":
             self._send_json(load_history())
         elif path.startswith("/api/files/list"):
