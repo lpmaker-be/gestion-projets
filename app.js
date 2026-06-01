@@ -2619,13 +2619,14 @@ function applyCustomTheme(hue) {
     document.documentElement.style.removeProperty('--accent-h');
     document.documentElement.style.removeProperty('--sidebar');
     // Injecter via une balise style dynamique
+    document.documentElement.setAttribute('data-theme', 'custom');
     var styleEl = document.getElementById('custom-theme-style');
     if (!styleEl) {
         styleEl = document.createElement('style');
         styleEl.id = 'custom-theme-style';
         document.head.appendChild(styleEl);
     }
-    styleEl.textContent = ':root { --accent: hsl(' + hue + ', 85%, 45%) !important; --accent-h: hsl(' + (parseInt(hue)+10) + ', 85%, 45%) !important; --sidebar: hsl(' + hue + ', 40%, 15%) !important; }';
+    styleEl.textContent = ':root[data-theme="custom"] { --accent: hsl(' + hue + ', 85%, 45%); --accent-h: hsl(' + (parseInt(hue)+10) + ', 85%, 45%); --sidebar: hsl(' + hue + ', 40%, 15%); }';
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
