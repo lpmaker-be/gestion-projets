@@ -347,6 +347,23 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         self._send_json({'ok': True})
 
+
+    def _reorder_tasks(self):
+        """Sauvegarde le nouvel ordre des taches d'un projet."""
+        length = int(self.headers.get("Content-Length", 0))
+        body   = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+        pid    = body.get("projectId")
+        tasks  = body.get("tasks", [])
+        if not pid:
+            self._send_json({"error": "projectId manquant"}); return
+        data = load_data()
+        data["tasks"][pid] = tasks
+        pdir = find_proj_dir(pid)
+        if pdir:
+            with open(pdir / "taches.json", "w", encoding="utf-8") as f:
+                json.dump(tasks, f, ensure_ascii=False, indent=2)
+        self._send_json({"ok": True})
+
     def _restore_snapshot(self):
         from urllib.parse import urlparse, parse_qs
         qs  = parse_qs(urlparse(self.path).query)
