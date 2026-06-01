@@ -206,6 +206,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self._cors()
         self.end_headers()
 
+    def do_HEAD(self):
+        """Supporte les requetes HEAD pour la verification de connexion."""
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+
     def do_GET(self):
         path = urlparse(self.path).path
         if path in STATIC_FILES:

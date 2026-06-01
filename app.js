@@ -2455,7 +2455,7 @@ async function syncOfflineData() {
 // Verifier la connexion toutes les 10 secondes
 setInterval(async function() {
     try {
-        await fetch('/api/data', { method: 'HEAD' });
+        await fetch(`${API}/api/data`);
         if (!_isOnline) {
             _isOnline = false; // Forcer le changement
             setOnlineStatus(true);
@@ -2472,13 +2472,14 @@ registerServiceWorker();
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Supprimer la balise style custom si elle existe
+    // Supprimer TOUT ce qui pourrait forcer une couleur custom
     var customStyle = document.getElementById('custom-theme-style');
-    if (customStyle) customStyle.remove();
-    document.documentElement.style.removeProperty('--accent');
-    document.documentElement.style.removeProperty('--accent-h');
-    document.documentElement.style.removeProperty('--sidebar');
+    if (customStyle) customStyle.textContent = '';  // Vider le contenu
+    if (customStyle) customStyle.remove();          // Puis supprimer
+    // Supprimer tous les styles inline sur :root
+    document.documentElement.removeAttribute('style');
     document.documentElement.setAttribute('data-theme', theme);
+    console.log('Theme applique:', theme, 'data-theme:', document.documentElement.getAttribute('data-theme'));
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
