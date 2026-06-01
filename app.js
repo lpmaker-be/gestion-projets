@@ -777,6 +777,7 @@ function renderBoard() {
                             <div class="tname-cell" style="padding-left:${indent}px">
                                 <span style="color:var(--text3);margin-right:4px">${level === 1 ? '└' : '  └'}</span>
                                 <span class="tname-txt ${st.done ? 'done' : ''}">${escHtml(st.name)}</span>
+                                ${st.note ? `<span class="note-ic" title="${escHtml(st.note)}">&#128221;</span>` : ''}
                                 ${st.subtasks && st.subtasks.length ? '<span style="font-size:10px;color:var(--text3);margin-left:4px">('+st.subtasks.length+' etape'+(st.subtasks.length>1?'s':'')+')</span>' : ''}
                                 <button class="open-btn" style="border-color:#00c875;color:#00c875"
                                         onclick="event.stopPropagation(); addSubtask('${p.id}', '${t.id}', '${st.id}')">
