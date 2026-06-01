@@ -579,6 +579,13 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
     --sidebar:  #1f2937;
 }
 
+/* Theme custom - valeurs definies dynamiquement par JS */
+[data-theme="custom"] {
+    --accent:   hsl(210, 85%, 45%);
+    --accent-h: hsl(220, 85%, 45%);
+    --sidebar:  hsl(210, 40%, 15%);
+}
+
 /* Modale selection theme */
 .theme-picker { display: flex; flex-wrap: wrap; gap: 10px; padding: 4px 0; }
 .theme-swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .15s, border-color .15s; }
