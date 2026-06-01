@@ -109,6 +109,28 @@ def load_data():
         projects.append(p)
         with open(tf, 'r', encoding='utf-8') as f2:
             tasks[p['id']] = json.load(f2) if tf.exists() else []
+    # Ajouter les projets archives depuis les zips
+    ARCHIVE_DIR.mkdir(exist_ok=True)
+    for zip_path in sorted(ARCHIVE_DIR.iterdir()):
+        if zip_path.suffix != '.zip': continue
+        try:
+            import zipfile
+            with zipfile.ZipFile(zip_path, 'r') as z:
+                # Chercher projet.json dans le zip
+                names = z.namelist()
+                proj_files = [n for n in names if n.endswith('projet.json')]
+                tasks_files = [n for n in names if n.endswith('taches.json')]
+                if proj_files:
+                    p = json.loads(z.read(proj_files[0]).decode('utf-8'))
+                    p['archived'] = True  # S'assurer que archived=True
+                    projects.append(p)
+                    if tasks_files:
+                        tasks[p['id']] = json.loads(z.read(tasks_files[0]).decode('utf-8'))
+                    else:
+                        tasks[p['id']] = []
+        except Exception as e:
+            print(f"Erreur lecture archive {zip_path.name}: {e}")
+
     return {"projects": projects, "tasks": tasks}
 
 def save_data(data):
