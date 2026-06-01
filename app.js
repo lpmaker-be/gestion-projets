@@ -2471,10 +2471,17 @@ setInterval(async function() {
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Neutraliser la balise custom en la vidant (plus fiable que remove)
-    var customStyle = document.getElementById('custom-theme-style');
-    if (customStyle) customStyle.textContent = ':root[data-theme="__none__"] {}';
-    document.documentElement.setAttribute('data-theme', theme);
+    // Retirer TOUTES les variables inline sur :root
+    var root = document.documentElement;
+    var style = root.style;
+    style.removeProperty('--accent');
+    style.removeProperty('--accent-h');
+    style.removeProperty('--sidebar');
+    // Vider la balise custom si elle existe
+    var el = document.getElementById('custom-theme-style');
+    if (el) el.textContent = '';
+    // Appliquer le theme
+    root.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
@@ -2482,6 +2489,7 @@ function applyTheme(theme) {
     });
     toast('Theme ' + theme + ' applique !');
 }
+
 
 function openThemePicker() {
     var current = localStorage.getItem('gp_theme') || 'blue';
@@ -2607,22 +2615,18 @@ function confirmCustomHue() {
 }
 
 function applyCustomTheme(hue) {
-    // Supprimer data-theme pour desactiver les themes predefinis
-    document.documentElement.removeAttribute('data-theme');
-    // Supprimer les inline styles residuels
-    document.documentElement.style.removeProperty('--accent');
-    document.documentElement.style.removeProperty('--accent-h');
-    document.documentElement.style.removeProperty('--sidebar');
-    // Injecter via une balise style dynamique
-    document.documentElement.setAttribute('data-theme', 'custom');
-    var styleEl = document.getElementById('custom-theme-style');
-    if (!styleEl) {
-        styleEl = document.createElement('style');
-        styleEl.id = 'custom-theme-style';
-        document.head.appendChild(styleEl);
-    }
-    styleEl.textContent = ':root[data-theme="custom"] { --accent: hsl(' + hue + ', 85%, 45%); --accent-h: hsl(' + (parseInt(hue)+10) + ', 85%, 45%); --sidebar: hsl(' + hue + ', 40%, 15%); }';
+    var root = document.documentElement;
+    // Retirer data-theme pour eviter conflit
+    root.removeAttribute('data-theme');
+    // Appliquer directement sur :root via style inline
+    root.style.setProperty('--accent',   'hsl(' + hue + ', 85%, 45%)');
+    root.style.setProperty('--accent-h', 'hsl(' + (parseInt(hue)+10) + ', 85%, 45%)');
+    root.style.setProperty('--sidebar',  'hsl(' + hue + ', 40%, 15%)');
+    // Vider la balise custom si elle existe
+    var el = document.getElementById('custom-theme-style');
+    if (el) el.textContent = '';
 }
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
