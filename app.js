@@ -1757,6 +1757,16 @@ function updateSchemaPreview(url) {
 }
 
 
+
+/**
+ * Retourne le HTML du bouton schema de cablage.
+ */
+function schemaLink(projId, schema) {
+    if (!schema) return '';
+    return '<button class="btn btn-secondary btn-sm schema-btn" style="padding:2px 8px;font-size:11px" '
+        + 'onclick="event.stopPropagation();openLightbox(data.projects.find(function(p){return p.id===\''+projId+'\';}).schema)" '
+        + 'title="Voir le schema">&#128200; Schema</button>';
+}
 function openLightbox(src) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('modal-lightbox').classList.add('open');
@@ -2833,6 +2843,7 @@ async function dropKanban(e, status, colEl) {
  * Affiche les deadlines et dates de début des projets et tâches.
  */
 function renderCalendar() {
+    const projs = getFilteredProjects();
     const today    = new Date();
     const firstDay = new Date(calYear, calMonth, 1);
     const lastDay  = new Date(calYear, calMonth + 1, 0);
