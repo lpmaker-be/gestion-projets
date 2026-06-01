@@ -318,7 +318,7 @@ if __name__ == "__main__":
     print("  ========================================")
     print("")
     print(f"  Adresse : http://localhost:{PORT}")
-    print(f"  Donnees : {DATA_FILE}")
+    print(f"  Donnees : {LEGACY_FILE}")
     print("")
     print("  Ferme cette fenetre pour arreter le serveur")
     print("")
