@@ -563,7 +563,7 @@ function updateSummary() {
         <div class="sum-item">
             <span class="sum-dot" style="background:#0073ea"></span>
             <span class="sum-lbl">Projets</span>
-            <span class="sum-val">${data.projects.length}</span>
+            <span class="sum-val">${data.projects.filter(function(p){return !p.archived;}).length}</span>
         </div>
         <div class="sum-item">
             <span class="sum-dot" style="background:#fdab3d"></span>
@@ -590,6 +590,12 @@ function updateSummary() {
             <span class="sum-dot" style="background:#e2445c"></span>
             <span class="sum-lbl">En retard</span>
             <span class="sum-val" style="color:var(--red)">${overdue}</span>
+        </div>` : ''}
+        ${data.projects.filter(function(p){return p.archived;}).length > 0 ? `
+        <div class="sum-item">
+            <span class="sum-dot" style="background:#888"></span>
+            <span class="sum-lbl">Archives</span>
+            <span class="sum-val">${data.projects.filter(function(p){return p.archived;}).length}</span>
         </div>` : ''}
         ${totalEst > 0 ? `
         <div class="sum-item">
@@ -1290,7 +1296,13 @@ function exportPDF(projId) {
                     <span>${typeLabel(p.type).replace(/🔌|💻|⚙️/g,'').trim()}</span>
                     ${dl ? `<span class="${dl.cls}">${dl.str}</span>` : ''}
                     <span>Avancement : ${pct}% (${doneCnt}/${tasks.length} taches)</span>
-                    ${totalEst > 0 ? `<span>Estime : ${fmtEstimate(totalEst)}</span>` : ''}
+                    ${data.projects.filter(function(p){return p.archived;}).length > 0 ? `
+        <div class="sum-item">
+            <span class="sum-dot" style="background:#888"></span>
+            <span class="sum-lbl">Archives</span>
+            <span class="sum-val">${data.projects.filter(function(p){return p.archived;}).length}</span>
+        </div>` : ''}
+        ${totalEst > 0 ? `<span>Estime : ${fmtEstimate(totalEst)}</span>` : ''}
                     ${totalSpent > 0 ? `<span>Passe : ${fmtTime(totalSpent)}</span>` : ''}
                 </div>
                 ${p.desc ? `<div class="pdf-desc">${escHtml(p.desc)}</div>` : ''}
@@ -2703,6 +2715,15 @@ function morphUpdate(elementId, newHtml) {
         }
     });
 }
+
+/**
+ * Bascule l'affichage des projets archives dans le tableau.
+ */
+function toggleShowArchived(btn) {
+    showArchived = !showArchived;
+    if (btn) btn.classList.toggle('active', showArchived);
+    renderAll();
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
@@ -3248,6 +3269,12 @@ function renderDashboard() {
         </div>` : ''}
 
         <!-- ── Suivi du temps (widget conditionnel) ── -->
+        ${data.projects.filter(function(p){return p.archived;}).length > 0 ? `
+        <div class="sum-item">
+            <span class="sum-dot" style="background:#888"></span>
+            <span class="sum-lbl">Archives</span>
+            <span class="sum-val">${data.projects.filter(function(p){return p.archived;}).length}</span>
+        </div>` : ''}
         ${totalEst > 0 ? `
         <div class="dash-widget">
             <h3>⏱ Suivi du temps</h3>
