@@ -724,7 +724,7 @@ function renderBoard() {
                         <td class="dl-cell ${pdl ? pdl.cls : ''}">${pdl ? pdl.str : '—'}</td>
                         <td></td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${allTasks.reduce((s, t) => s + totalEstimate(t), 0)}h
+                            ${Math.round(allTasks.reduce((s, t) => s + totalEstimate(t), 0) * 10) / 10}h
                         </td>
                         <td></td>
                     </tr>`;
@@ -801,7 +801,7 @@ function renderBoard() {
                             </button>
                         </td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${totalEstimate(t) > 0 ? totalEstimate(t) + 'h' : '—'}
+                            ${totalEstimate(t) > 0 ? (Math.round(totalEstimate(t) * 10) / 10) + 'h' : '—'}
                         </td>
                         <td onclick="event.stopPropagation()">
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
@@ -1166,7 +1166,7 @@ function openSubtaskDetail(projId, taskId, subId, level) {
 function totalEstimate(task) {
     const own = parseFloat(task.estimate) || 0;
     const subs = (task.subtasks || []).reduce((s, st) => s + totalEstimate(st), 0);
-    return own + subs;
+    return Math.round((own + subs) * 10) / 10;
 }
 
 /**
@@ -3362,7 +3362,7 @@ function openTaskDetail(projId, taskId) {
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Estimation</div>
-                <div style="font-size:13px">${totalEstimate(t) > 0 ? totalEstimate(t) + 'h' : '—'}</div>
+                <div style="font-size:13px">${totalEstimate(t) > 0 ? (Math.round(totalEstimate(t) * 10) / 10) + 'h' : '—'}</div>
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Temps passé</div>
