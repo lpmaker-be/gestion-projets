@@ -2768,6 +2768,13 @@ async function deleteArchive(projId, projName) {
             if (result.ok) {
                 await loadData();
                 toast('Archive supprimee definitivement');
+                // Si plus d'archives, revenir au mode normal
+                var remaining = data.projects.filter(function(p) { return p.archived; });
+                if (!remaining.length) {
+                    showArchived = false;
+                    var arcBtn = document.getElementById('sb-archived');
+                    if (arcBtn) arcBtn.classList.remove('active');
+                }
                 renderAll();
             } else {
                 toast('Erreur : ' + (result.error || 'inconnue'), true);
