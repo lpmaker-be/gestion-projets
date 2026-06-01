@@ -433,6 +433,9 @@ function getFilteredProjects() {
     const sortBy = document.getElementById('sort-by').value;
 
     let projs = data.projects.filter(p => {
+        // Filtre archives
+        if (showArchived && !p.archived) return false;
+        if (!showArchived && p.archived) return false;
         // Filtre statut
         if (sideFilter !== 'all' && p.status !== sideFilter) return false;
         // Filtre type
@@ -533,12 +536,16 @@ function filterTasks(tasks) {
  * Met à jour les compteurs dans la sidebar.
  */
 function updateSideCounts() {
-    const c = { all: data.projects.length, todo: 0, prog: 0, done: 0, block: 0 };
-    data.projects.forEach(p => { c[p.status] = (c[p.status] || 0) + 1; });
+    const active   = data.projects.filter(p => !p.archived);
+    const archived = data.projects.filter(p => p.archived);
+    const c = { all: active.length, todo: 0, prog: 0, done: 0, block: 0 };
+    active.forEach(p => { c[p.status] = (c[p.status] || 0) + 1; });
     ['all', 'todo', 'prog', 'done', 'block'].forEach(k => {
         const el = document.getElementById('sc-' + k);
         if (el) el.textContent = c[k] || 0;
     });
+    const elArc = document.getElementById('sc-archived');
+    if (elArc) elArc.textContent = archived.length;
 }
 
 /**
@@ -1861,6 +1868,7 @@ async function archiveProject(id) {
             : (result.size/1048576).toFixed(1) + ' Mo';
         toast('Projet archive (' + size + ') dans archives/' + result.zip);
         addActivity('Projet archive : ' + p.name);
+        showArchived = false;
     } else {
         // Desarchiver : supprimer zip + marquer archived=false
         const resp   = await fetch('/api/unarchive?projId=' + id, { method: 'POST' });
