@@ -1039,7 +1039,9 @@ function toggleSubtask(projId, taskId, subId) {
 
 
 function deleteSubtask(projId, taskId, subId) {
-    const _stObj = findSubtask(t ? (t.subtasks||[]) : [], subId);
+    const t = findTask(projId, taskId);
+    if (!t) return;
+    const _stObj = findSubtask(t.subtasks || [], subId);
     const _stName = _stObj ? _stObj.name : 'cette etape';
     if (!window.__delSubConfirmed) {
         showConfirm('Supprimer cette etape ?', '"' + _stName + '"', function() {
@@ -1049,8 +1051,6 @@ function deleteSubtask(projId, taskId, subId) {
         return;
     }
     window.__delSubConfirmed = false;
-    const t = findTask(projId, taskId);
-    if (!t) return;
 
     const removeFromList = (list) => {
         const idx = list.findIndex(x => x.id === subId);
