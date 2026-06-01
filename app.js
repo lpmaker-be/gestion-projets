@@ -2874,7 +2874,11 @@ function initSortable() {
             handle: '.proj-drag-handle',
             animation: 150,
             ghostClass: 'drag-ghost',
+            dragClass: 'drag-ghost',
+            forceFallback: false,
+            onStart: function() { document.body.classList.add('dragging'); },
             onEnd: function(evt) {
+                document.body.classList.remove('dragging');
                 // Recalculer l'ordre des projets
                 var blocks = projContainer.querySelectorAll('.project-block[data-proj-id]');
                 var updates = [];
@@ -2904,8 +2908,11 @@ function initSortable() {
             handle: '.task-drag-handle',
             animation: 150,
             ghostClass: 'drag-ghost',
+            dragClass: 'drag-ghost',
             filter: '.subtask-row-1, .subtask-row-2',
+            onStart: function() { document.body.classList.add('dragging'); },
             onEnd: function(evt) {
+                document.body.classList.remove('dragging');
                 var tasks = data.tasks[pid] || [];
                 var rows = tbody.querySelectorAll('tr.task-row:not(.subtask-row-1):not(.subtask-row-2)');
                 var orderedIds = Array.from(rows).map(function(r) { return r.dataset.taskRow; });
