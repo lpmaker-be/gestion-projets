@@ -2352,7 +2352,7 @@ async function restoreSnapshot(idx) {
     if (result.ok) {
         closeModal('modal-history');
         await loadData();
-registerServiceWorker();
+unregisterOldServiceWorkers().then(function() { registerServiceWorker(); });
         toast('Version du ' + result.date + ' restauree !');
     } else {
         toast('Erreur : ' + result.error, true);
@@ -2460,7 +2460,7 @@ setInterval(async function() {
             _isOnline = false; // Forcer le changement
             setOnlineStatus(true);
             await loadData();
-registerServiceWorker();
+unregisterOldServiceWorkers().then(function() { registerServiceWorker(); });
             renderAll();
         }
     } catch(e) {
@@ -2519,6 +2519,15 @@ function openThemePicker() {
 /**
  * Enregistre le Service Worker pour les notifications hors page.
  */
+async function unregisterOldServiceWorkers() {
+    if (!('serviceWorker' in navigator)) return;
+    var regs = await navigator.serviceWorker.getRegistrations();
+    for (var reg of regs) {
+        await reg.unregister();
+        console.log('Service Worker ancien desinstalle');
+    }
+}
+
 async function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) {
         console.warn('Service Worker non supporte');
@@ -3813,4 +3822,4 @@ function toggleHelp() {
 
 /** Démarrage : chargement des données depuis le serveur */
 loadData();
-registerServiceWorker();
+unregisterOldServiceWorkers().then(function() { registerServiceWorker(); });
