@@ -314,16 +314,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
             for file in pdir.rglob('*'):
                 if file.is_file():
                     z.write(file, file.relative_to(pdir.parent))
-        # Supprimer le dossier apres le zip
-        import shutil
-        shutil.rmtree(pdir)
-
+        # Marquer archive et sauvegarder AVANT de supprimer le dossier
         data = load_data()
         for p in data['projects']:
             if p['id'] == proj_id:
                 p['archived'] = True
                 break
         save_data(data)
+
+        # Supprimer le dossier APRES save_data (qui aurait recrée le dossier sinon)
+        import shutil, time
+        time.sleep(0.1)
+        if pdir.exists():
+            shutil.rmtree(pdir)
+
         self._send_json({'ok': True, 'zip': zip_name, 'size': zip_path.stat().st_size})
 
     def _unarchive_project(self):
