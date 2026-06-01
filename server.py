@@ -302,6 +302,50 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(content)
 
 
+
+    def _delete_archive(self):
+        """Supprime definitivement une archive zip et retire le projet."""
+        from urllib.parse import urlparse, parse_qs
+        import re as _re
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        if not proj_id:
+            self._send_json({'error': 'projId manquant'}); return
+
+        # Trouver le projet dans les archives (zip)
+        data = load_data()
+        proj = next((p for p in data['projects'] if p['id'] == proj_id), None)
+        if not proj:
+            self._send_json({'error': 'Projet introuvable'}); return
+
+        # Supprimer le zip
+        zip_name = _re.sub(r'[<>:"/\\|?*]', '_', proj.get('name', proj_id)).strip('. ')[:60] + '.zip'
+        zip_path = ARCHIVE_DIR / zip_name
+        if zip_path.exists():
+            zip_path.unlink()
+            print(f"Archive supprimee: {zip_path}")
+
+        # Retirer le projet de la liste et sauvegarder
+        data['projects'] = [p for p in data['projects'] if p['id'] != proj_id]
+        if proj_id in data['tasks']:
+            del data['tasks'][proj_id]
+
+        # Sauvegarder sans le projet supprime
+        # On sauvegarde manuellement pour eviter les complications avec save_data
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        active = [p for p in data['projects'] if not p.get('archived')]
+        for p in active:
+            pdir = find_proj_dir(p['id'])
+            if not pdir:
+                pdir = DATA_DIR / proj_dirname(p)
+                pdir.mkdir(exist_ok=True)
+            with open(pdir / 'projet.json', 'w', encoding='utf-8') as f:
+                json.dump(p, f, ensure_ascii=False, indent=2)
+            with open(pdir / 'taches.json', 'w', encoding='utf-8') as f:
+                json.dump(data['tasks'].get(p['id'], []), f, ensure_ascii=False, indent=2)
+
+        self._send_json({'ok': True})
+
     def _restore_snapshot(self):
         from urllib.parse import urlparse, parse_qs
         qs  = parse_qs(urlparse(self.path).query)
