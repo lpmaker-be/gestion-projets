@@ -2460,7 +2460,6 @@ setInterval(async function() {
             _isOnline = false; // Forcer le changement
             setOnlineStatus(true);
             await loadData();
-unregisterOldServiceWorkers().then(function() { registerServiceWorker(); });
             renderAll();
         }
     } catch(e) {
