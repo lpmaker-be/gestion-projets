@@ -3678,32 +3678,38 @@ async function toggleTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
     if (!t) return;
 
+    // Si on veut cocher, verifier que toutes les sous-taches sont terminees
+    if (!t.done && t.subtasks && t.subtasks.length > 0) {
+        function allDoneRecursive(subs) {
+            return (subs || []).every(function(s) { return s.done && allDoneRecursive(s.subtasks); });
+        }
+        if (!allDoneRecursive(t.subtasks)) {
+            toast('Terminez d abord toutes les sous-etapes !', true);
+            return;
+        }
+    }
+
     t.done   = !t.done;
     t.status = t.done ? 'done' : 'todo';
 
-    // Propager aux sous-taches
-    setAllSubtasksDone(t.subtasks || [], t.done);
+    // Si on coche, propager aux sous-taches
+    if (t.done) setAllSubtasksDone(t.subtasks || [], true);
 
     await apiPost('/api/tasks', { projectId: projId, task: t });
     addActivity('Tache ' + (t.done ? 'terminee' : 'reouverte') + ' : ' + t.name);
     renderAll();
 
-    // Animation flash vert si tache cochee
     if (t.done) {
-        setTimeout(() => {
-            document.querySelectorAll('.btbl tbody tr.task-row').forEach(row => {
+        setTimeout(function() {
+            document.querySelectorAll('.btbl tbody tr.task-row').forEach(function(row) {
                 row.classList.add('just-done');
-                setTimeout(() => row.classList.remove('just-done'), 600);
+                setTimeout(function() { row.classList.remove('just-done'); }, 600);
             });
         }, 50);
     }
 }
 
-/**
- * Supprime une tâche.
- * @param {string} projId - ID du projet
- * @param {string} taskId - ID de la tâche
- */
+
 async function deleteTask(projId, taskId) {
     const t = (data.tasks[projId] || []).find(x => x.id === taskId);
     await apiDel(`/api/tasks?projectId=${projId}&taskId=${taskId}`);
