@@ -2682,6 +2682,31 @@ async function switchFilesDir(dir) {
     });
     await loadFilesList();
 }
+
+/**
+ * Met a jour le DOM en utilisant morphdom pour eviter le clignotement.
+ * Seuls les noeuds reellement modifies sont touches.
+ */
+function morphUpdate(elementId, newHtml) {
+    var el = document.getElementById(elementId);
+    if (!el) return;
+    if (typeof morphdom === 'undefined') {
+        // Fallback si morphdom non charge
+        el.innerHTML = newHtml;
+        return;
+    }
+    var tmp = document.createElement('div');
+    tmp.innerHTML = '<div id="' + elementId + '">' + newHtml + '</div>';
+    morphdom(el, tmp.firstChild, {
+        onBeforeElUpdated: function(fromEl, toEl) {
+            // Ne pas toucher les elements avec focus (inputs, textareas)
+            if (fromEl === document.activeElement) return false;
+            // Ne pas toucher les checkboxes en cours d'interaction
+            if (fromEl.tagName === 'INPUT' && fromEl.type === 'checkbox') return false;
+            return true;
+        }
+    });
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
