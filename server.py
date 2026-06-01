@@ -130,6 +130,9 @@ def save_data(data):
         else:
             pdir = new_path
         pdir.mkdir(exist_ok=True)
+        # Creer les sous-dossiers standard
+        for sub in ['images', 'stl', 'cura', 'docs']:
+            (pdir / sub).mkdir(exist_ok=True)
         with open(pdir/'projet.json','w',encoding='utf-8') as f:
             json.dump(p, f, ensure_ascii=False, indent=2)
         with open(pdir/'taches.json','w',encoding='utf-8') as f:
@@ -279,6 +282,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._export_excel()
         elif path == "/api/history":
             self._send_json(load_history())
+        elif path.startswith("/api/files/list"):
+            self._list_files()
+        elif path.startswith("/api/files/get"):
+            self._get_file()
+
         elif path.startswith("/api/restore"):
             self._restore_snapshot()
 
@@ -289,6 +297,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+
+        # Routes upload fichiers (multipart - traitement separe)
+        if parsed.path == "/api/files/upload":
+            self._upload_file()
+            return
+        if parsed.path == "/api/files/delete":
+            self._delete_file()
+            return
+
         length = int(self.headers.get("Content-Length", 0))
         body   = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
         data   = load_data()

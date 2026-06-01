@@ -673,6 +673,8 @@ function renderBoard() {
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#555;font-size:11px"
                             onclick="printView('${p.id}')" title="Imprimer ce projet">&#128424;</button>
+                    <button class="ic-btn" style="color:#0073ea;font-size:11px"
+                            onclick="openFiles('${p.id}')" title="Fichiers du projet">&#128193;</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
                     <button class="btn btn-secondary btn-sm" onclick="exportExcel('${p.id}')" title="Exporter Excel" style="padding:3px 8px;font-size:11px;color:#1d6f42;border-color:#1d6f42">XLS</button>
@@ -2574,6 +2576,97 @@ async function registerServiceWorker() {
 
 
 
+
+/* === GESTION DES FICHIERS PAR PROJET === */
+
+var currentFilesProj = null;
+var currentFilesDir  = 'images';
+
+/**
+ * Ouvre le gestionnaire de fichiers d'un projet.
+ */
+async function openFiles(projId) {
+    currentFilesProj = projId;
+    currentFilesDir  = 'images';
+    var proj = data.projects.find(function(p) { return p.id === projId; });
+    document.getElementById('files-proj-name').textContent = proj ? proj.name : '';
+    await loadFilesList();
+    document.getElementById('modal-files').classList.add('open');
+}
+
+async function loadFilesList() {
+    var list = document.getElementById('files-list');
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3)">Chargement...</div>';
+    try {
+        var resp = await fetch('/api/files/list?projId=' + currentFilesProj + '&dir=' + currentFilesDir);
+        var result = await resp.json();
+        var files = result.files || [];
+        if (!files.length) {
+            list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-style:italic">Aucun fichier</div>';
+            return;
+        }
+        var html = '';
+        files.forEach(function(f) {
+            var isImg = /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(f.name);
+            var isStl = /\.stl$/i.test(f.name);
+            var icon  = isImg ? '&#128247;' : isStl ? '&#128684;' : '&#128196;';
+            var size  = f.size < 1024 ? f.size + ' o' : f.size < 1048576 ? Math.round(f.size/1024) + ' Ko' : (f.size/1048576).toFixed(1) + ' Mo';
+            html += '<div class="file-row">';
+            if (isImg) {
+                html += '<img src="' + f.url + '" class="file-thumb" onclick="openLightbox(\'' + f.url + '\')">';
+            } else {
+                html += '<span class="file-icon">' + icon + '</span>';
+            }
+            html += '<div class="file-info"><div class="file-name">' + escHtml(f.name) + '</div>';
+            html += '<div class="file-size">' + size + '</div></div>';
+            html += '<div class="file-actions">';
+            html += '<a href="' + f.url + '" download="' + escHtml(f.name) + '" class="btn btn-secondary btn-sm" style="font-size:11px">&#8595;</a>';
+            html += '<button class="btn btn-sm" style="color:var(--red);font-size:11px" onclick="deleteFile(\'' + escHtml(f.name) + '\')">&#128465;</button>';
+            html += '</div></div>';
+        });
+        list.innerHTML = html;
+    } catch(e) {
+        list.innerHTML = '<div style="color:var(--red);padding:20px">Erreur : ' + e.message + '</div>';
+    }
+}
+
+async function uploadFiles(input) {
+    if (!input.files.length) return;
+    var formData = new FormData();
+    for (var i = 0; i < input.files.length; i++) {
+        formData.append('file', input.files[i]);
+    }
+    try {
+        var resp = await fetch('/api/files/upload?projId=' + currentFilesProj + '&dir=' + currentFilesDir, {
+            method: 'POST',
+            body: formData
+        });
+        var result = await resp.json();
+        toast(result.files.length + ' fichier(s) uploade(s) !');
+        await loadFilesList();
+    } catch(e) {
+        toast('Erreur upload : ' + e.message, true);
+    }
+    input.value = '';
+}
+
+async function deleteFile(fname) {
+    if (!confirm('Supprimer "' + fname + '" ?')) return;
+    var resp = await fetch('/api/files/delete?projId=' + currentFilesProj + '&dir=' + currentFilesDir + '&file=' + encodeURIComponent(fname), { method: 'POST' });
+    var result = await resp.json();
+    if (result.ok) {
+        toast('Fichier supprime');
+        await loadFilesList();
+    }
+}
+
+async function switchFilesDir(dir) {
+    currentFilesDir = dir;
+    document.querySelectorAll('.files-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.dir === dir);
+    });
+    await loadFilesList();
+}
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);

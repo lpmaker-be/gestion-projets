@@ -577,6 +577,33 @@
         </div>
     </div>
 </div>
+
+<!-- MODAL FICHIERS -->
+<div class="modal-overlay" id="modal-files">
+    <div class="modal" style="max-width:600px">
+        <div class="modal-hdr">
+            <h2>&#128193; Fichiers — <span id="files-proj-name" style="font-weight:400;font-size:14px"></span></h2>
+            <button class="modal-x" onclick="closeModal('modal-files')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="files-tabs">
+                <div class="files-tab active" data-dir="images" onclick="switchFilesDir('images')">&#128247; Images</div>
+                <div class="files-tab" data-dir="stl" onclick="switchFilesDir('stl')">&#128684; STL</div>
+                <div class="files-tab" data-dir="cura" onclick="switchFilesDir('cura')">&#9881; Cura</div>
+                <div class="files-tab" data-dir="docs" onclick="switchFilesDir('docs')">&#128196; Docs</div>
+            </div>
+            <label class="file-upload-zone" for="file-upload-input">
+                <div style="font-size:24px">&#8679;</div>
+                <div style="font-size:13px;color:var(--text2);margin-top:4px">Cliquer ou glisser-deposer des fichiers</div>
+                <input type="file" id="file-upload-input" multiple style="display:none" onchange="uploadFiles(this)">
+            </label>
+            <div id="files-list"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-files')">Fermer</button>
+        </div>
+    </div>
+</div>
 <div class="toast" id="toast"></div>
 
 
