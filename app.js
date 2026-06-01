@@ -2472,16 +2472,21 @@ registerServiceWorker();
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Retirer les custom properties si on revient a un theme predefini
-    document.documentElement.style.removeProperty('--accent');
-    document.documentElement.style.removeProperty('--accent-h');
-    document.documentElement.style.removeProperty('--sidebar');
-    document.documentElement.setAttribute('data-theme', theme);
+    // Forcer la suppression des custom properties inline
+    var root = document.documentElement;
+    root.style.cssText = root.style.cssText
+        .replace(/--accent[^;]*;?/g, '')
+        .replace(/--sidebar[^;]*;?/g, '');
+    root.style.removeProperty('--accent');
+    root.style.removeProperty('--accent-h');
+    root.style.removeProperty('--sidebar');
+    root.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.theme === theme);
     });
+    toast('Theme ' + theme + ' applique !');
 }
 
 function openThemePicker() {
