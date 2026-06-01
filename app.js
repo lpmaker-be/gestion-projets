@@ -2471,14 +2471,15 @@ setInterval(async function() {
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Supprimer TOUT ce qui pourrait forcer une couleur custom
+    // Supprimer la balise style custom
     var customStyle = document.getElementById('custom-theme-style');
-    if (customStyle) customStyle.textContent = '';  // Vider le contenu
-    if (customStyle) customStyle.remove();          // Puis supprimer
-    // Supprimer tous les styles inline sur :root
+    if (customStyle) {
+        customStyle.textContent = '';
+        customStyle.parentNode.removeChild(customStyle);
+    }
+    // Supprimer styles inline residuels
     document.documentElement.removeAttribute('style');
     document.documentElement.setAttribute('data-theme', theme);
-    console.log('Theme applique:', theme, 'data-theme:', document.documentElement.getAttribute('data-theme'));
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
