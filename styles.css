@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    GESTIONNAIRE DE PROJETS - styles.css
    ============================================================ */
 
@@ -272,7 +272,7 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .add-task-btn { width: 100%; padding: 10px 16px !important; border-radius: 0 !important; border: none !important; border-top: 1px solid var(--border) !important; color: var(--accent) !important; font-weight: 500; font-size: 13px; justify-content: flex-start; }
 .add-task-btn:hover { background: rgba(0,115,234,.06) !important; }
 
-/* ── Animations ── */
+/* â”€â”€ Animations â”€â”€ */
 
 /* Apparition d'une nouvelle ligne */
 @keyframes fadeIn {
@@ -335,7 +335,7 @@ body { background: var(--bg); color: var(--text); font-size: 14px; height: 100vh
 .tag-colors-4 { background: #ffe8e8; color: #cc0000; }
 .tag-colors-5 { background: #f0e8ff; color: #7700cc; }
 
-/* ── Mode sombre ── */
+/* â”€â”€ Mode sombre â”€â”€ */
 body.dark {
     --bg:             #1a1b1e;
     --white:          #25262b;
@@ -534,7 +534,7 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
     }
 }
 
-/* ── Themes de couleurs ── */
+/* â”€â”€ Themes de couleurs â”€â”€ */
 
 /* Bleu (defaut) */
 :root, [data-theme="blue"] {
@@ -621,7 +621,8 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 .file-upload-zone:hover { border-color: var(--accent); }
 
 /* Transition douce pour le rendu */
-#content { transition: opacity 0.08s ease; }
+#content { transition: opacity 0.05s ease; }
 #content.rendering { opacity: 0.85; }
 .project-block { animation: none !important; }
 .task-row { transition: background 0.15s, opacity 0.15s; }
+
