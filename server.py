@@ -523,6 +523,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
 
         # Routes upload fichiers (multipart - traitement separe)
+        if parsed.path == "/api/delete-archive":
+            self._delete_archive()
+            return
         if parsed.path == "/api/archive":
             self._archive_project()
             return

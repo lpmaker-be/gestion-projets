@@ -875,7 +875,7 @@ function renderBoard() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
@@ -883,8 +883,9 @@ function renderBoard() {
                 html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
                       + '<div class="proj-hdr" style="background:var(--bg)">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
         }
@@ -2746,6 +2747,28 @@ function toggleShowArchived(btn) {
     if (btn) btn.classList.toggle('active', showArchived);
     setView('board', null);
     renderAll();
+    if (showArchived) {
+        setTimeout(function() {
+            var el = document.getElementById('archives-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+    }
+}
+
+/**
+ * Supprime definitivement une archive (zip) sans restaurer.
+ */
+async function deleteArchive(projId, projName) {
+    if (!confirm('Supprimer definitivement l archive "' + projName + '" ?\nCette action est irreversible !')) return;
+    var resp   = await fetch('/api/delete-archive?projId=' + projId, { method: 'POST' });
+    var result = await resp.json();
+    if (result.ok) {
+        await loadData();
+        toast('Archive supprimee definitivement');
+        renderAll();
+    } else {
+        toast('Erreur : ' + (result.error || 'inconnue'), true);
+    }
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
@@ -2847,7 +2870,7 @@ function renderKanban() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
@@ -2855,8 +2878,9 @@ function renderKanban() {
                 html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
                       + '<div class="proj-hdr" style="background:var(--bg)">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
         }
@@ -3002,7 +3026,7 @@ function renderCalendar() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
@@ -3010,8 +3034,9 @@ function renderCalendar() {
                 html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
                       + '<div class="proj-hdr" style="background:var(--bg)">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
         }
@@ -3170,7 +3195,7 @@ function renderGantt() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
@@ -3178,8 +3203,9 @@ function renderGantt() {
                 html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
                       + '<div class="proj-hdr" style="background:var(--bg)">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
         }
@@ -3388,7 +3414,7 @@ function renderDashboard() {
     if (showArchived) {
         var archived = data.projects.filter(function(p) { return p.archived; });
         if (archived.length) {
-            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+            html += '<div id="archives-section" style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span>'
                   + '<span>&#128451; Archives (' + archived.length + ')</span>'
                   + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
@@ -3396,8 +3422,9 @@ function renderDashboard() {
                 html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
                       + '<div class="proj-hdr" style="background:var(--bg)">'
                       + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
-                      + '<div style="margin-left:auto">'
+                      + '<div style="margin-left:auto;display:flex;gap:6px">'
                       + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '<button class="btn btn-sm" onclick="deleteArchive(\'' + p.id + '\',\'' + escHtml(p.name) + '\')" style="font-size:11px;color:var(--red)" title="Supprimer definitivement">&#128465;</button>'
                       + '</div></div></div>';
             });
         }
