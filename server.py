@@ -276,6 +276,169 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
 
+
+    def _restore_snapshot(self):
+        from urllib.parse import urlparse, parse_qs
+        qs  = parse_qs(urlparse(self.path).query)
+        idx = int(qs.get('idx', [0])[0])
+        history = load_history()
+        if 0 <= idx < len(history):
+            snap = history[idx]
+            save_data(snap['data'])
+            self._send_json({'ok': True, 'date': snap['date']})
+        else:
+            self._send_json({'ok': False, 'error': 'Index invalide'})
+
+    def _list_archives(self):
+        ARCHIVE_DIR.mkdir(exist_ok=True)
+        archives = []
+        for f in sorted(ARCHIVE_DIR.iterdir()):
+            if f.suffix == '.zip':
+                archives.append({'name': f.stem, 'file': f.name,
+                    'size': f.stat().st_size,
+                    'date': datetime.datetime.fromtimestamp(f.stat().st_mtime).strftime('%d/%m/%Y %H:%M')})
+        self._send_json({'archives': archives})
+
+    def _archive_project(self):
+        from urllib.parse import urlparse, parse_qs
+        import zipfile
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        if not proj_id: self._send_json({'error': 'projId manquant'}); return
+        pdir = find_proj_dir(proj_id)
+        if not pdir: self._send_json({'error': 'Projet introuvable'}); return
+        ARCHIVE_DIR.mkdir(exist_ok=True)
+        zip_name = pdir.name + '.zip'
+        zip_path = ARCHIVE_DIR / zip_name
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
+            for file in pdir.rglob('*'):
+                if file.is_file():
+                    z.write(file, file.relative_to(pdir.parent))
+        data = load_data()
+        for p in data['projects']:
+            if p['id'] == proj_id:
+                p['archived'] = True
+                break
+        save_data(data)
+        self._send_json({'ok': True, 'zip': zip_name, 'size': zip_path.stat().st_size})
+
+    def _unarchive_project(self):
+        from urllib.parse import urlparse, parse_qs
+        import re as _re
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        if not proj_id: self._send_json({'error': 'projId manquant'}); return
+        data = load_data()
+        proj = next((p for p in data['projects'] if p['id'] == proj_id), None)
+        if not proj: self._send_json({'error': 'Projet introuvable'}); return
+        zip_name = _re.sub(r'[<>:"/\\|?*]', '_', proj.get('name', proj_id)).strip('. ')[:60] + '.zip'
+        zip_path = ARCHIVE_DIR / zip_name
+        if zip_path.exists(): zip_path.unlink()
+        proj['archived'] = False
+        save_data(data)
+        self._send_json({'ok': True})
+
+    def _list_files(self):
+        from urllib.parse import urlparse, parse_qs
+        import mimetypes
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        subdir  = qs.get('dir',    ['images'])[0]
+        if not proj_id or subdir not in ['images','stl','cura','docs']:
+            self._send_json({'error': 'Parametres invalides'}); return
+        pdir = find_proj_dir(proj_id)
+        if not pdir: self._send_json({'files': []}); return
+        target = pdir / subdir
+        target.mkdir(exist_ok=True)
+        files = []
+        for f in sorted(target.iterdir()):
+            if f.is_file():
+                files.append({'name': f.name, 'size': f.stat().st_size,
+                    'url': f'/api/files/get?projId={proj_id}&dir={subdir}&file={f.name}'})
+        self._send_json({'files': files})
+
+    def _get_file(self):
+        from urllib.parse import urlparse, parse_qs
+        import mimetypes
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        subdir  = qs.get('dir',    ['images'])[0]
+        fname   = qs.get('file',   [None])[0]
+        if not all([proj_id, subdir, fname]) or subdir not in ['images','stl','cura','docs']:
+            self.send_response(400); self.end_headers(); return
+        pdir = find_proj_dir(proj_id)
+        if not pdir: self.send_response(404); self.end_headers(); return
+        fpath = pdir / subdir / fname
+        if not fpath.exists(): self.send_response(404); self.end_headers(); return
+        import mimetypes
+        ctype = mimetypes.guess_type(str(fpath))[0] or 'application/octet-stream'
+        content = fpath.read_bytes()
+        self.send_response(200)
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(len(content)))
+        self.send_header('Content-Disposition', f'inline; filename="{fname}"')
+        self._cors()
+        self.end_headers()
+        self.wfile.write(content)
+
+    def _upload_file(self):
+        from urllib.parse import urlparse, parse_qs
+        import re as _re
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        subdir  = qs.get('dir',    ['images'])[0]
+        if not proj_id or subdir not in ['images','stl','cura','docs']:
+            self._send_json({'error': 'Parametres invalides'}); return
+        pdir = find_proj_dir(proj_id)
+        if not pdir: self._send_json({'error': 'Projet introuvable'}); return
+        ctype  = self.headers.get('Content-Type', '')
+        length = int(self.headers.get('Content-Length', 0))
+        body   = self.rfile.read(length)
+        boundary = None
+        for part in ctype.split(';'):
+            part = part.strip()
+            if part.startswith('boundary='):
+                boundary = part[9:].strip('"'); break
+        if not boundary: self._send_json({'error': 'Pas de boundary'}); return
+        bnd   = ('--' + boundary).encode()
+        parts = body.split(bnd)
+        saved = []
+        for part in parts[1:]:
+            if part.strip() in [b'', b'--', b'--\r\n']: continue
+            sep = part.find(b'\r\n\r\n')
+            if sep < 0: continue
+            hdr_raw = part[:sep].decode('utf-8', errors='replace')
+            content = part[sep+4:]
+            if content.endswith(b'\r\n'): content = content[:-2]
+            fname = None
+            for line in hdr_raw.split('\r\n'):
+                if 'filename=' in line:
+                    m = _re.search(r'filename="([^"]+)"', line)
+                    if m: fname = m.group(1)
+            if not fname: continue
+            target = pdir / subdir
+            target.mkdir(exist_ok=True)
+            (target / fname).write_bytes(content)
+            saved.append({'name': fname, 'size': len(content),
+                'url': f'/api/files/get?projId={proj_id}&dir={subdir}&file={fname}'})
+        self._send_json({'ok': True, 'files': saved})
+
+    def _delete_file(self):
+        from urllib.parse import urlparse, parse_qs
+        qs      = parse_qs(urlparse(self.path).query)
+        proj_id = qs.get('projId', [None])[0]
+        subdir  = qs.get('dir',    ['images'])[0]
+        fname   = qs.get('file',   [None])[0]
+        if not all([proj_id, subdir, fname]): self._send_json({'error': 'Parametres manquants'}); return
+        pdir = find_proj_dir(proj_id)
+        if not pdir: self._send_json({'error': 'Projet introuvable'}); return
+        fpath = pdir / subdir / fname
+        if fpath.exists():
+            fpath.unlink()
+            self._send_json({'ok': True})
+        else:
+            self._send_json({'error': 'Fichier introuvable'})
+
     def do_OPTIONS(self):
         self.send_response(200)
         self._cors()
