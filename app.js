@@ -1881,6 +1881,8 @@ async function archiveProject(id) {
         toast('Projet archive (' + size + ') dans archives/' + result.zip);
         addActivity('Projet archive : ' + p.name);
         showArchived = false;
+        var arcBtn = document.getElementById('sb-archived');
+        if (arcBtn) arcBtn.classList.remove('active');
     } else {
         // Desarchiver : supprimer zip + marquer archived=false
         const resp   = await fetch('/api/unarchive?projId=' + id, { method: 'POST' });
@@ -1889,6 +1891,9 @@ async function archiveProject(id) {
         await loadData();
         toast('Projet restaure et archive zip supprime !');
         addActivity('Projet restaure : ' + p.name);
+        showArchived = false;
+        var arcBtn2 = document.getElementById('sb-archived');
+        if (arcBtn2) arcBtn2.classList.remove('active');
     }
     renderAll();
 }
