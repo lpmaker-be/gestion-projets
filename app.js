@@ -457,10 +457,6 @@ function getFilteredProjects() {
         return true;
     });
 
-    // Tri par ordre manuel en priorite si pas de tri specifique
-    if (!sortBy || sortBy === 'created') {
-        projs.sort(function(a, b) { return (a.order !== undefined ? a.order : 999) - (b.order !== undefined ? b.order : 999); });
-    }
     // Tri
     projs.sort((a, b) => {
         if (sortBy === 'deadline')  return (a.deadline || '9999') > (b.deadline || '9999') ? 1 : -1;
@@ -660,7 +656,7 @@ function renderBoard() {
     let html = '<div>';
 
     projs.forEach(p => {
-        const allTasks = (data.tasks[p.id] || []).slice().sort(function(a,b){ return (a.order!==undefined?a.order:999)-(b.order!==undefined?b.order:999); });
+        const allTasks = data.tasks[p.id] || [];
         const tasks    = filterTasks(allTasks);
         const doneCnt  = allTasks.filter(t => t.done).length;
         const pct      = allTasks.length ? Math.round(doneCnt / allTasks.length * 100) : 0;
@@ -700,8 +696,6 @@ function renderBoard() {
                     <button class="ic-btn" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
                     <button class="ic-btn" style="color:#555;font-size:11px"
                             onclick="printView('${p.id}')" title="Imprimer ce projet">&#128424;</button>
-                    <button class="ic-btn" onclick="moveProjUp('${p.id}')" title="Monter" style="font-size:11px">&#9650;</button>
-                    <button class="ic-btn" onclick="moveProjDown('${p.id}')" title="Descendre" style="font-size:11px">&#9660;</button>
                     <button class="ic-btn" style="color:#0073ea;font-size:11px"
                             onclick="openFiles('${p.id}')" title="Fichiers du projet">&#128193;</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
@@ -842,8 +836,6 @@ function renderBoard() {
                             ${totalTimeSpent(t) > 0 ? fmtTime(totalTimeSpent(t)) : (t.done ? '—' : '')}
                         </td>
                         <td onclick="event.stopPropagation()">
-                            <button class="ic-btn" onclick="moveTaskUp('${p.id}','${t.id}')" title="Monter" style="font-size:10px;color:var(--text3)">&#9650;</button>
-                            <button class="ic-btn" onclick="moveTaskDown('${p.id}','${t.id}')" title="Descendre" style="font-size:10px;color:var(--text3)">&#9660;</button>
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
                                     onclick="deleteTask('${p.id}', '${t.id}')">✕</button>
                         </td>
@@ -2864,59 +2856,15 @@ function deleteSelectedArchives() {
 /**
  * Initialise les ordres si pas encore definis (0,1,2,3...)
  */
-function ensureOrders(arr) {
-    var needsInit = arr.some(function(x) { return x.order === undefined || x.order === 999; });
-    if (needsInit) {
-        arr.forEach(function(x, i) { x.order = i; });
-    }
-}
 
-function moveProjUp(id) {
-    var projs = getFilteredProjects();
-    ensureOrders(data.projects);
-    var idx = projs.findIndex(function(p) { return p.id === id; });
-    if (idx <= 0) return;
-    // Echanger les positions dans data.projects
-    var a = data.projects.find(function(p) { return p.id === projs[idx].id; });
-    var b = data.projects.find(function(p) { return p.id === projs[idx-1].id; });
-    if (!a || !b) return;
-    var tmp = a.order; a.order = b.order; b.order = tmp;
-    Promise.all([apiPost('/api/projects', a), apiPost('/api/projects', b)])
-        .then(function() { renderAll(); });
-}
 
-function moveProjDown(id) {
-    var projs = getFilteredProjects();
-    ensureOrders(data.projects);
-    var idx = projs.findIndex(function(p) { return p.id === id; });
-    if (idx < 0 || idx >= projs.length - 1) return;
-    var a = data.projects.find(function(p) { return p.id === projs[idx].id; });
-    var b = data.projects.find(function(p) { return p.id === projs[idx+1].id; });
-    if (!a || !b) return;
-    var tmp = a.order; a.order = b.order; b.order = tmp;
-    Promise.all([apiPost('/api/projects', a), apiPost('/api/projects', b)])
-        .then(function() { renderAll(); });
-}
 
-function moveTaskUp(projId, taskId) {
-    var tasks = data.tasks[projId] || [];
-    ensureOrders(tasks);
-    var idx = tasks.findIndex(function(t) { return t.id === taskId; });
-    if (idx <= 0) return;
-    var tmp = tasks[idx].order; tasks[idx].order = tasks[idx-1].order; tasks[idx-1].order = tmp;
-    apiPost('/api/tasks/reorder', { projectId: projId, tasks: tasks })
-        .then(function() { renderAll(); });
-}
 
-function moveTaskDown(projId, taskId) {
-    var tasks = data.tasks[projId] || [];
-    ensureOrders(tasks);
-    var idx = tasks.findIndex(function(t) { return t.id === taskId; });
-    if (idx < 0 || idx >= tasks.length - 1) return;
-    var tmp = tasks[idx].order; tasks[idx].order = tasks[idx+1].order; tasks[idx+1].order = tmp;
-    apiPost('/api/tasks/reorder', { projectId: projId, tasks: tasks })
-        .then(function() { renderAll(); });
-}
+
+
+
+
+
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
     else                   collapsed.add(id);
