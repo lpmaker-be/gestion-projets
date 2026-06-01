@@ -699,6 +699,7 @@ function renderBoard() {
                             <th style="width:120px">Deadline</th>
                             <th style="width:90px">Temps</th>
                             <th style="width:80px">Estimé</th>
+                        <th style="width:80px">Passé</th>
                             <th style="width:50px"></th>
                         </tr>
                     </thead>
@@ -804,6 +805,9 @@ function renderBoard() {
                         </td>
                         <td style="font-size:12px;color:var(--text2)">
                             ${fmtEstimate(totalEstimate(t))}
+                        </td>
+                        <td style="font-size:12px;color:var(--text2)">
+                            ${totalTimeSpent(t) > 0 ? fmtTime(totalTimeSpent(t)) : (t.done ? '—' : '')}
                         </td>
                         <td onclick="event.stopPropagation()">
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
