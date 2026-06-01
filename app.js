@@ -2759,16 +2759,21 @@ function toggleShowArchived(btn) {
  * Supprime definitivement une archive (zip) sans restaurer.
  */
 async function deleteArchive(projId, projName) {
-    if (!confirm('Supprimer definitivement l archive "' + projName + '" ?\nCette action est irreversible !')) return;
-    var resp   = await fetch('/api/delete-archive?projId=' + projId, { method: 'POST' });
-    var result = await resp.json();
-    if (result.ok) {
-        await loadData();
-        toast('Archive supprimee definitivement');
-        renderAll();
-    } else {
-        toast('Erreur : ' + (result.error || 'inconnue'), true);
-    }
+    showConfirm(
+        'Supprimer l archive ?',
+        '"' + projName + '" sera supprime definitivement. Cette action est irreversible !',
+        async function() {
+            var resp   = await fetch('/api/delete-archive?projId=' + projId, { method: 'POST' });
+            var result = await resp.json();
+            if (result.ok) {
+                await loadData();
+                toast('Archive supprimee definitivement');
+                renderAll();
+            } else {
+                toast('Erreur : ' + (result.error || 'inconnue'), true);
+            }
+        }
+    );
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
