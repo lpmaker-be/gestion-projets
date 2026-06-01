@@ -2471,14 +2471,9 @@ setInterval(async function() {
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Supprimer la balise style custom
+    // Neutraliser la balise custom en la vidant (plus fiable que remove)
     var customStyle = document.getElementById('custom-theme-style');
-    if (customStyle) {
-        customStyle.textContent = '';
-        customStyle.parentNode.removeChild(customStyle);
-    }
-    // Supprimer styles inline residuels
-    document.documentElement.removeAttribute('style');
+    if (customStyle) customStyle.textContent = ':root[data-theme="__none__"] {}';
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
