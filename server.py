@@ -36,6 +36,30 @@ STATIC_FILES = {
 }
 
 
+
+def proj_dirname(p):
+    """Retourne un nom de dossier valide depuis le nom du projet."""
+    import re
+    name = p.get('name', p['id'])
+    # Remplacer les caracteres invalides
+    name = re.sub(r'[<>:"/\\|?*]', '_', name)
+    name = name.strip('. ')[:60]  # Max 60 chars
+    return name or p['id']
+
+def find_proj_dir(pid):
+    """Trouve le dossier d'un projet par son ID (cherche dans tous les sous-dossiers)."""
+    if not DATA_DIR.exists():
+        return None
+    for d in DATA_DIR.iterdir():
+        if not d.is_dir(): continue
+        pf = d / 'projet.json'
+        if pf.exists():
+            with open(pf, 'r', encoding='utf-8') as f:
+                p = json.load(f)
+            if p.get('id') == pid:
+                return d
+    return None
+
 def ensure_data_dir():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -91,7 +115,19 @@ def save_data(data):
         if entry.is_dir() and entry.name not in existing_ids:
             import shutil; shutil.rmtree(entry)
     for p in projects:
-        pdir = DATA_DIR / p['id']
+        # Chercher si le dossier existe deja (par ID)
+        existing = find_proj_dir(p['id'])
+        # Calculer le nouveau nom de dossier
+        new_name = proj_dirname(p)
+        new_path = DATA_DIR / new_name
+        # Renommer si necessaire
+        if existing and existing.name != new_name:
+            existing.rename(new_path)
+            pdir = new_path
+        elif existing:
+            pdir = existing
+        else:
+            pdir = new_path
         pdir.mkdir(exist_ok=True)
         with open(pdir/'projet.json','w',encoding='utf-8') as f:
             json.dump(p, f, ensure_ascii=False, indent=2)

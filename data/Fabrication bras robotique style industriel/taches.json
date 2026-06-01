@@ -138,8 +138,8 @@
     "depends": "",
     "note": "",
     "reminder": "",
-    "status": "done",
-    "done": true,
+    "status": "todo",
+    "done": false,
     "subtasks": [],
     "timeSpent": 5749,
     "attachments": [
@@ -176,7 +176,8 @@
       }
     ],
     "tags": [
-      "impression3d"
+      "impression3d",
+      "mecanique"
     ],
     "comments": []
   }
