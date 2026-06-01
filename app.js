@@ -2585,15 +2585,12 @@ function hueToSidebar(hue) {
  * Applique une teinte personnalisee en preview.
  */
 function applyCustomHue(hue) {
+    // Uniquement mettre a jour le preview - pas les CSS globales
     var accent  = hueToAccent(hue);
     var preview = document.getElementById('hue-preview');
     var label   = document.getElementById('hue-value');
     if (preview) preview.style.background = accent;
     if (label)   label.textContent = 'Teinte : ' + hue + 'deg';
-    // Deselectionner les swatches predefinies
-    document.querySelectorAll('.theme-swatch').forEach(function(s) {
-        s.classList.remove('active');
-    });
 }
 
 /**
