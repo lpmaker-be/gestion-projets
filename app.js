@@ -2472,15 +2472,13 @@ registerServiceWorker();
 /* === THEMES DE COULEURS === */
 
 function applyTheme(theme) {
-    // Forcer la suppression des custom properties inline
-    var root = document.documentElement;
-    root.style.cssText = root.style.cssText
-        .replace(/--accent[^;]*;?/g, '')
-        .replace(/--sidebar[^;]*;?/g, '');
-    root.style.removeProperty('--accent');
-    root.style.removeProperty('--accent-h');
-    root.style.removeProperty('--sidebar');
-    root.setAttribute('data-theme', theme);
+    // Supprimer la balise style custom si elle existe
+    var customStyle = document.getElementById('custom-theme-style');
+    if (customStyle) customStyle.remove();
+    document.documentElement.style.removeProperty('--accent');
+    document.documentElement.style.removeProperty('--accent-h');
+    document.documentElement.style.removeProperty('--sidebar');
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
     localStorage.removeItem('gp_custom_hue');
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
@@ -2508,10 +2506,8 @@ function openThemePicker() {
 (function() {
     var saved = localStorage.getItem('gp_theme') || 'blue';
     if (saved === 'custom') {
-        var hue     = localStorage.getItem('gp_custom_hue') || '210';
-        document.documentElement.style.setProperty('--accent',   'hsl(' + hue + ', 85%, 45%)');
-        document.documentElement.style.setProperty('--accent-h', 'hsl(' + (parseInt(hue)+10) + ', 85%, 45%)');
-        document.documentElement.style.setProperty('--sidebar',  'hsl(' + hue + ', 40%, 15%)');
+        var hue = localStorage.getItem('gp_custom_hue') || '210';
+        applyCustomTheme(hue);
     } else {
         document.documentElement.setAttribute('data-theme', saved);
     }
@@ -2598,19 +2594,28 @@ function applyCustomHue(hue) {
  */
 function confirmCustomHue() {
     var hue = document.getElementById('hue-slider').value;
-    var accent  = hueToAccent(hue);
-    var sidebar = hueToSidebar(hue);
-
-    // Appliquer via CSS custom properties
-    document.documentElement.style.setProperty('--accent',   accent);
-    document.documentElement.style.setProperty('--accent-h', hueToAccent(parseInt(hue) + 10));
-    document.documentElement.style.setProperty('--sidebar',  sidebar);
-    document.documentElement.removeAttribute('data-theme');
-
+    applyCustomTheme(hue);
     localStorage.setItem('gp_theme',     'custom');
     localStorage.setItem('gp_custom_hue', hue);
     toast('Theme personnalise applique !');
     closeModal('modal-theme');
+}
+
+function applyCustomTheme(hue) {
+    // Supprimer data-theme pour desactiver les themes predefinis
+    document.documentElement.removeAttribute('data-theme');
+    // Supprimer les inline styles residuels
+    document.documentElement.style.removeProperty('--accent');
+    document.documentElement.style.removeProperty('--accent-h');
+    document.documentElement.style.removeProperty('--sidebar');
+    // Injecter via une balise style dynamique
+    var styleEl = document.getElementById('custom-theme-style');
+    if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'custom-theme-style';
+        document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = ':root { --accent: hsl(' + hue + ', 85%, 45%) !important; --accent-h: hsl(' + (parseInt(hue)+10) + ', 85%, 45%) !important; --sidebar: hsl(' + hue + ', 40%, 15%) !important; }';
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
