@@ -127,6 +127,9 @@ def save_data(data):
                 import shutil; shutil.rmtree(entry)
         except: pass
     for p in projects:
+        # Ne pas recreer le dossier d'un projet archive
+        if p.get('archived'):
+            continue
         # Chercher si le dossier existe deja (par ID)
         existing = find_proj_dir(p['id'])
         # Calculer le nouveau nom de dossier
@@ -322,11 +325,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 break
         save_data(data)
 
-        # Supprimer le dossier APRES save_data (qui aurait recrée le dossier sinon)
-        import shutil, time
+        # Supprimer le dossier APRES save_data
+        import shutil, time, stat
         time.sleep(0.1)
         if pdir.exists():
-            shutil.rmtree(pdir)
+            def force_remove(func, path, exc):
+                import os
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+            shutil.rmtree(pdir, onerror=force_remove)
 
         self._send_json({'ok': True, 'zip': zip_name, 'size': zip_path.stat().st_size})
 
