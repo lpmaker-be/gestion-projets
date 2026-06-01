@@ -2861,54 +2861,61 @@ function deleteSelectedArchives() {
 
 /* === REORDONNEMENT MANUEL === */
 
+/**
+ * Initialise les ordres si pas encore definis (0,1,2,3...)
+ */
+function ensureOrders(arr) {
+    var needsInit = arr.some(function(x) { return x.order === undefined || x.order === 999; });
+    if (needsInit) {
+        arr.forEach(function(x, i) { x.order = i; });
+    }
+}
+
 function moveProjUp(id) {
     var projs = getFilteredProjects();
-    var idx   = projs.findIndex(function(p) { return p.id === id; });
+    ensureOrders(data.projects);
+    var idx = projs.findIndex(function(p) { return p.id === id; });
     if (idx <= 0) return;
-    swapOrder(data.projects, projs[idx].id, projs[idx-1].id);
-    Promise.all([apiPost('/api/projects', data.projects.find(function(p){return p.id===projs[idx].id;})),
-                 apiPost('/api/projects', data.projects.find(function(p){return p.id===projs[idx-1].id;}))])
+    // Echanger les positions dans data.projects
+    var a = data.projects.find(function(p) { return p.id === projs[idx].id; });
+    var b = data.projects.find(function(p) { return p.id === projs[idx-1].id; });
+    if (!a || !b) return;
+    var tmp = a.order; a.order = b.order; b.order = tmp;
+    Promise.all([apiPost('/api/projects', a), apiPost('/api/projects', b)])
         .then(function() { renderAll(); });
 }
 
 function moveProjDown(id) {
     var projs = getFilteredProjects();
-    var idx   = projs.findIndex(function(p) { return p.id === id; });
+    ensureOrders(data.projects);
+    var idx = projs.findIndex(function(p) { return p.id === id; });
     if (idx < 0 || idx >= projs.length - 1) return;
-    swapOrder(data.projects, projs[idx].id, projs[idx+1].id);
-    Promise.all([apiPost('/api/projects', data.projects.find(function(p){return p.id===projs[idx].id;})),
-                 apiPost('/api/projects', data.projects.find(function(p){return p.id===projs[idx+1].id;}))])
+    var a = data.projects.find(function(p) { return p.id === projs[idx].id; });
+    var b = data.projects.find(function(p) { return p.id === projs[idx+1].id; });
+    if (!a || !b) return;
+    var tmp = a.order; a.order = b.order; b.order = tmp;
+    Promise.all([apiPost('/api/projects', a), apiPost('/api/projects', b)])
         .then(function() { renderAll(); });
 }
 
 function moveTaskUp(projId, taskId) {
     var tasks = data.tasks[projId] || [];
-    var idx   = tasks.findIndex(function(t) { return t.id === taskId; });
+    ensureOrders(tasks);
+    var idx = tasks.findIndex(function(t) { return t.id === taskId; });
     if (idx <= 0) return;
-    swapOrder(tasks, tasks[idx].id, tasks[idx-1].id);
+    var tmp = tasks[idx].order; tasks[idx].order = tasks[idx-1].order; tasks[idx-1].order = tmp;
     apiPost('/api/tasks/reorder', { projectId: projId, tasks: tasks })
         .then(function() { renderAll(); });
 }
 
 function moveTaskDown(projId, taskId) {
     var tasks = data.tasks[projId] || [];
-    var idx   = tasks.findIndex(function(t) { return t.id === taskId; });
+    ensureOrders(tasks);
+    var idx = tasks.findIndex(function(t) { return t.id === taskId; });
     if (idx < 0 || idx >= tasks.length - 1) return;
-    swapOrder(tasks, tasks[idx].id, tasks[idx+1].id);
+    var tmp = tasks[idx].order; tasks[idx].order = tasks[idx+1].order; tasks[idx+1].order = tmp;
     apiPost('/api/tasks/reorder', { projectId: projId, tasks: tasks })
         .then(function() { renderAll(); });
-}
-
-/**
- * Echange les valeurs order de deux elements par leurs IDs.
- */
-function swapOrder(arr, id1, id2) {
-    var a = arr.find(function(x) { return x.id === id1; });
-    var b = arr.find(function(x) { return x.id === id2; });
-    if (!a || !b) return;
-    var tmp = a.order !== undefined ? a.order : 999;
-    a.order = b.order !== undefined ? b.order : 999;
-    b.order = tmp;
 }
 function toggleCollapse(id) {
     if (collapsed.has(id)) collapsed.delete(id);
