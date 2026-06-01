@@ -24,6 +24,7 @@ from urllib.parse import urlparse, parse_qs
 BASE_DIR    = Path(r"D:\Onedrive\Documents\Claude\gestion_projets")
 DATA_DIR    = BASE_DIR / "data"
 LEGACY_FILE = BASE_DIR / "projets.json"
+HIST_FILE   = BASE_DIR / "historique.json"
 PORT      = 8742
 
 STATIC_FILES = {
