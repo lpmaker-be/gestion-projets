@@ -587,7 +587,7 @@ function updateSummary() {
         <div class="sum-item">
             <span class="sum-dot" style="background:#579bfc"></span>
             <span class="sum-lbl">Estimé</span>
-            <span class="sum-val">${totalEst}h</span>
+            <span class="sum-val">${fmtEstimate(totalEst)}</span>
         </div>` : ''}
     `;
 }
@@ -724,7 +724,7 @@ function renderBoard() {
                         <td class="dl-cell ${pdl ? pdl.cls : ''}">${pdl ? pdl.str : '—'}</td>
                         <td></td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${Math.round(allTasks.reduce((s, t) => s + totalEstimate(t), 0) * 10) / 10}h
+                            ${fmtEstimate(allTasks.reduce((s, t) => s + totalEstimate(t), 0))}
                         </td>
                         <td></td>
                     </tr>`;
@@ -762,7 +762,7 @@ function renderBoard() {
                         <td><span class="pill ${prioCls(st.priority||'low')}" style="height:18px;font-size:10px">${prioLabel(st.priority||'low')}</span></td>
                         <td class="dl-cell">${st.deadline ? dlInfo(st.deadline)?.str || '' : '—'}</td>
                         <td></td>
-                        <td style="font-size:12px;color:var(--text2)">${st.estimate ? st.estimate+'h' : '—'}</td>
+                        <td style="font-size:12px;color:var(--text2)">${fmtEstimate(st.estimate)}</td>
                         <td onclick="event.stopPropagation()">
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
                                     onclick="deleteSubtask('${p.id}','${t.id}','${st.id}')">x</button>
@@ -801,7 +801,7 @@ function renderBoard() {
                             </button>
                         </td>
                         <td style="font-size:12px;color:var(--text2)">
-                            ${totalEstimate(t) > 0 ? (Math.round(totalEstimate(t) * 10) / 10) + 'h' : '—'}
+                            ${fmtEstimate(totalEstimate(t))}
                         </td>
                         <td onclick="event.stopPropagation()">
                             <button class="ic-btn" style="color:var(--red);font-size:12px"
@@ -1163,6 +1163,20 @@ function openSubtaskDetail(projId, taskId, subId, level) {
  * @param {object} task
  * @returns {number} heures
  */
+
+/**
+ * Formate une estimation en heures vers "Xh YYmin"
+ * Ex: 1.72 -> "1h 43min", 0.5 -> "30min", 2 -> "2h"
+ */
+function fmtEstimate(hours) {
+    if (!hours || hours <= 0) return '—';
+    var h   = Math.floor(hours);
+    var min = Math.round((hours - h) * 60);
+    if (min === 60) { h++; min = 0; }
+    if (h > 0 && min > 0) return h + 'h ' + min + 'min';
+    if (h > 0)            return h + 'h';
+    return min + 'min';
+}
 function totalEstimate(task) {
     const own = parseFloat(task.estimate) || 0;
     const subs = (task.subtasks || []).reduce((s, st) => s + totalEstimate(st), 0);
@@ -1235,7 +1249,7 @@ function exportPDF(projId) {
                     <td>${statusLabel(t.status || 'todo')}</td>
                     <td>${prioLabel(t.priority).replace(/🔴|🟡|🟢/g,'').trim()}</td>
                     <td class="${tdl ? tdl.cls : ''}">${tdl ? tdl.str : '-'}</td>
-                    <td>${est > 0 ? est + 'h' : '-'}</td>
+                    <td>${est > 0 ? fmtEstimate(est) : '-'}</td>
                     <td>${spent > 0 ? fmtTime(spent) : '-'}</td>
                 </tr>
                 ${renderSubHTML(t.subtasks || [], 1)}
@@ -1252,7 +1266,7 @@ function exportPDF(projId) {
                     <span>${typeLabel(p.type).replace(/🔌|💻|⚙️/g,'').trim()}</span>
                     ${dl ? `<span class="${dl.cls}">${dl.str}</span>` : ''}
                     <span>Avancement : ${pct}% (${doneCnt}/${tasks.length} taches)</span>
-                    ${totalEst > 0 ? `<span>Estime : ${totalEst}h</span>` : ''}
+                    ${totalEst > 0 ? `<span>Estime : ${fmtEstimate(totalEst)}</span>` : ''}
                     ${totalSpent > 0 ? `<span>Passe : ${fmtTime(totalSpent)}</span>` : ''}
                 </div>
                 ${p.desc ? `<div class="pdf-desc">${escHtml(p.desc)}</div>` : ''}
@@ -3080,7 +3094,7 @@ function renderDashboard() {
             <h3>⏱ Suivi du temps</h3>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-val blue">${totalEst}h</div>
+                    <div class="stat-val blue">${fmtEstimate(totalEst)}</div>
                     <div class="stat-lbl">Estimé total</div>
                 </div>
                 <div class="stat-box">
@@ -3362,7 +3376,7 @@ function openTaskDetail(projId, taskId) {
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Estimation</div>
-                <div style="font-size:13px">${totalEstimate(t) > 0 ? (Math.round(totalEstimate(t) * 10) / 10) + 'h' : '—'}</div>
+                <div style="font-size:13px">${fmtEstimate(totalEstimate(t))}</div>
             </div>
             <div>
                 <div style="font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Temps passé</div>
