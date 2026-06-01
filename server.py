@@ -109,7 +109,6 @@ def load_data():
     return {"projects": projects, "tasks": tasks}
 
 def save_data(data):
-    save_snapshot()
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     projects, tasks = data.get('projects',[]), data.get('tasks',{})
     existing_ids = {p['id'] for p in projects}
@@ -146,6 +145,11 @@ def save_data(data):
             json.dump(p, f, ensure_ascii=False, indent=2)
         with open(pdir/'taches.json','w',encoding='utf-8') as f:
             json.dump(tasks.get(p['id'],[]), f, ensure_ascii=False, indent=2)
+    # Snapshot APRES l'ecriture
+    try:
+        save_snapshot()
+    except Exception as e:
+        print(f"Erreur snapshot (non critique): {e}")
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -381,7 +385,7 @@ if __name__ == "__main__":
     print("  ========================================")
     print("")
     print(f"  Adresse : http://localhost:{PORT}")
-    print(f"  Donnees : {LEGACY_FILE}")
+    print(f"  Donnees : {DATA_DIR}")
     print("")
     print("  Ferme cette fenetre pour arreter le serveur")
     print("")
