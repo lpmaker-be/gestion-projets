@@ -25,8 +25,9 @@ BASE_DIR    = Path(r"D:\Onedrive\Documents\Claude\gestion_projets")
 DATA_DIR    = BASE_DIR / "data"
 LEGACY_FILE  = BASE_DIR / "projets.json"
 ARCHIVE_DIR  = BASE_DIR / "archives"
-HIST_FILE   = BASE_DIR / "historique.json"
-PORT      = 8742
+HIST_FILE    = BASE_DIR / "historique.json"
+MAX_VERSIONS = 5
+PORT         = 8742
 
 STATIC_FILES = {
     "/":           ("index.html", "text/html; charset=utf-8"),
