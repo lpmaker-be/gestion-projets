@@ -433,9 +433,8 @@ function getFilteredProjects() {
     const sortBy = document.getElementById('sort-by').value;
 
     let projs = data.projects.filter(p => {
-        // Filtre archives
-        if (showArchived && !p.archived) return false;
-        if (!showArchived && p.archived) return false;
+        // Toujours exclure les archives de la liste normale
+        if (p.archived) return false;
         // Filtre statut
         if (sideFilter !== 'all' && p.status !== sideFilter) return false;
         // Filtre type
@@ -2727,6 +2726,7 @@ function morphUpdate(elementId, newHtml) {
 function toggleShowArchived(btn) {
     showArchived = !showArchived;
     if (btn) btn.classList.toggle('active', showArchived);
+    setView('board', null);
     renderAll();
 }
 function toggleCollapse(id) {
