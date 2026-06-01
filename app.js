@@ -660,7 +660,7 @@ function renderBoard() {
     let html = '<div>';
 
     projs.forEach(p => {
-        const allTasks = data.tasks[p.id] || [];
+        const allTasks = (data.tasks[p.id] || []).slice().sort(function(a,b){ return (a.order!==undefined?a.order:999)-(b.order!==undefined?b.order:999); });
         const tasks    = filterTasks(allTasks);
         const doneCnt  = allTasks.filter(t => t.done).length;
         const pct      = allTasks.length ? Math.round(doneCnt / allTasks.length * 100) : 0;
