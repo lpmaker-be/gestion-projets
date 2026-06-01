@@ -314,6 +314,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             for file in pdir.rglob('*'):
                 if file.is_file():
                     z.write(file, file.relative_to(pdir.parent))
+        # Supprimer le dossier apres le zip
+        import shutil
+        shutil.rmtree(pdir)
+
         data = load_data()
         for p in data['projects']:
             if p['id'] == proj_id:
@@ -333,7 +337,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not proj: self._send_json({'error': 'Projet introuvable'}); return
         zip_name = _re.sub(r'[<>:"/\\|?*]', '_', proj.get('name', proj_id)).strip('. ')[:60] + '.zip'
         zip_path = ARCHIVE_DIR / zip_name
-        if zip_path.exists(): zip_path.unlink()
+        # Restaurer le dossier depuis le zip
+        if zip_path.exists():
+            import zipfile
+            with zipfile.ZipFile(zip_path, 'r') as z:
+                z.extractall(DATA_DIR)
+            zip_path.unlink()
+
         proj['archived'] = False
         save_data(data)
         self._send_json({'ok': True})
