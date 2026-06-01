@@ -871,6 +871,24 @@ function renderBoard() {
 
     // Stats avancees en bas du dashboard
     const dashEl = document.getElementById('content');
+    // Ajouter les projets archives en bas si showArchived
+    if (showArchived) {
+        var archived = data.projects.filter(function(p) { return p.archived; });
+        if (archived.length) {
+            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span>'
+                  + '<span>&#128451; Archives (' + archived.length + ')</span>'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            archived.forEach(function(p) {
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
+                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                      + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
+                      + '<div style="margin-left:auto">'
+                      + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '</div></div></div>';
+            });
+        }
+    }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
@@ -2825,6 +2843,24 @@ function renderKanban() {
     html += '</div>';
     // Stats avancees en bas du dashboard
     const dashEl = document.getElementById('content');
+    // Ajouter les projets archives en bas si showArchived
+    if (showArchived) {
+        var archived = data.projects.filter(function(p) { return p.archived; });
+        if (archived.length) {
+            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span>'
+                  + '<span>&#128451; Archives (' + archived.length + ')</span>'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            archived.forEach(function(p) {
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
+                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                      + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
+                      + '<div style="margin-left:auto">'
+                      + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '</div></div></div>';
+            });
+        }
+    }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
@@ -2962,6 +2998,24 @@ function renderCalendar() {
     html += `</div></div>`;
     // Stats avancees en bas du dashboard
     const dashEl = document.getElementById('content');
+    // Ajouter les projets archives en bas si showArchived
+    if (showArchived) {
+        var archived = data.projects.filter(function(p) { return p.archived; });
+        if (archived.length) {
+            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span>'
+                  + '<span>&#128451; Archives (' + archived.length + ')</span>'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            archived.forEach(function(p) {
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
+                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                      + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
+                      + '<div style="margin-left:auto">'
+                      + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '</div></div></div>';
+            });
+        }
+    }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
@@ -3112,6 +3166,24 @@ function renderGantt() {
     html += `</div></div>`;
     // Stats avancees en bas du dashboard
     const dashEl = document.getElementById('content');
+    // Ajouter les projets archives en bas si showArchived
+    if (showArchived) {
+        var archived = data.projects.filter(function(p) { return p.archived; });
+        if (archived.length) {
+            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span>'
+                  + '<span>&#128451; Archives (' + archived.length + ')</span>'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            archived.forEach(function(p) {
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
+                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                      + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
+                      + '<div style="margin-left:auto">'
+                      + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '</div></div></div>';
+            });
+        }
+    }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
@@ -3312,6 +3384,24 @@ function renderDashboard() {
 
     // Stats avancees en bas du dashboard
     const dashEl = document.getElementById('content');
+    // Ajouter les projets archives en bas si showArchived
+    if (showArchived) {
+        var archived = data.projects.filter(function(p) { return p.archived; });
+        if (archived.length) {
+            html += '<div style="margin:24px 0 8px;font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px">'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span>'
+                  + '<span>&#128451; Archives (' + archived.length + ')</span>'
+                  + '<span style="flex:1;height:1px;background:var(--border)"></span></div>';
+            archived.forEach(function(p) {
+                html += '<div class="project-block" style="opacity:0.65;border:1px dashed var(--border);border-radius:8px;margin-bottom:8px">'
+                      + '<div class="proj-hdr" style="background:var(--bg)">'
+                      + '<span class="proj-name" style="color:var(--text2)">&#128451; ' + escHtml(p.name) + '</span>'
+                      + '<div style="margin-left:auto">'
+                      + '<button class="btn btn-secondary btn-sm" onclick="archiveProject(\'' + p.id + '\')" style="font-size:11px">&#8635; Restaurer</button>'
+                      + '</div></div></div>';
+            });
+        }
+    }
     dashEl.innerHTML = html + buildAdvancedStats(projs);
 }
 
