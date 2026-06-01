@@ -549,7 +549,8 @@ function updateSummary() {
     const doneT    = allT.filter(t => t.done).length;
     const pct      = allT.length ? Math.round(doneT / allT.length * 100) : 0;
     const overdue  = allT.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date()).length;
-    const totalEst = allT.reduce((s, t) => s + totalEstimate(t), 0);
+    const totalEst   = allT.reduce((s, t) => s + totalEstimate(t), 0);
+    const totalSpent = allT.reduce((s, t) => s + totalTimeSpent(t), 0);
 
     document.getElementById('summary-bar').innerHTML = `
         <div class="sum-item">
@@ -588,6 +589,12 @@ function updateSummary() {
             <span class="sum-dot" style="background:#579bfc"></span>
             <span class="sum-lbl">Estimé</span>
             <span class="sum-val">${fmtEstimate(totalEst)}</span>
+        </div>` : ''}
+        ${totalSpent > 0 ? `
+        <div class="sum-item">
+            <span class="sum-dot" style="background:#00c875"></span>
+            <span class="sum-lbl">Passé</span>
+            <span class="sum-val">${fmtTime(totalSpent)}</span>
         </div>` : ''}
     `;
 }
