@@ -1,22 +1,35 @@
-# Audit complet - 2026-06-02
+# Audit Complet - 2026-06-03
 
-## app.js
-- **153 fonctions définies**
-- **0 fonction manquante** dans les appels HTML/JS
-- Vestiges inoffensifs : `toggleTimer`, `var timers` (ancien chronomètre)
+## Résultat : ✅ SAIN
 
-## server.py
-- **20 méthodes dans Handler**
-- **0 méthode manquante**
+### Syntaxe
+- app.js : OK (158 fonctions, 4845 lignes)
+- server.py : OK (20 méthodes, 705 lignes)
 
-## Conclusion
-L'application est structurellement saine. Les bugs récents venaient d'insertions défectueuses de fonctions, pas de fonctions réellement perdues.
+### Fonctions manquantes
+- index.html → app.js : 0 manquante
+- app.js onclick → fonctions : 0 manquante
+- server.py routes → méthodes : 0 manquante
 
-## Fonctions clés vérifiées
-- renderAll, loadData, renderBoard, renderKanban, renderCalendar, renderGantt, renderDashboard ✅
-- saveTask, saveProject, saveSubtask, saveComponents, saveTimeHM ✅
-- openTaskModal, openProjectModal, openSubtaskDetail, editSubtask ✅
-- archiveProject, deleteArchive, deleteSelectedArchives ✅
-- parseTimeInput, parseTimeToHours, fmtTime, fmtEstimate ✅
-- totalTimeSpent, totalEstimate, updateProjHeader ✅
-- openComponents, openFiles, openNotesPanel, addNotePanel ✅
+### Colonnes tableau
+- 9 colonnes header ✅
+- colspan="9" ✅
+
+### Nettoyage effectué
+- toggleTimer supprimée (vestige chronomètre)
+- let timers supprimée
+- 2x setInterval chronomètre supprimés
+- openProjectNotes supprimée (remplacée par openNotesPanel)
+- sortable.min.js retiré du HTML
+- colspan corrigé de 8 à 9
+
+### Code mort (faux positifs vérifiés)
+- deleteArchive : appelée dans template literals (OK)
+- morphUpdate : utilisée dans le rendu (OK)
+- updateTaskRowVisual : utilisée pour MAJ visuelle (OK)
+
+### Routes API (15)
+/api/archive, /api/archives, /api/data, /api/delete-archive,
+/api/export-excel, /api/files/delete, /api/files/get, /api/files/list,
+/api/files/upload, /api/history, /api/projects, /api/restore,
+/api/tasks, /api/tasks/reorder, /api/unarchive
