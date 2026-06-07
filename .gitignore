@@ -1,11 +1,24 @@
-# Données personnelles — ne pas versionner
-projets.json
+# Build artifacts
+build/
+dist/
+installer/
+*.spec.bak
 
-# Python
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 
-# OS
-.DS_Store
-Thumbs.db
+# Runtime data (local uniquement)
+data/
+archives/
+historique.json
+settings.json
+tuto.txt
+projets.json
+projets.json.backup
+
+# Logs
+*.log
+warn-*.txt
+xref-*.html
