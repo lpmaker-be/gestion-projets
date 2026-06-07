@@ -2,15 +2,18 @@ using GP;
 using System.Diagnostics;
 using System.Net;
 
-console.OutputEncoding = System.Text.Encoding.UTF8;
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 const int PORT = 8742;
 
-// BASE_DIR = dossier de l'exe (ou dossier du projet en dev)
+// BASE_DIR = dossier de l'exe en production, dossier parent du projet en dev
 var baseDir = AppContext.BaseDirectory;
-// En dev (dotnet run), remonter jusqu'au dossier du projet parent
-if (File.Exists(Path.Combine(baseDir, "GP.csproj")))
-    baseDir = Directory.GetParent(baseDir)!.Parent!.Parent!.Parent!.FullName;
+
+// En dev (dotnet run), remonter au dossier parent du projet (ou le repo)
+// bin/Debug/net8.0 -> remonter 3 fois -> dossier csharp -> remonter 1 fois -> racine projet
+var devCandidate = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", ".."));
+if (File.Exists(Path.Combine(devCandidate, "index.html")))
+    baseDir = devCandidate;
 
 Console.WriteLine("");
 Console.WriteLine("  ========================================");
