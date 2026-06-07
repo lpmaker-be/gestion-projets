@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec pour GP - v3
+# PyInstaller spec pour GP - v2
 
 from PyInstaller.utils.hooks import collect_submodules
 
