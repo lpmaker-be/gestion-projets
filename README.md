@@ -68,3 +68,16 @@ Application web locale de gestion de projets inspirée de Monday.com, spécialis
 ---
 
 *Développé avec Claude — Philippe (lpmaker-be)*
+
+## ?? IMPORTANT - NE PAS UTILISER
+
+```bash
+# INTERDIT - detruit les donnees locales non committees
+git reset --hard
+```
+
+A la place, restaurer un fichier specifique :
+```bash
+git restore server.py   # restaure UN seul fichier
+git restore app.js
+```
