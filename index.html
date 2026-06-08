@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionnaire de Projets</title>
+    <title>GP - Gestionnaire de Projets v1.0.0</title>
 
     <!-- Police Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -79,11 +79,10 @@
         <button class="sb-item" id="sb-archived" onclick="toggleShowArchived(this)">&#128451; Archives (<span id="sc-archived">0</span>)</button>
     </div>
 
-    <!-- Pied de sidebar : chemin du fichier de données -->
+    <!-- Pied de sidebar : version + chemin données -->
     <div class="sb-footer">
-        <div class="sb-footer-text">
-            💾 D:\Onedrive\Documents\Claude\gestion_projets\projets.json
-        </div>
+        <div class="app-version-badge" id="app-version-badge">v1.0.0</div>
+        <div class="sb-footer-text" id="sb-data-path">💾 data/</div>
     </div>
 
 </aside>
@@ -120,11 +119,19 @@
 
             <!-- Tri -->
             <select class="btn btn-secondary btn-sm" id="sort-by" onchange="renderAll()">
+                <option value="manual">Tri : Manuel</option>
                 <option value="created">Tri : Création</option>
                 <option value="deadline">Tri : Deadline</option>
                 <option value="priority">Tri : Priorité</option>
                 <option value="name">Tri : Nom A-Z</option>
             </select>
+
+            <!-- Indicateur sauvegarde NAS -->
+            <button class="btn btn-secondary btn-sm nas-backup-btn" id="nas-backup-btn"
+                    onclick="triggerNasBackup()" title="Sauvegarder sur NAS maintenant">
+                <span id="nas-backup-icon">💾</span>
+                <span id="nas-backup-text">NAS</span>
+            </button>
 
             <!-- Bouton nouveau projet -->
             <button class="btn btn-secondary btn-sm" onclick="toggleHelp()" title="Raccourcis clavier (?)" style="padding:4px 10px;font-weight:700">?</button>
@@ -608,7 +615,7 @@
 
 
 <!-- Script principal de l'application -->
-<script src="sortable.min.js"></script>
+    <script src="theme.js"></script>
     <script src="morphdom.min.js"></script>
     <script src="app.js"></script>
 

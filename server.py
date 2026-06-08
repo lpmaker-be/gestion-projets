@@ -39,7 +39,66 @@ HIST_FILE   = BASE_DIR / "historique.json"
 TUTO_FILE   = BASE_DIR / "tuto.txt"
 SETTINGS_FILE = BASE_DIR / "settings.json"
 MAX_VERSIONS = 5
+APP_VERSION  = "1.0.0"
 PORT         = 8742
+
+
+# Sauvegarde NAS
+import threading as _threading
+import shutil as _shutil
+
+NAS_BACKUP_PATH = Path(r"\\192.168.0.24\volume2\GestionProjet")
+_backup_status  = {"state": "idle", "last": None, "error": None}
+
+def _load_backup_config():
+    """Charge les identifiants NAS depuis backup_config.json (jamais commite)."""
+    cfg_file = BASE_DIR / "backup_config.json"
+    if cfg_file.exists():
+        return read_json(cfg_file)
+    return {"nas_path": str(NAS_BACKUP_PATH), "username": None, "password": None}
+
+def backup_to_nas():
+    """Copie data/ et archives/ vers le NAS avec authentification."""
+    global _backup_status
+    _backup_status = {"state": "running", "last": _backup_status.get("last"), "error": None}
+    try:
+        cfg  = _load_backup_config()
+        path = cfg.get("nas_path", str(NAS_BACKUP_PATH))
+        user = cfg.get("username")
+        pwd  = cfg.get("password")
+
+        # Monter le partage avec credentials si fournis
+        if user and pwd:
+            import subprocess as _sp
+            _sp.run(
+                ["net", "use", path, f"/user:{user}", pwd, "/persistent:no"],
+                capture_output=True, check=False
+            )
+
+        nas = Path(path)
+        nas.mkdir(parents=True, exist_ok=True)
+
+        # Copier data/
+        dst_data = nas / "data"
+        if dst_data.exists(): _shutil.rmtree(dst_data)
+        _shutil.copytree(str(DATA_DIR), str(dst_data))
+
+        # Copier archives/
+        dst_arch = nas / "archives"
+        if dst_arch.exists(): _shutil.rmtree(dst_arch)
+        if ARCHIVE_DIR.exists(): _shutil.copytree(str(ARCHIVE_DIR), str(dst_arch))
+
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        _backup_status = {"state": "ok", "last": now, "error": None}
+        print(f"  Sauvegarde NAS OK - {now}")
+    except Exception as e:
+        _backup_status = {"state": "error", "last": _backup_status.get("last"), "error": str(e)}
+        print(f"  Sauvegarde NAS ERREUR - {e}")
+
+def backup_async():
+    """Lance la sauvegarde dans un thread separe."""
+    t = _threading.Thread(target=backup_to_nas, daemon=True)
+    t.start()
 
 STATIC_FILES = {
     "/":                ("index.html",       "text/html; charset=utf-8"),
@@ -225,6 +284,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             filename, content_type = STATIC_FILES[path]
             self._send_file(filename, content_type)
 
+        elif path == "/api/backup/status":
+            self._send_json(_backup_status)
+
+        elif path == "/api/version":
+            self._send_json({"version": APP_VERSION})
+
         elif path == "/api/data":
             self._send_json(load_data())
 
@@ -299,6 +364,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
 
+        if parsed.path == "/api/backup":
+            backup_async()
+            self._send_json({"ok": True, "message": "Sauvegarde lancee"})
+            return
         if parsed.path == "/api/archive":
             self._archive_project(); return
         if parsed.path == "/api/unarchive":

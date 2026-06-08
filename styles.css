@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    GESTIONNAIRE DE PROJETS - styles.css
    ============================================================ */
 
@@ -341,17 +341,24 @@ body.dark {
     --white:          #25262b;
     --sidebar:        #141517;
     --sidebar-hover:  #1e1f24;
-    --sidebar-active: #0073ea;
     --border:         #2c2e33;
     --text:           #c1c2c5;
     --text2:          #868e96;
     --text3:          #4a4b50;
-    --accent:         #4dabf7;
-    --accent-h:       #339af0;
     --green:          #51cf66;
     --orange:         #ffa94d;
     --red:            #ff6b6b;
 }
+
+/* Accents par theme en mode sombre - versions plus lumineuses */
+body.dark,
+body.dark[data-theme="blue"]   { --accent: #4dabf7; --accent-h: #339af0; --sidebar-active: #4dabf7; }
+body.dark[data-theme="purple"] { --accent: #a78bfa; --accent-h: #8b5cf6; --sidebar-active: #a78bfa; }
+body.dark[data-theme="green"]  { --accent: #34d399; --accent-h: #10b981; --sidebar-active: #34d399; }
+body.dark[data-theme="red"]    { --accent: #fc8181; --accent-h: #f87171; --sidebar-active: #fc8181; }
+body.dark[data-theme="orange"] { --accent: #fbbf24; --accent-h: #f59e0b; --sidebar-active: #fbbf24; }
+body.dark[data-theme="cyan"]   { --accent: #67e8f9; --accent-h: #22d3ee; --sidebar-active: #67e8f9; }
+body.dark[data-theme="gray"]   { --accent: #9ca3af; --accent-h: #6b7280; --sidebar-active: #9ca3af; }
 
 body.dark .btbl tbody tr           { background: var(--white); }
 body.dark .btbl tbody tr:hover     { background: #2c2e33; }
@@ -375,6 +382,177 @@ body.dark .gantt-body,
 body.dark .gantt-hdr               { background: var(--white); }
 body.dark .add-proj-row .add-proj-btn { background: none; }
 body.dark .sb-footer-text          { color: rgba(255,255,255,.15); }
+
+
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE — Soignement complet v1.0.0
+   ───────────────────────────────────────────────────────────── */
+
+/* Transition douce sur tous les elements au toggle dark */
+body { transition: background .25s, color .2s; }
+body.dark * { transition: background-color .2s, border-color .2s, color .15s; }
+
+/* ── Scrollbar dark ──────────────────────────────────────────── */
+body.dark ::-webkit-scrollbar-thumb { background: #3a3b40; }
+body.dark ::-webkit-scrollbar-thumb:hover { background: #4a4b52; }
+
+/* ── Sous-taches (fonds hardcodes) ──────────────────────────── */
+body.dark .subtask-row-1 { background: #1f2023 !important; }
+body.dark .subtask-row-2 { background: #1c1d20 !important; }
+body.dark .subtask-row-1:hover,
+body.dark .subtask-row-2:hover { background: #2c2e33 !important; }
+
+/* ── Tags couleurs dark ──────────────────────────────────────── */
+body.dark .tag { background: rgba(77,171,247,.15); color: #4dabf7; }
+body.dark .tag-colors   { background: rgba(77,171,247,.15); color: #4dabf7; }
+body.dark .tag-colors-2 { background: rgba(255,169,77,.15);  color: #ffa94d; }
+body.dark .tag-colors-3 { background: rgba(81,207,102,.15);  color: #51cf66; }
+body.dark .tag-colors-4 { background: rgba(255,107,107,.15); color: #ff6b6b; }
+body.dark .tag-colors-5 { background: rgba(162,93,220,.15);  color: #c084fc; }
+
+/* ── Liens projets ───────────────────────────────────────────── */
+body.dark .proj-link        { background: #2c2e33; border-color: #3a3b40; color: var(--text2); }
+body.dark .proj-link:hover  { border-color: var(--accent); color: var(--accent); }
+body.dark .proj-link.dep    { background: rgba(255,169,77,.1);  border-color: var(--orange); color: var(--orange); }
+body.dark .proj-link.ref    { background: rgba(77,171,247,.1);  border-color: var(--accent); color: var(--accent); }
+
+/* ── Search popup ────────────────────────────────────────────── */
+body.dark .search-popup     { background: #25262b; border-color: #3a3b40; box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+body.dark .search-result:hover { background: #2c2e33; }
+body.dark .search-popup-section { border-color: #3a3b40; }
+
+/* ── Toast ───────────────────────────────────────────────────── */
+body.dark .toast { background: #25262b !important; color: var(--text) !important; border: 1px solid #3a3b40 !important; box-shadow: 0 4px 20px rgba(0,0,0,.5) !important; }
+
+/* ── Panneau notes (floating) ────────────────────────────────── */
+body.dark .notes-panel      { background: #25262b !important; border-color: #3a3b40 !important; box-shadow: 0 8px 32px rgba(0,0,0,.6) !important; }
+body.dark .notes-panel .notes-header { background: #1f2023 !important; border-color: #3a3b40 !important; }
+body.dark .notes-panel .note-item   { background: #1a1b1e !important; border-color: #3a3b40 !important; }
+body.dark .notes-panel textarea { background: #1a1b1e !important; color: var(--text) !important; border-color: #3a3b40 !important; }
+body.dark .notes-panel textarea:focus { border-color: var(--accent) !important; }
+
+/* ── Diagnostic panel ────────────────────────────────────────── */
+body.dark .diag-modal       { background: #25262b !important; }
+body.dark .diag-item        { background: #1f2023 !important; border-color: #3a3b40 !important; }
+body.dark .diag-item:hover  { background: #2c2e33 !important; }
+body.dark .diag-section-title { color: var(--text2) !important; border-color: #3a3b40 !important; }
+
+/* ── Gestionnaire de fichiers ────────────────────────────────── */
+body.dark .file-row         { background: #25262b; border-color: #3a3b40; }
+body.dark .file-row:hover   { background: #2c2e33; }
+body.dark .file-upload-zone { border-color: #3a3b40; background: #1f2023; }
+body.dark .file-upload-zone:hover { border-color: var(--accent); }
+body.dark .files-tab        { background: #1a1b1e; border-color: #3a3b40; color: var(--text2); }
+body.dark .files-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── Composants table ────────────────────────────────────────── */
+body.dark .comp-table th    { background: #1a1b1e; border-color: #3a3b40; }
+body.dark .comp-table td    { border-color: #3a3b40; }
+body.dark .comp-table input { color: var(--text); }
+body.dark .comp-table input:focus { background: #1a1b1e; border-color: var(--accent); }
+
+/* ── Stat charts ─────────────────────────────────────────────── */
+body.dark .stat-chart       { background: #25262b; border-color: #3a3b40; }
+body.dark .stat-bar-track   { background: #1a1b1e; }
+
+/* ── Summary bar ─────────────────────────────────────────────── */
+body.dark .summary-bar      { background: #25262b !important; border-color: #3a3b40 !important; }
+body.dark .summary-bar .sum-item { color: var(--text2); }
+body.dark .summary-bar .sum-val  { color: var(--text); }
+
+/* ── Selects + inputs dropdowns ──────────────────────────────── */
+body.dark select { background: #25262b; color: var(--text); border-color: #3a3b40; }
+body.dark select option { background: #25262b; color: var(--text); }
+body.dark input[type="date"],
+body.dark input[type="datetime-local"],
+body.dark input[type="time"] {
+    background: #1a1b1e; color: var(--text);
+    border-color: #3a3b40; color-scheme: dark;
+}
+
+/* ── Modales ─────────────────────────────────────────────────── */
+body.dark .modal            { background: #25262b; border: 1px solid #3a3b40; box-shadow: 0 20px 60px rgba(0,0,0,.7); }
+body.dark .modal-header     { border-color: #3a3b40; }
+body.dark .modal-footer     { border-color: #3a3b40; background: #1f2023; }
+body.dark .frow label       { color: var(--text2); }
+body.dark .frow input,
+body.dark .frow select,
+body.dark .frow textarea    { background: #1a1b1e !important; color: var(--text) !important; border-color: #3a3b40 !important; }
+body.dark .frow input:focus,
+body.dark .frow select:focus,
+body.dark .frow textarea:focus { border-color: var(--accent) !important; }
+body.dark .modal-close      { color: var(--text2); }
+body.dark .modal-close:hover{ color: var(--text); background: #3a3b40; }
+
+/* ── Budget bar ──────────────────────────────────────────────── */
+body.dark .budget-bar       { background: #3a3b40; }
+
+/* ── Calendrier ──────────────────────────────────────────────── */
+body.dark .cal-grid         { background: #1f2023; border-color: #3a3b40; }
+body.dark .cal-header       { background: #25262b; border-color: #3a3b40; }
+body.dark .cal-day          { border-color: #3a3b40 !important; }
+body.dark .cal-day.other-month { background: #1a1b1e !important; }
+body.dark .cal-day.today    { background: #1c2333 !important; border-color: var(--accent) !important; }
+body.dark .cal-event        { box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
+/* ── Timeline / Gantt ────────────────────────────────────────── */
+body.dark .gantt-hdr        { background: #1f2023 !important; border-color: #3a3b40 !important; }
+body.dark .gantt-body       { background: #25262b !important; }
+body.dark .gantt-row        { border-color: #3a3b40 !important; }
+body.dark .gantt-row:hover  { background: #2c2e33 !important; }
+body.dark .gantt-grid-line  { border-color: #3a3b40 !important; }
+body.dark .gantt-today-line { border-color: var(--red) !important; }
+
+/* ── Kanban ──────────────────────────────────────────────────── */
+body.dark .k-col            { background: #1f2023; border-color: #3a3b40; }
+body.dark .k-col-header     { background: #1a1b1e; border-color: #3a3b40; }
+body.dark .k-card           { background: #25262b; border-color: #3a3b40; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+body.dark .k-card:hover     { box-shadow: 0 4px 16px rgba(0,0,0,.5); }
+body.dark .k-card.drag-over { border-color: var(--accent); }
+
+/* ── Dashboard ───────────────────────────────────────────────── */
+body.dark .dash-widget      { background: #25262b; border-color: #3a3b40; box-shadow: none; }
+body.dark .stat-box         { background: #1f2023; border-color: #3a3b40; }
+body.dark .stat-box .stat-val { color: var(--text); }
+
+/* ── Tooltips ────────────────────────────────────────────────── */
+body.dark [title]:hover::after,
+body.dark .tooltip          { background: #3a3b40 !important; color: var(--text) !important; border-color: #4a4b52 !important; }
+
+/* ── Drag & drop highlight ───────────────────────────────────── */
+body.dark .project-block.drag-over { border-top-color: var(--accent); }
+body.dark .project-block.dragging  { opacity: .35; }
+
+/* ── Lightbox ────────────────────────────────────────────────── */
+body.dark .lightbox         { background: rgba(0,0,0,.92); }
+
+/* ── Commentaires ────────────────────────────────────────────── */
+body.dark .comment-item     { background: #1f2023; }
+body.dark .comment-input-wrap textarea { background: #1a1b1e !important; border-color: #3a3b40 !important; color: var(--text) !important; }
+
+/* ── En-tete projet (ligne principale) ──────────────────────── */
+body.dark tr[data-proj-main] { background: #1c2333 !important; border-left-color: var(--accent) !important; }
+
+/* ── Boutons secondaires dark ────────────────────────────────── */
+body.dark .btn-secondary    { background: #25262b; border-color: #3a3b40; color: var(--text2); }
+body.dark .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Archived banner ─────────────────────────────────────────── */
+body.dark .archived-banner  { background: #1f2023; border-left-color: #4a4b52; color: #666; }
+
+/* ── Filter chips ────────────────────────────────────────────── */
+body.dark .filter-chip      { background: #25262b; border-color: #3a3b40; color: var(--text2); }
+body.dark .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── Popup statut tache ──────────────────────────────────────── */
+body.dark .spopup           { background: #25262b !important; border-color: #3a3b40 !important; box-shadow: 0 8px 24px rgba(0,0,0,.6) !important; }
+body.dark .spopup-item:hover{ background: #2c2e33 !important; }
+
+/* ── Tutoriel spotlight ──────────────────────────────────────── */
+body.dark .tuto-bubble      { background: #25262b !important; border-color: #3a3b40 !important; box-shadow: 0 8px 32px rgba(0,0,0,.7) !important; }
+body.dark .tuto-bubble h3   { color: var(--text) !important; }
+body.dark .tuto-bubble p    { color: var(--text2) !important; }
 
 /* Bouton toggle dark/light */
 .dark-toggle {
@@ -644,3 +822,19 @@ body.dragging * { user-select: none !important; -webkit-user-select: none !impor
 .task-collapse-btn { background:none; border:none; cursor:pointer; color:var(--text3); font-size:10px; padding:0 4px; line-height:1; transition:transform .15s, color .15s; transform:rotate(0deg); }
 .task-collapse-btn.open { transform:rotate(90deg); color:var(--text2); }
 .task-collapse-btn:hover { color:var(--accent); }
+
+/* Badge version */
+.app-version-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,.25);
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: 2px 7px;
+    letter-spacing: .5px;
+    margin-bottom: 4px;
+    width: fit-content;
+}
+
+.nas-backup-btn { display:flex; align-items:center; gap:4px; font-size:12px; }
+.nas-backup-btn #nas-backup-icon { font-size:13px; }

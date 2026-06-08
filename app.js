@@ -75,6 +75,7 @@ let showArchived = false;
 let sideType = '';
 
 /** Set des IDs de projets réduits (collapsed) dans la vue tableau */
+const APP_VERSION = "1.0.0";
 let collapsed     = new Set();
 let mainCollapsed = new Set(JSON.parse(localStorage.getItem('gp_main_collapsed') || '[]'));
 
@@ -675,7 +676,7 @@ function renderBoard() {
 
         // ── En-tête du projet ──────────────────────────────────────────
         html += `
-        <div class="project-block" data-proj-id="${p.id}" draggable="true">
+        <div class="project-block" data-proj-id="${p.id}">
             <div class="proj-hdr" onmouseenter="currentProjId='${p.id}'">
                 <span class="proj-drag-handle" title="Glisser pour reordonner">⠿</span><button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
                 <span class="proj-color" style="background:${color}"></span>
@@ -4219,38 +4220,73 @@ var _dragProjId = null;
 var _dragOverId = null;
 
 function initProjDrag() {
-    document.querySelectorAll('.project-block[draggable]').forEach(function(block) {
+    document.querySelectorAll('.project-block').forEach(function(block) {
         if (block._dragInit) return;
         block._dragInit = true;
+
+        var handle = block.querySelector('.proj-drag-handle');
+        if (!handle) return;
+
+        // Activer draggable SEULEMENT au mousedown sur la poignee
+        handle.addEventListener('mousedown', function(e) {
+            block.setAttribute('draggable', 'true');
+        });
+
+        // Desactiver draggable des que la souris est relachee
+        handle.addEventListener('mouseup', function() {
+            block.setAttribute('draggable', 'false');
+        });
+
         block.addEventListener('dragstart', function(e) {
+            if (block.getAttribute('draggable') !== 'true') {
+                e.preventDefault(); return;
+            }
             _dragProjId = block.dataset.projId;
             block.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            e.stopPropagation();
         });
+
         block.addEventListener('dragend', function() {
+            block.setAttribute('draggable', 'false');
             block.classList.remove('dragging');
-            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+            document.querySelectorAll('.project-block').forEach(function(b) {
+                b.classList.remove('drag-over');
+            });
         });
+
         block.addEventListener('dragover', function(e) {
+            if (!_dragProjId) return;
             e.preventDefault();
             if (block.dataset.projId === _dragProjId) return;
-            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+            document.querySelectorAll('.project-block').forEach(function(b) {
+                b.classList.remove('drag-over');
+            });
             block.classList.add('drag-over');
             _dragOverId = block.dataset.projId;
         });
+
         block.addEventListener('drop', function(e) {
             e.preventDefault();
-            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+            document.querySelectorAll('.project-block').forEach(function(b) {
+                b.classList.remove('drag-over');
+            });
             if (!_dragProjId || _dragProjId === block.dataset.projId) return;
             var fromIdx = data.projects.findIndex(function(p) { return p.id === _dragProjId; });
             var toIdx   = data.projects.findIndex(function(p) { return p.id === block.dataset.projId; });
             if (fromIdx < 0 || toIdx < 0) return;
             var moved = data.projects.splice(fromIdx, 1)[0];
             data.projects.splice(toIdx, 0, moved);
+            _dragProjId = null;
             saveProjOrder();
         });
     });
+
+    // Securite : desactiver draggable sur mouseup global
+    document.addEventListener('mouseup', function() {
+        document.querySelectorAll('.project-block[draggable="true"]').forEach(function(b) {
+            b.setAttribute('draggable', 'false');
+        });
+    }, { once: false });
 }
 
 async function saveProjOrder() {
@@ -4285,3 +4321,48 @@ function toggleTaskCollapse(taskId, btn) {
     if (isOpen) btn.classList.remove('open');
     else btn.classList.add('open');
 }
+
+/* === SAUVEGARDE NAS === */
+
+async function checkNasStatus() {
+    try {
+        var r = await fetch('/api/backup/status');
+        var s = await r.json();
+        var icon = document.getElementById('nas-backup-icon');
+        var text = document.getElementById('nas-backup-text');
+        var btn  = document.getElementById('nas-backup-btn');
+        if (!icon) return;
+        if (s.state === 'ok') {
+            icon.textContent = '✅';
+            text.textContent = 'NAS';
+            btn.title = 'Derniere sauvegarde : ' + (s.last || '?');
+            btn.style.color = 'var(--green)';
+        } else if (s.state === 'running') {
+            icon.textContent = '🔄';
+            text.textContent = 'NAS...';
+            btn.style.color = 'var(--orange)';
+        } else if (s.state === 'error') {
+            icon.textContent = '❌';
+            text.textContent = 'NAS';
+            btn.title = 'Erreur : ' + (s.error || '?');
+            btn.style.color = 'var(--red)';
+        } else {
+            icon.textContent = '💾';
+            text.textContent = 'NAS';
+            btn.style.color = '';
+        }
+    } catch(e) {}
+}
+
+async function triggerNasBackup() {
+    var icon = document.getElementById('nas-backup-icon');
+    if (icon) icon.textContent = '🔄';
+    try {
+        await fetch('/api/backup', { method: 'POST' });
+        setTimeout(checkNasStatus, 3000);
+    } catch(e) { toast('Erreur sauvegarde NAS', true); }
+}
+
+// Verifier le statut au demarrage et toutes les 60 secondes
+setTimeout(checkNasStatus, 2000);
+setInterval(checkNasStatus, 60000);

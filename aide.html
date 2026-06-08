@@ -1,533 +1,581 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aide - Gestionnaire de Projets</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #f6f7fb; --white: #fff; --border: #e6e9ef;
-            --text: #323338; --text2: #676879; --text3: #c3c6d4;
-            --accent: #0073ea; --green: #00c875; --orange: #fdab3d;
-            --red: #e2445c; --sidebar: #1f2d3d;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Figtree, sans-serif; }
-        body { background: var(--bg); color: var(--text); }
-        .header { background: var(--sidebar); color: #fff; padding: 24px 40px; display: flex; align-items: center; gap: 16px; }
-        .header .logo { width: 42px; height: 42px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
-        .header h1 { font-size: 22px; font-weight: 700; }
-        .header p { font-size: 13px; color: rgba(255,255,255,.5); margin-top: 3px; }
-        .header-version { margin-left: auto; font-size: 11px; color: rgba(255,255,255,.3); }
-        .nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; gap: 4px; overflow-x: auto; }
-        .nav a { padding: 12px 16px; font-size: 13px; color: var(--text2); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 500; }
-        .nav a:hover { color: var(--text); }
-        .nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
-        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-        .section { margin-bottom: 48px; }
-        .section-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
-        .section-desc { font-size: 14px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
-        .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
-        .card-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .card-body { font-size: 13px; color: var(--text2); line-height: 1.7; }
-        .feature-list { list-style: none; }
-        .feature-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
-        .feature-list li:last-child { border-bottom: none; }
-        .feature-list li .icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
-        .feature-list li strong { color: var(--text); }
-        .shortcuts { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-        .shortcuts table { width: 100%; border-collapse: collapse; }
-        .shortcuts th { background: var(--bg); padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; border-bottom: 2px solid var(--border); }
-        .shortcuts td { padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .shortcuts tr:last-child td { border-bottom: none; }
-        .shortcuts tr:hover td { background: #f8f9ff; }
-        kbd { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 12px; font-family: monospace; }
-        .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-        .badge-blue { background: #e8f0fe; color: var(--accent); }
-        .steps { counter-reset: step; }
-        .step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
-        .step-num { counter-increment: step; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-        .step-content { flex: 1; }
-        .step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-        .step-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
-        .tip { background: #e8f4fd; border-left: 4px solid var(--accent); border-radius: 0 6px 6px 0; padding: 12px 16px; margin: 16px 0; font-size: 13px; color: var(--text2); line-height: 1.6; }
-        .tip strong { color: var(--accent); }
-        .warn { background: #fff4e0; border-left-color: var(--orange); }
-        .warn strong { color: var(--orange); }
-        .footer { background: var(--white); border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-size: 12px; color: var(--text3); margin-top: 40px; }
-        @media print { .nav { display: none; } .section { page-break-inside: avoid; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aide — GP Gestionnaire de Projets v1.0.0</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5f9;--white:#fff;--border:#e4e6ee;--text:#1a1d2e;--text2:#5c607a;--text3:#a0a4bb;--accent:#0073ea;--accent-light:#e8f2ff;--green:#00c875;--green-light:#e6faf1;--orange:#fdab3d;--orange-light:#fff6e3;--red:#e2445c;--red-light:#fdf0f2;--sidebar:#1f2d3d;--purple:#6e3cbc;--purple-light:#f0ebfa}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Figtree,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+
+/* HEADER */
+.header{background:var(--sidebar);color:#fff;padding:24px 40px;display:flex;align-items:center;gap:16px}
+.logo{width:44px;height:44px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.header-info h1{font-size:21px;font-weight:700}
+.header-info p{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px}
+.header-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.version-tag{font-size:11px;color:rgba(255,255,255,.3);background:rgba(255,255,255,.07);border-radius:4px;padding:3px 10px}
+
+/* NAV */
+.nav{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;display:flex;gap:2px;overflow-x:auto;position:sticky;top:0;z-index:100}
+.nav a{padding:12px 14px;font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px;transition:color .15s,border-color .15s}
+.nav a:hover{color:var(--text)}
+.nav a.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* LAYOUT */
+.container{max-width:980px;margin:0 auto;padding:36px 24px}
+.section{margin-bottom:56px;scroll-margin-top:60px}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sec-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sec-title{font-size:21px;font-weight:700}
+.sec-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.7;max-width:700px}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+.cards.two{grid-template-columns:1fr 1fr}
+.cards.three{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* FEATURE LIST */
+.flist{list-style:none}
+.flist li{padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text2);line-height:1.5}
+.flist li:last-child{border-bottom:none}
+.flist li .ic{flex-shrink:0;font-size:15px;margin-top:1px;width:22px;text-align:center}
+.flist strong{color:var(--text)}
+
+/* BADGES / PILLS */
+kbd{background:var(--bg);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:2px 8px;font-size:11px;font-family:monospace;color:var(--text)}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700;margin-left:4px}
+.badge-blue{background:var(--accent-light);color:var(--accent)}
+.badge-green{background:var(--green-light);color:#00854d}
+.badge-orange{background:var(--orange-light);color:#c87a00}
+.new-tag{display:inline-flex;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:5px;letter-spacing:.3px;text-transform:uppercase;vertical-align:middle}
+
+/* CALLOUTS */
+.callout{display:flex;gap:12px;padding:13px 15px;border-radius:8px;margin:14px 0;font-size:13px;line-height:1.6}
+.callout .ci{font-size:17px;flex-shrink:0;margin-top:1px}
+.callout p{color:var(--text2)}
+.callout p strong{color:var(--text)}
+.callout-blue{background:var(--accent-light);border-left:3px solid var(--accent)}
+.callout-green{background:var(--green-light);border-left:3px solid var(--green)}
+.callout-orange{background:var(--orange-light);border-left:3px solid var(--orange)}
+.callout-red{background:var(--red-light);border-left:3px solid var(--red)}
+
+/* TABLE */
+.tbl{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.tbl table{width:100%;border-collapse:collapse}
+.tbl th{background:var(--bg);padding:9px 15px;text-align:left;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+.tbl td{padding:10px 15px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#fafbff}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;margin-top:2px}
+.step-title{font-weight:600;font-size:13px;margin-bottom:2px}
+.step-desc{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* STATUS PILLS */
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;gap:5px}
+.pill-gray{background:#f0f0f0;color:#555}
+.pill-blue{background:var(--accent-light);color:var(--accent)}
+.pill-green{background:var(--green-light);color:#00854d}
+.pill-orange{background:var(--orange-light);color:#c87a00}
+.pill-red{background:var(--red-light);color:var(--red)}
+
+/* FOOTER */
+.footer{background:var(--white);border-top:1px solid var(--border);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text3);margin-top:32px}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+@media(max-width:768px){.header{padding:18px 20px}.nav{padding:0 16px}.container{padding:20px 14px}.cards.two,.cards.three{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo">GP</div>
-    <div>
-        <h1>Gestionnaire de Projets</h1>
-        <p>Documentation complete de toutes les fonctionnalites</p>
-    </div>
-    <div class="header-version">Version 2026-06-01 (rev 4)</div>
+  <div class="logo">GP</div>
+  <div class="header-info">
+    <h1>Gestionnaire de Projets</h1>
+    <p>Documentation complète pour Makers — Arduino, Raspberry Pi, Impression 3D</p>
+  </div>
+  <div class="header-right">
+    <div class="version-tag">v1.0.0</div>
+  </div>
 </div>
 
 <div class="nav">
-    <a href="#demarrage" class="active">Demarrage</a>
-    <a href="#vues">Vues</a>
-    <a href="#projets">Projets</a>
-    <a href="#taches">Taches</a>
-    <a href="#fichiers">Fichiers</a>
-    <a href="#composants">Composants</a>
-    <a href="#raccourcis">Raccourcis</a>
-    <a href="#astuces">Astuces</a>
+  <a href="#demarrage">Démarrage</a>
+  <a href="#interface">Interface</a>
+  <a href="#vues">Vues</a>
+  <a href="#projets">Projets</a>
+  <a href="#taches">Tâches</a>
+  <a href="#fichiers">Fichiers</a>
+  <a href="#composants">Composants</a>
+  <a href="#notes">Notes</a>
+  <a href="#nas">Sauvegarde NAS</a>
+  <a href="#diagnostic">Diagnostic</a>
+  <a href="#raccourcis">Raccourcis</a>
 </div>
 
 <div class="container">
 
-    <!-- DEMARRAGE -->
-    <div class="section" id="demarrage">
-        <div class="section-title">&#128640; Demarrage rapide</div>
-        <div class="section-desc">Gestionnaire de projets local inspire de Monday.com, specialise pour les projets Arduino, Raspberry Pi, impression 3D et logiciels.</div>
-        <div class="steps">
-            <div class="step">
-                <div class="step-num">1</div>
-                <div class="step-content">
-                    <div class="step-title">Lancer le serveur</div>
-                    <div class="step-desc">Double-cliquer sur <strong>start.bat</strong>. Une fenetre noire s'ouvre — ne pas la fermer tant que tu utilises l'appli.</div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-num">2</div>
-                <div class="step-content">
-                    <div class="step-title">Ouvrir dans le navigateur</div>
-                    <div class="step-desc">Le navigateur s'ouvre automatiquement sur <strong>http://localhost:8742</strong></div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-num">3</div>
-                <div class="step-content">
-                    <div class="step-title">Creer un projet</div>
-                    <div class="step-desc">Cliquer sur <strong>+ Nouveau projet</strong> ou appuyer sur <kbd>N</kbd>. Un dossier est cree automatiquement dans <strong>data/Nom du projet/</strong></div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-num">4</div>
-                <div class="step-content">
-                    <div class="step-title">Ajouter des taches</div>
-                    <div class="step-desc">Cliquer sur <strong>+ Tache</strong> dans l'en-tete du projet ou appuyer sur <kbd>T</kbd></div>
-                </div>
-            </div>
-        </div>
-        <div class="tip"><strong>Structure des donnees :</strong> Chaque projet a son propre dossier dans <strong>data/Nom du projet/</strong> avec projet.json, taches.json et les sous-dossiers images/, stl/, cura/, docs/.</div>
-    </div>
-
-    <!-- VUES -->
-    <div class="section" id="vues">
-        <div class="section-title">&#128065; Les 5 vues</div>
-        <div class="section-desc">Chaque vue offre une perspective differente sur tes projets et taches.</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128203; Tableau <span class="badge badge-blue">B</span></div>
-                <div class="card-body">Vue principale. Affiche tous les projets avec leurs taches. Colonnes : Statut, Priorite, Deadline, Temps (chrono), Estime, Passe. En-tete de projet collant.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128193; Kanban <span class="badge badge-blue">K</span></div>
-                <div class="card-body">4 colonnes : A faire, En cours, Termine, Bloque. Glisser-deposer les projets entre les colonnes.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128197; Calendrier</div>
-                <div class="card-body">Vue mensuelle avec les deadlines. Navigation mois par mois. Cliquer sur un evenement pour ouvrir.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128200; Timeline / Gantt</div>
-                <div class="card-body">Barres horizontales representant la duree. Ligne rouge = aujourd'hui. Necessite une date de debut et une deadline.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128202; Dashboard <span class="badge badge-blue">D</span></div>
-                <div class="card-body">Statistiques globales + 5 graphiques avances en bas : temps passe, statuts, types, retards, avancement SVG.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PROJETS -->
-    <div class="section" id="projets">
-        <div class="section-title">&#128193; Gestion des projets</div>
-        <div class="section-desc">Chaque projet est stocke dans son propre dossier et peut avoir des taches, fichiers, composants, budget, schema et tags.</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128221; Informations de base</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128065;</span><div><strong>Nom</strong> — Aussi utilise comme nom de dossier dans data/</div></li>
-                        <li><span class="icon">&#128230;</span><div><strong>Type</strong> — Arduino/RPI, Logiciel, Mixte, Divers</div></li>
-                        <li><span class="icon">&#128308;</span><div><strong>Statut</strong> — A faire, En cours, Termine, Bloque (clic sur la pill)</div></li>
-                        <li><span class="icon">&#127919;</span><div><strong>Priorite</strong> — Haute, Moyenne, Basse</div></li>
-                        <li><span class="icon">&#128197;</span><div><strong>Dates</strong> — Date de debut et deadline</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Description</strong> — Notes, liens, objectifs</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#9881; Boutons en-tete projet</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128193;</span><div><strong>&#128193; Fichiers</strong> — Gestionnaire images/STL/Cura/docs</div></li>
-                        <li><span class="icon">&#128424;</span><div><strong>&#128424; Imprimer</strong> — Impression de ce projet uniquement</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>PDF</strong> — Export PDF du projet</div></li>
-                        <li><span class="icon">&#128202;</span><div><strong>XLS</strong> — Export Excel du projet</div></li>
-                        <li><span class="icon">&#128260;</span><div><strong>Dupliquer</strong> — Copie le projet avec toutes ses taches</div></li>
-                        <li><span class="icon">&#128451;</span><div><strong>Archiver</strong> — Zippe le dossier dans archives/ et masque le projet</div></li>
-                        <li><span class="icon">&#9999;</span><div><strong>Modifier</strong> — Ouvre la modale edition</div></li>
-                        <li><span class="icon">&#128293;</span><div><strong>Supprimer</strong> — Suppression definitive</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128451; Archivage des projets</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128451;</span><div>Cliquer sur le bouton <strong>&#128451;</strong> dans l'en-tete du projet</div></li>
-                        <li><span class="icon">&#128230;</span><div>Le dossier complet est <strong>zippe</strong> dans <strong>archives/Nom du projet.zip</strong> puis <strong>supprime</strong> de data/</div></li>
-                        <li><span class="icon">&#128193;</span><div>Le zip contient tout : projet.json, taches.json, images, STL, Cura, docs</div></li>
-                        <li><span class="icon">&#128065;</span><div>Cliquer sur <strong>Archives (N)</strong> dans la sidebar pour voir les projets archives en bas du tableau</div></li>
-                        <li><span class="icon">&#8635;</span><div><strong>Restaurer</strong> : recrée le dossier depuis le zip et supprime le zip</div></li>
-                        <li><span class="icon">&#128465;</span><div><strong>Supprimer definitivement</strong> : supprime le zip et retire le projet (irreversible)</div></li>
-                        <li><span class="icon">&#128073;</span><div>Clic sur <strong>Archives</strong> → scroll automatique vers la section archives</div></li>
-                        <li><span class="icon">&#9745;</span><div><strong>Selection multiple</strong> : cocher plusieurs archives + bouton "Supprimer la selection"</div></li>
-                        <li><span class="icon">&#9745;</span><div>"Tout selectionner" pour cocher toutes les archives d'un coup</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128200; Schema de cablage</div>
-                <div class="card-body">Dans la modale projet, champ "Schema de cablage". Bouton <strong>Parcourir</strong> pour selectionner une image. Cliquer sur "Schema" dans l'en-tete pour agrandir en lightbox.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128176; Budget</div>
-                <div class="card-body">Champs <strong>Budget estime</strong> et <strong>Budget reel</strong> dans la modale. Widget dans le Dashboard avec barre de progression. Le total des composants est additionne automatiquement.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#127991; Tags et liens</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#127991;</span><div><strong>Tags</strong> — impression3D, electronique, mecanique, firmware, urgent...</div></li>
-                        <li><span class="icon">&#128279;</span><div><strong>Depend de</strong> (orange) — tri topologique automatique</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Reference</strong> (bleu) — lien informel entre projets</div></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TACHES -->
-    <div class="section" id="taches">
-        <div class="section-title">&#9989; Gestion des taches</div>
-        <div class="section-desc">Les taches ont deux niveaux de sous-taches. La colonne PASSE affiche le temps reel passe (chronometre).</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128221; Champs d'une tache</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128308;</span><div><strong>Statut</strong> — clic sur la pill dans le tableau</div></li>
-                        <li><span class="icon">&#127919;</span><div><strong>Priorite</strong> — Haute, Moyenne, Basse</div></li>
-                        <li><span class="icon">&#128197;</span><div><strong>Debut / Deadline</strong></div></li>
-                        <li><span class="icon">&#8987;</span><div><strong>Estimation</strong> — format Xh YYmin</div></li>
-                        <li><span class="icon">&#128336;</span><div><strong>Chronometre</strong> — ▶ pour demarrer, colonne TEMPS</div></li>
-                        <li><span class="icon">&#128276;</span><div><strong>Rappel</strong> — Notification Windows date/heure</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Notes</strong> — Details techniques</div></li>
-                        <li><span class="icon">&#127991;</span><div><strong>Tags</strong> — dans la modale detail</div></li>
-                        <li><span class="icon">&#128247;</span><div><strong>Pieces jointes</strong> — images base64, lightbox</div></li>
-                        <li><span class="icon">&#128221;</span><div><strong>Indicateur note &#128221;</strong> — icone visible dans le tableau si une note est saisie (survol = apercu)</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128336; Chronometre et temps</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#9654;</span><div>Colonne <strong>TEMPS</strong> : bouton ▶ pour demarrer</div></li>
-                        <li><span class="icon">&#9209;</span><div>Bouton ⏹ pour arreter et sauvegarder</div></li>
-                        <li><span class="icon">&#128190;</span><div>Sauvegarde auto toutes les 60 secondes</div></li>
-                        <li><span class="icon">&#128200;</span><div>Colonne <strong>PASSE</strong> : total reel (chrono + sous-taches)</div></li>
-                        <li><span class="icon">&#128202;</span><div>Total visible dans la barre du bas et le Dashboard</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128196; Sous-taches (2 niveaux)</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#10133;</span><div>Survol tache → bouton <strong>+ Etape</strong> vert</div></li>
-                        <li><span class="icon">&#9989;</span><div>Cocher la parente coche toutes les sous-taches</div></li>
-                        <li><span class="icon">&#128308;</span><div>Toutes les sous-taches terminees = parente terminee auto</div></li>
-                        <li><span class="icon">&#9888;</span><div>Impossible de cocher la parente si sous-taches non finies</div></li>
-                        <li><span class="icon">&#8595;</span><div>Les taches <strong>terminees descendent automatiquement</strong> en bas de la liste</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128172; Commentaires et pieces jointes</div>
-                <div class="card-body">Dans la modale detail (bouton "Ouvrir" au survol) : commentaires horodates avec edit/suppression. Ctrl+Entree pour envoyer. Pieces jointes images avec lightbox et multi-selection.</div>
-            </div>
-        </div>
-        <div class="tip"><strong>Rappels :</strong> Autoriser les notifications via &#128276; dans la topbar. Avec le Service Worker, les rappels fonctionnent meme si la page est fermee (navigateur ouvert en arriere-plan).</div>
-    </div>
-
-    <!-- FICHIERS -->
-    <div class="section" id="fichiers">
-        <div class="section-title">&#128193; Gestionnaire de fichiers</div>
-        <div class="section-desc">Chaque projet a son propre dossier avec 4 sous-dossiers pour stocker les fichiers physiquement sur le disque.</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128193; Structure des dossiers</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128247;</span><div><strong>images/</strong> — Photos, captures, visuels du projet</div></li>
-                        <li><span class="icon">&#128684;</span><div><strong>stl/</strong> — Fichiers STL pour impression 3D</div></li>
-                        <li><span class="icon">&#9881;</span><div><strong>cura/</strong> — Profils et projets Ultimaker Cura</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>docs/</strong> — Autres documents (PDF, textes...)</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#8679; Ouvrir le gestionnaire</div>
-                <div class="card-body">Dans l'en-tete du projet, cliquer sur le bouton <strong>&#128193;</strong> bleu. Une modale s'ouvre avec 4 onglets correspondant aux sous-dossiers.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#8679; Upload de fichiers</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128073;</span><div>Selectionner l'onglet du type de fichier (Images, STL, Cura, Docs)</div></li>
-                        <li><span class="icon">&#8679;</span><div>Cliquer sur la zone pointillee ou glisser-deposer</div></li>
-                        <li><span class="icon">&#128248;</span><div>Multi-selection possible</div></li>
-                        <li><span class="icon">&#128247;</span><div>Les images s'affichent en miniature cliquable (lightbox)</div></li>
-                        <li><span class="icon">&#8595;</span><div>Bouton de telechargement pour chaque fichier</div></li>
-                        <li><span class="icon">&#128465;</span><div>Bouton de suppression pour chaque fichier</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128193; Acces direct au dossier</div>
-                <div class="card-body">Les fichiers sont stockes dans <strong>data/Nom du projet/images/</strong> etc. Tu peux y acceder directement depuis l'Explorateur Windows pour copier/coller des fichiers manuellement.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- COMPOSANTS -->
-    <div class="section" id="composants">
-        <div class="section-title">&#128295; Liste de composants</div>
-        <div class="section-desc">Chaque projet peut avoir une liste de composants avec quantite, fournisseur, prix et lien.</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128295; Acceder aux composants</div>
-                <div class="card-body">Dans l'en-tete du projet, cliquer sur le bouton &#128295;. Un compteur s'affiche quand des composants sont definis.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128203; Champs par composant</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128221;</span><div><strong>Nom</strong> — Ex: Arduino Mega 2560</div></li>
-                        <li><span class="icon">&#128290;</span><div><strong>Quantite</strong></div></li>
-                        <li><span class="icon">&#127979;</span><div><strong>Fournisseur</strong> — Ex: AliExpress, Amazon</div></li>
-                        <li><span class="icon">&#128176;</span><div><strong>Prix unitaire</strong> — En EUR</div></li>
-                        <li><span class="icon">&#128279;</span><div><strong>Lien URL</strong> — Lien direct vers le produit</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128176; Total automatique</div>
-                <div class="card-body">Total calcule automatiquement (quantite x prix) visible en bas de la liste et dans le widget Budget du Dashboard.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RACCOURCIS -->
-    <div class="section" id="raccourcis">
-        <div class="section-title">&#9875; Raccourcis clavier</div>
-        <div class="section-desc">Ces raccourcis fonctionnent quand le curseur n'est pas dans un champ de saisie.</div>
-        <div class="shortcuts">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:140px">Touche</th>
-                        <th>Action</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><kbd>N</kbd></td><td>Nouveau projet</td><td style="font-size:12px;color:#676879">Ouvre la modale de creation</td></tr>
-                    <tr><td><kbd>T</kbd></td><td>Nouvelle tache</td><td style="font-size:12px;color:#676879">Dans le projet courant (dernier survole)</td></tr>
-                    <tr><td><kbd>D</kbd></td><td>Vue Dashboard</td><td style="font-size:12px;color:#676879">Tableau de bord global</td></tr>
-                    <tr><td><kbd>B</kbd></td><td>Vue Tableau</td><td style="font-size:12px;color:#676879">Vue Board principale</td></tr>
-                    <tr><td><kbd>K</kbd></td><td>Vue Kanban</td><td style="font-size:12px;color:#676879">Vue colonnes glissables</td></tr>
-                    <tr><td><kbd>?</kbd></td><td>Aide raccourcis</td><td style="font-size:12px;color:#676879">Liste des raccourcis dans l'appli</td></tr>
-                    <tr><td><kbd>Echap</kbd></td><td>Fermer</td><td style="font-size:12px;color:#676879">Ferme toute modale ouverte</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="tip" style="margin-top:16px"><strong>Astuce :</strong> Le bouton <strong>?</strong> dans la topbar affiche aussi les raccourcis directement dans l'appli.</div>
-    </div>
-
-    <!-- ASTUCES -->
-    <div class="section" id="astuces">
-        <div class="section-title">&#128161; Astuces et conseils</div>
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">&#128269; Recherche globale</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128269;</span><div>Recherche en temps reel dans un popup</div></li>
-                        <li><span class="icon">&#128193;</span><div>Cherche dans les <strong>projets</strong> (nom, description)</div></li>
-                        <li><span class="icon">&#9989;</span><div>Cherche dans les <strong>taches et sous-taches</strong></div></li>
-                        <li><span class="icon">&#127991;</span><div>Cherche aussi dans les <strong>tags</strong> et <strong>priorites</strong></div></li>
-                        <li><span class="icon">&#128308;</span><div>Cherche dans les <strong>statuts</strong> (tape "en cours", "termine"...)</div></li>
-                        <li><span class="icon">&#128073;</span><div>Clic sur un resultat → projet/tache correspondant</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128202; Filtres et tri</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128308;</span><div>Sidebar : filtre par statut ou type de projet</div></li>
-                        <li><span class="icon">&#128203;</span><div>Tri Deadline/Priorite/Nom sur les taches</div></li>
-                        <li><span class="icon">&#9989;</span><div>Bouton <strong>Terminees</strong> pour masquer les taches cochees</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128276; Notifications push (Service Worker)</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128276;</span><div>Cliquer sur &#128276; dans la topbar pour autoriser</div></li>
-                        <li><span class="icon">&#128336;</span><div>Verifie les rappels toutes les <strong>60 secondes</strong></div></li>
-                        <li><span class="icon">&#128187;</span><div>Fonctionne si la page est fermee (navigateur ouvert)</div></li>
-                        <li><span class="icon">&#128073;</span><div>Clic sur la notification → ouvre directement la tache</div></li>
-                        <li><span class="icon">&#9881;</span><div>Edge/Chrome : activer "Continuer en arriere-plan"</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#127912; Themes de couleurs</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#127912;</span><div>Bouton &#127912; dans la topbar</div></li>
-                        <li><span class="icon">&#127744;</span><div>7 pastilles : Bleu, Violet, Vert, Rouge, Orange, Cyan, Gris</div></li>
-                        <li><span class="icon">&#128190;</span><div>Theme sauvegarde et restaure au prochain lancement</div></li>
-                        <li><span class="icon">&#127769;</span><div>Compatible avec le mode sombre</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#127769; Mode sombre</div>
-                <div class="card-body">Toggle rond dans la topbar pour basculer clair/sombre. Preference sauvegardee automatiquement.</div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128336; Historique des versions</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128336;</span><div>Bouton &#128336; dans la topbar</div></li>
-                        <li><span class="icon">&#128190;</span><div>Sauvegarde automatique a chaque modification</div></li>
-                        <li><span class="icon">5&#65039;&#8419;</span><div>Les <strong>5 dernieres versions</strong> conservees</div></li>
-                        <li><span class="icon">&#8635;</span><div><strong>Restaurer</strong> pour revenir en arriere</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128202; Statistiques avancees</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128202;</span><div>En bas du <strong>Dashboard</strong></div></li>
-                        <li><span class="icon">&#8987;</span><div>Temps passe par projet</div></li>
-                        <li><span class="icon">&#128308;</span><div>Repartition taches par statut</div></li>
-                        <li><span class="icon">&#128193;</span><div>Projets par type</div></li>
-                        <li><span class="icon">&#128308;</span><div>Taches en retard avec nombre de jours</div></li>
-                        <li><span class="icon">&#128200;</span><div>Avancement global par projet</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128202; Exports</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128196;</span><div><strong>PDF</strong> topbar : tous les projets visibles</div></li>
-                        <li><span class="icon">&#128202;</span><div><strong>Excel</strong> topbar : tous les projets (onglet global + un onglet par projet)</div></li>
-                        <li><span class="icon">&#128424;</span><div><strong>Impression</strong> topbar : tous les projets</div></li>
-                        <li><span class="icon">&#128424;</span><div><strong>Impression</strong> par projet : ce projet uniquement</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#127760; Mode hors-ligne</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128994;</span><div>Point <strong>vert</strong> dans la topbar = serveur connecte</div></li>
-                        <li><span class="icon">&#128308;</span><div>Point <strong>rouge</strong> = hors-ligne, cache local actif</div></li>
-                        <li><span class="icon">&#128190;</span><div>Modifications sauvegardees en cache localStorage</div></li>
-                        <li><span class="icon">&#8635;</span><div>Synchronisation automatique au retour du serveur</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128279; Liens entre projets</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128279;</span><div><strong>Depend de</strong> (orange) — tri topologique auto</div></li>
-                        <li><span class="icon">&#128196;</span><div><strong>Reference</strong> (bleu) — lien informel</div></li>
-                        <li><span class="icon">&#128065;</span><div>Liens visibles dans l'en-tete du projet, cliquables</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#128640; Workflow recommande</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">1&#65039;&#8419;</span><div>Creer le projet avec type, priorite, deadline</div></li>
-                        <li><span class="icon">2&#65039;&#8419;</span><div>Uploader les images, STL, fichiers Cura</div></li>
-                        <li><span class="icon">3&#65039;&#8419;</span><div>Ajouter les composants et le schema de cablage</div></li>
-                        <li><span class="icon">4&#65039;&#8419;</span><div>Decomposer en taches puis en etapes</div></li>
-                        <li><span class="icon">5&#65039;&#8419;</span><div>Utiliser le chronometre pour tracker le temps</div></li>
-                        <li><span class="icon">6&#65039;&#8419;</span><div>Suivre l'avancement dans le Dashboard</div></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">&#9888; Limitations connues</div>
-                <div class="card-body">
-                    <ul class="feature-list">
-                        <li><span class="icon">&#128276;</span><div>Service Worker necessite le navigateur ouvert</div></li>
-                        <li><span class="icon">&#128190;</span><div>Images en pieces jointes stockees en base64 dans taches.json</div></li>
-                        <li><span class="icon">&#128193;</span><div>Les fichiers STL/Cura/images sont stockes physiquement dans data/</div></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<!-- ═══════════════════════ DÉMARRAGE ═══════════════════════ -->
+<div class="section" id="demarrage">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e8f2ff">🚀</div><h2 class="sec-title">Démarrage rapide</h2></div>
+  <p class="sec-desc">GP est un gestionnaire de projets local sans compte, sans cloud, sans abonnement. Conçu pour les Makers : Arduino, Raspberry Pi, impression 3D, électronique. Tes données restent sur ton PC et se sauvegardent automatiquement sur ton NAS.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Lancer le serveur</div><div class="step-desc">Double-cliquer sur <strong>start.bat</strong>. La fenêtre noire = serveur actif. Ne pas la fermer.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Ouvrir l'application</div><div class="step-desc">Le navigateur s'ouvre automatiquement sur <strong>http://localhost:8742</strong></div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Créer un projet</div><div class="step-desc">Clic sur <strong>+ Nouveau projet</strong> (vert, topbar) ou touche <kbd>N</kbd></div></div></div>
+    <div class="step"><div class="step-num">4</div><div><div class="step-title">Ajouter des tâches</div><div class="step-desc">Clic sur <strong>+ Tâche</strong> dans l'en-tête du projet ou touche <kbd>T</kbd></div></div></div>
+    <div class="step"><div class="step-num">5</div><div><div class="step-title">Tutoriel interactif</div><div class="step-desc">Clic sur <strong>🎯 Tutoriel</strong> dans la topbar — 9 étapes guidées avec spotlight</div></div></div>
+  </div>
+  <div class="callout callout-blue" style="margin-top:18px">
+    <div class="ci">📁</div>
+    <p><strong>Structure données :</strong> chaque projet a son dossier dans <strong>data/Nom du projet/</strong> contenant projet.json, taches.json, images/, stl/, cura/, docs/. Archives ZIP dans <strong>archives/</strong>. Sauvegarde NAS automatique dans <strong>\\NAS\GestionProjet\</strong>.</p>
+  </div>
 </div>
 
+<!-- ═══════════════════════ INTERFACE ═══════════════════════ -->
+<div class="section" id="interface">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#f0ebfa">👁</div><h2 class="sec-title">Interface</h2></div>
+  <p class="sec-desc">L'interface se compose d'une sidebar de navigation, d'une topbar avec les outils et d'une zone principale.</p>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">☰ Sidebar</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📊</span><div><strong>5 vues</strong> : Tableau de bord, Tableau, Kanban, Calendrier, Timeline</div></li>
+          <li><span class="ic">🔴</span><div><strong>Filtres statut</strong> : Tous, À faire, En cours, Terminés, Bloqués — avec compteurs</div></li>
+          <li><span class="ic">🔌</span><div><strong>Filtres type</strong> : Arduino/RPI, Logiciel, Mixte, Divers</div></li>
+          <li><span class="ic">📦</span><div><strong>Archives</strong> : afficher/masquer les projets archivés</div></li>
+          <li><span class="ic">🏷</span><div>Version <strong>v1.0.0</strong> affichée en bas de sidebar</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚙ Topbar</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">🔍</span><div><strong>Recherche</strong> — projets, tâches, tags en temps réel</div></li>
+          <li><span class="ic">⇅</span><div><strong>Tri</strong> — Manuel, Création, Deadline, Priorité, Nom</div></li>
+          <li><span class="ic">🎯</span><div><strong>Tutoriel</strong> — 9 étapes guidées (clignote au démarrage)</div></li>
+          <li><span class="ic">🔔</span><div><strong>Notifications</strong> — autoriser les rappels</div></li>
+          <li><span class="ic">🕐</span><div><strong>Historique</strong> — 5 versions, restauration</div></li>
+          <li><span class="ic">🎨</span><div><strong>Thème</strong> — 7 couleurs + mode sombre</div></li>
+          <li><span class="ic">📝</span><div><strong>Notes globales</strong> — panneau flottant</div></li>
+          <li><span class="ic">⚡</span><div><strong>Diagnostic</strong> — vérification cohérence</div></li>
+          <li><span class="ic">💾</span><div><strong>NAS</strong> — état sauvegarde + déclenchement manuel</div></li>
+          <li><span class="ic">📊</span><div><strong>Export Excel</strong> et <strong>PDF</strong> globaux</div></li>
+          <li><span class="ic">➕</span><div><strong>+ Nouveau projet</strong></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">🌙 Mode sombre + Thèmes</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">🌙</span><div>Toggle sombre/clair — sauvegardé automatiquement</div></li>
+          <li><span class="ic">🎨</span><div>7 pastilles couleur : Bleu, Violet, Vert, Rouge, Orange, Cyan, Gris</div></li>
+          <li><span class="ic">✅</span><div>Thèmes fonctionnent aussi en mode sombre</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🌐 Mode hors-ligne</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">🟢</span><div>Point <strong>vert</strong> = serveur connecté</div></li>
+          <li><span class="ic">🔴</span><div>Point <strong>rouge</strong> = hors-ligne, cache localStorage actif</div></li>
+          <li><span class="ic">🔄</span><div>Synchronisation automatique au retour du serveur</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ VUES ═══════════════════════ -->
+<div class="section" id="vues">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e8f2ff">📋</div><h2 class="sec-title">Les 5 vues</h2></div>
+  <p class="sec-desc">Chaque vue offre une perspective différente sur tes projets. Navigation via la sidebar ou les onglets.</p>
+  <div class="cards three">
+    <div class="card"><div class="card-title">📋 Tableau <span class="badge badge-blue">B</span></div><div class="card-body">Vue principale. Projets + tâches en tableau. Colonnes : Tâche, Statut, Priorité, Deadline, Temps H/Min, Estimé, Passé. En-tête de projet collant avec bouton ▶ collapse.</div></div>
+    <div class="card"><div class="card-title">🗂 Kanban <span class="badge badge-blue">K</span></div><div class="card-body">4 colonnes : À faire, En cours, Terminé, Bloqué. Drag & drop projets entre colonnes.</div></div>
+    <div class="card"><div class="card-title">📅 Calendrier</div><div class="card-body">Vue mensuelle avec deadlines. Navigation mois par mois. Clic sur un événement pour ouvrir le projet.</div></div>
+    <div class="card"><div class="card-title">📈 Timeline / Gantt</div><div class="card-body">Barres horizontales par durée estimée. Ligne rouge = aujourd'hui. Nécessite date de début et deadline.</div></div>
+    <div class="card"><div class="card-title">📊 Dashboard <span class="badge badge-blue">D</span></div><div class="card-body">Statistiques globales + 5 graphiques : temps passé, statuts, types, retards, avancement par projet.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PROJETS ═══════════════════════ -->
+<div class="section" id="projets">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e8f2ff">📁</div><h2 class="sec-title">Gestion des projets</h2></div>
+  <p class="sec-desc">Chaque projet est dans son propre dossier. Il peut contenir des tâches, fichiers, composants, budget, schéma de câblage et tags.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">✏ Champs d'un projet</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📛</span><div><strong>Nom</strong> — utilisé comme nom de dossier dans data/</div></li>
+          <li><span class="ic">📦</span><div><strong>Type</strong> — Arduino/RPI, Logiciel, Impression 3D, Mixte, Divers</div></li>
+          <li><span class="ic">🔴</span><div><strong>Statut</strong> — À faire, En cours, Terminé, Bloqué, En attente</div></li>
+          <li><span class="ic">🎯</span><div><strong>Priorité</strong> — Haute, Moyenne, Basse</div></li>
+          <li><span class="ic">📅</span><div><strong>Dates</strong> — Début et deadline</div></li>
+          <li><span class="ic">💶</span><div><strong>Budget</strong> — Estimé et réel en EUR</div></li>
+          <li><span class="ic">📄</span><div><strong>Description</strong> — notes, objectifs, liens</div></li>
+          <li><span class="ic">🏷</span><div><strong>Tags</strong> — impression3D, electronique, mecanique...</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⠿ Drag & drop projets <span class="new-tag">Nouveau</span></div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">⠿</span><div>Poignée <strong>⠿</strong> visible à gauche de chaque en-tête projet</div></li>
+          <li><span class="ic">🖱</span><div>Glisser pour <strong>réordonner</strong> les projets dans la vue Tableau</div></li>
+          <li><span class="ic">📋</span><div>Le tri passe automatiquement en <strong>"Tri : Manuel"</strong></div></li>
+          <li><span class="ic">💾</span><div>Ordre sauvegardé sur le disque immédiatement</div></li>
+          <li><span class="ic">🔄</span><div>Pour revenir au tri par date : sélectionner "Tri : Création" dans le dropdown</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">▶ Collapse ligne projet <span class="new-tag">Nouveau</span></div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">▶</span><div>Bouton <strong>▶</strong> dans la 1ère colonne de la ligne résumé du projet</div></li>
+          <li><span class="ic">👆</span><div>Clic → masque toutes les tâches du projet (gain de place)</div></li>
+          <li><span class="ic">▶</span><div>▶ horizontal = tâches masquées / ▶ tourné 90° = tâches visibles</div></li>
+          <li><span class="ic">💾</span><div>État sauvegardé dans localStorage entre les sessions</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📦 Archivage ZIP</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📦</span><div>Bouton 📦 dans l'en-tête → dossier complet zippé dans <strong>archives/</strong></div></li>
+          <li><span class="ic">📂</span><div>Le ZIP contient tout : JSON, images, STL, Cura, docs</div></li>
+          <li><span class="ic">👁</span><div>Section <strong>Archives</strong> sidebar pour voir les projets archivés</div></li>
+          <li><span class="ic">🔄</span><div><strong>Restaurer</strong> — recrée le dossier depuis le ZIP</div></li>
+          <li><span class="ic">✅</span><div>Sélection multiple + "Supprimer la sélection"</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+    <span class="pill pill-gray">⚪ À faire</span>
+    <span class="pill pill-blue">🔵 En cours</span>
+    <span class="pill pill-green">🟢 Terminé</span>
+    <span class="pill pill-red">🔴 Bloqué</span>
+    <span class="pill pill-orange">🟡 En attente</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TÂCHES ═══════════════════════ -->
+<div class="section" id="taches">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e6faf1">✅</div><h2 class="sec-title">Gestion des tâches</h2></div>
+  <p class="sec-desc">Les tâches ont 2 niveaux de sous-tâches. Le temps se saisit directement en heures et minutes. Les tâches terminées descendent automatiquement en bas.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">📋 Champs d'une tâche</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">🔴</span><div><strong>Statut</strong> — clic direct sur la pill dans le tableau</div></li>
+          <li><span class="ic">🎯</span><div><strong>Priorité</strong> — Haute, Moyenne, Basse</div></li>
+          <li><span class="ic">📅</span><div><strong>Début / Deadline</strong></div></li>
+          <li><span class="ic">⏱</span><div><strong>Estimation</strong> — format libre : 2h 30min, 45min...</div></li>
+          <li><span class="ic">🔔</span><div><strong>Rappel</strong> — notification Windows à date/heure précise</div></li>
+          <li><span class="ic">📝</span><div><strong>Notes</strong> — icône 📝 dans le tableau si une note existe</div></li>
+          <li><span class="ic">🏷</span><div><strong>Tags</strong> — dans la modale détail</div></li>
+          <li><span class="ic">📎</span><div><strong>Pièces jointes</strong> — images base64 avec lightbox</div></li>
+          <li><span class="ic">💬</span><div><strong>Commentaires</strong> — horodatés, éditables, Ctrl+Entrée</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🕐 Saisie du temps H/Min</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">🕐</span><div>Colonne <strong>TEMPS</strong> : deux champs <strong>H</strong> et <strong>Min</strong> saisissables directement dans le tableau</div></li>
+          <li><span class="ic">⏱</span><div>Colonne <strong>PASSÉ</strong> : total calculé (tâche + toutes ses sous-tâches)</div></li>
+          <li><span class="ic">📊</span><div>Total visible dans la barre du bas et le Dashboard</div></li>
+          <li><span class="ic">📁</span><div>La ligne projet affiche la somme de toutes ses tâches</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">▶ Collapse sous-tâches <span class="new-tag">Nouveau</span></div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">▶</span><div>Bouton <strong>▶</strong> à gauche du nom de chaque tâche ayant des étapes</div></li>
+          <li><span class="ic">👆</span><div>Clic → masque/affiche les sous-tâches de cette tâche</div></li>
+          <li><span class="ic">🔄</span><div>▶ horizontal = sous-tâches masquées / tourné = visibles</div></li>
+          <li><span class="ic">💡</span><div>Utile pour les tâches avec beaucoup d'étapes</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📑 Sous-tâches (2 niveaux)</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">➕</span><div>Survol tâche → bouton <strong>+ Étape</strong></div></li>
+          <li><span class="ic">✅</span><div>Cocher la parente coche toutes les sous-tâches</div></li>
+          <li><span class="ic">🔴</span><div>Toutes sous-tâches terminées → parente terminée automatiquement</div></li>
+          <li><span class="ic">⬇</span><div>Les tâches terminées <strong>descendent automatiquement</strong> en bas</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ FICHIERS ═══════════════════════ -->
+<div class="section" id="fichiers">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#fff6e3">📁</div><h2 class="sec-title">Gestionnaire de fichiers</h2></div>
+  <p class="sec-desc">Chaque projet stocke ses fichiers physiquement dans 4 sous-dossiers. Le drag & drop trie automatiquement par extension.</p>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">📁 Les 4 dossiers</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📷</span><div><strong>images/</strong> — .jpg .png .gif .webp .svg</div></li>
+          <li><span class="ic">🖨</span><div><strong>stl/</strong> — .stl .obj .3mf .step .stp</div></li>
+          <li><span class="ic">⚙</span><div><strong>cura/</strong> — .gcode .curaproject .cura</div></li>
+          <li><span class="ic">📄</span><div><strong>docs/</strong> — .pdf .txt .docx .xlsx .ino .py .zip...</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⬆ Upload auto-trié</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📁</span><div>Bouton 📁 dans l'en-tête du projet</div></li>
+          <li><span class="ic">⬆</span><div>Glisser-déposer les fichiers sur la zone pointillée</div></li>
+          <li><span class="ic">✅</span><div>Extension détectée → <strong>bon dossier automatiquement</strong></div></li>
+          <li><span class="ic">📷</span><div>Images : miniatures cliquables (lightbox)</div></li>
+          <li><span class="ic">⬇</span><div>Bouton ⬇ télécharger, 🗑 supprimer</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-green">
+    <div class="ci">💡</div>
+    <p><strong>Accès direct :</strong> Tu peux copier des fichiers directement dans <strong>data/Nom du projet/images/</strong> depuis l'Explorateur Windows — ils apparaîtront automatiquement.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ COMPOSANTS ═══════════════════════ -->
+<div class="section" id="composants">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e6faf1">🔧</div><h2 class="sec-title">Liste de composants</h2></div>
+  <p class="sec-desc">Chaque projet peut avoir une liste de composants/matériel avec quantité, fournisseur, prix unitaire et lien. Total calculé automatiquement.</p>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">🔧 Accéder aux composants</div>
+      <div class="card-body">Cliquer sur le bouton 🔧 dans l'en-tête du projet. Un compteur s'affiche quand des composants sont définis.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Colonnes disponibles</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📛</span><div><strong>Composant</strong> — ex: Arduino Mega 2560</div></li>
+          <li><span class="ic">🔢</span><div><strong>Quantité</strong></div></li>
+          <li><span class="ic">🏪</span><div><strong>Fournisseur</strong> — AliExpress, Amazon...</div></li>
+          <li><span class="ic">💶</span><div><strong>Prix unitaire</strong> (€)</div></li>
+          <li><span class="ic">📊</span><div><strong>Total ligne</strong> — calculé auto (qté × prix)</div></li>
+          <li><span class="ic">🔗</span><div><strong>Lien URL</strong> — vers le produit</div></li>
+          <li><span class="ic">📝</span><div><strong>Remarque</strong> — notes libres</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ NOTES ═══════════════════════ -->
+<div class="section" id="notes">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#f0ebfa">📝</div><h2 class="sec-title">Notes</h2></div>
+  <p class="sec-desc">Deux types de notes : globales au logiciel et spécifiques à chaque projet. Panneau flottant déplaçable et redimensionnable.</p>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">📝 Notes globales</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📝</span><div>Bouton <strong>📝</strong> dans la topbar</div></li>
+          <li><span class="ic">💾</span><div>Sauvegardées dans le <strong>localStorage</strong> du navigateur</div></li>
+          <li><span class="ic">💡</span><div>Idéal pour les notes générales, bugs, idées</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📝 Notes par projet</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📝</span><div>Bouton <strong>📝</strong> dans l'en-tête de chaque projet</div></li>
+          <li><span class="ic">💾</span><div>Sauvegardées dans le <strong>projet.json</strong></div></li>
+          <li><span class="ic">📦</span><div>Archivées avec le projet</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">🖼 Le panneau flottant</div>
+    <div class="card-body">
+      <ul class="flist">
+        <li><span class="ic">↔</span><div>Panneau <strong>déplaçable</strong> par drag sur l'en-tête</div></li>
+        <li><span class="ic">↕</span><div>Panneau <strong>redimensionnable</strong> par drag sur le bord</div></li>
+        <li><span class="ic">_</span><div>Bouton <strong>_</strong> minimiser, <strong>×</strong> fermer</div></li>
+        <li><span class="ic">⌨</span><div><strong>Ctrl+Entrée</strong> pour ajouter une note rapidement</div></li>
+        <li><span class="ic">📅</span><div>Chaque note est horodatée</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ NAS ═══════════════════════ -->
+<div class="section" id="nas">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e6faf1">💾</div><h2 class="sec-title">Sauvegarde NAS automatique <span class="new-tag">Nouveau</span></h2></div>
+  <p class="sec-desc">GP sauvegarde automatiquement tes données sur ton NAS Synology après chaque modification. Aucune configuration nécessaire — tout est automatique.</p>
+  <div class="cards two">
+    <div class="card">
+      <div class="card-title">💾 Indicateur topbar</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">💾</span><div><strong>💾 NAS</strong> — état initial</div></li>
+          <li><span class="ic">🔄</span><div><strong>🔄 NAS...</strong> — sauvegarde en cours (thread séparé)</div></li>
+          <li><span class="ic">✅</span><div><strong>✅ NAS</strong> — succès (survol = heure de la dernière sauvegarde)</div></li>
+          <li><span class="ic">❌</span><div><strong>❌ NAS</strong> — erreur (NAS injoignable, réseau coupé...)</div></li>
+          <li><span class="ic">👆</span><div>Clic sur le bouton = <strong>sauvegarde manuelle immédiate</strong></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚙ Configuration</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">📄</span><div>Fichier <strong>backup_config.json</strong> dans le dossier du projet</div></li>
+          <li><span class="ic">🔒</span><div>Jamais envoyé sur GitHub (sécurité mot de passe)</div></li>
+          <li><span class="ic">📂</span><div>Copie <strong>data/</strong> et <strong>archives/</strong> vers le NAS</div></li>
+          <li><span class="ic">⚡</span><div>Non bloquant — tourne en arrière-plan</div></li>
+          <li><span class="ic">🔄</span><div>Vérification statut toutes les 60 secondes</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-orange">
+    <div class="ci">⚠</div>
+    <p><strong>NAS injoignable ?</strong> Si l'icône ❌ s'affiche, vérifie que le NAS est allumé et accessible sur le réseau. La sauvegarde se relancera automatiquement à la prochaine modification.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DIAGNOSTIC ═══════════════════════ -->
+<div class="section" id="diagnostic">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#fff3cd">⚡</div><h2 class="sec-title">Diagnostic de cohérence</h2></div>
+  <p class="sec-desc">Le diagnostic analyse tous les projets actifs et signale les incohérences. Un clic sur une alerte ouvre directement la modale pour corriger.</p>
+  <div class="cards three">
+    <div class="card" style="border-top:3px solid var(--red)">
+      <div class="card-title" style="color:var(--red)">❌ Erreurs critiques</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">❌</span><div>Projet "Terminé" mais des tâches encore ouvertes</div></li>
+          <li><span class="ic">❌</span><div>Tâche terminée mais des sous-tâches non terminées</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--orange)">
+      <div class="card-title" style="color:#c87a00">⚠ Alertes</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">⚠</span><div>Projet sans aucune tâche</div></li>
+          <li><span class="ic">⚠</span><div>Tâche(s) en retard</div></li>
+          <li><span class="ic">⚠</span><div>Budget dépassé</div></li>
+          <li><span class="ic">⚠</span><div>Temps passé &gt; estimation +20%</div></li>
+          <li><span class="ic">⚠</span><div>Projet bloqué sans description</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent)">
+      <div class="card-title" style="color:var(--accent)">ℹ Informations</div>
+      <div class="card-body">
+        <ul class="flist">
+          <li><span class="ic">ℹ</span><div>Tâches sans deadline</div></li>
+          <li><span class="ic">ℹ</span><div>Tâches sans estimation de temps</div></li>
+          <li><span class="ic">ℹ</span><div>Composants sans prix</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-blue">
+    <div class="ci">👆</div>
+    <p><strong>Navigation directe :</strong> Cliquer sur une alerte ferme le diagnostic et ouvre la modale correspondante. Les projets/tâches "En attente" sont exclus des alertes.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ RACCOURCIS ═══════════════════════ -->
+<div class="section" id="raccourcis">
+  <div class="sec-hdr"><div class="sec-icon" style="background:#e8f2ff">⌨</div><h2 class="sec-title">Raccourcis clavier</h2></div>
+  <p class="sec-desc">Actifs quand le curseur n'est pas dans un champ de saisie. Appuyer sur <kbd>?</kbd> dans l'appli pour afficher la liste.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th style="width:120px">Touche</th><th>Action</th><th>Détails</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>N</kbd></td><td>Nouveau projet</td><td style="color:var(--text2)">Ouvre la modale création</td></tr>
+        <tr><td><kbd>T</kbd></td><td>Nouvelle tâche</td><td style="color:var(--text2)">Dans le projet courant</td></tr>
+        <tr><td><kbd>B</kbd></td><td>Vue Tableau</td><td style="color:var(--text2)">Board principal</td></tr>
+        <tr><td><kbd>K</kbd></td><td>Vue Kanban</td><td style="color:var(--text2)">Colonnes glissables</td></tr>
+        <tr><td><kbd>D</kbd></td><td>Dashboard</td><td style="color:var(--text2)">Statistiques globales</td></tr>
+        <tr><td><kbd>?</kbd></td><td>Aide raccourcis</td><td style="color:var(--text2)">Popup dans l'appli</td></tr>
+        <tr><td><kbd>Échap</kbd></td><td>Fermer</td><td style="color:var(--text2)">Ferme toute modale ouverte</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">💡 Workflow recommandé</div>
+    <div class="card-body">
+      <ul class="flist">
+        <li><span class="ic">1️⃣</span><div>Créer le projet avec type, priorité, deadline, budget</div></li>
+        <li><span class="ic">2️⃣</span><div>Uploader les fichiers STL, images, Cura, docs</div></li>
+        <li><span class="ic">3️⃣</span><div>Ajouter les composants avec prix et liens fournisseurs</div></li>
+        <li><span class="ic">4️⃣</span><div>Décomposer en tâches puis en étapes</div></li>
+        <li><span class="ic">5️⃣</span><div>Saisir le temps passé en H/Min par tâche</div></li>
+        <li><span class="ic">6️⃣</span><div>Lancer ⚡ Diagnostic régulièrement</div></li>
+        <li><span class="ic">7️⃣</span><div>Vérifier l'icône 💾 NAS pour confirmer la sauvegarde</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
 <div class="footer">
-    Gestionnaire de Projets &mdash; Fait avec Claude &mdash; Philippe (lpmaker-be) &mdash; 2026
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="https://github.com/lpmaker-be/gestion-projets" target="_blank" style="color:var(--accent)">GitHub</a>
+  <div>GP Gestionnaire de Projets v1.0.0 &mdash; Philippe lpmaker-be &mdash; 2026</div>
+  <div><a href="https://github.com/lpmaker-be/gestion-projets" target="_blank">GitHub</a> &nbsp;|&nbsp; <a href="http://localhost:8742">← Retour à l'appli</a></div>
 </div>
 
 <script>
-    const sections = document.querySelectorAll('.section');
-    const navLinks = document.querySelectorAll('.nav a');
-    window.addEventListener('scroll', function() {
-        let current = '';
-        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
-        navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
-    });
-    navLinks.forEach(a => {
-        a.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    });
+const sections = document.querySelectorAll('.section');
+const navLinks  = document.querySelectorAll('.nav a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+navLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
 </script>
-
 </body>
 </html>

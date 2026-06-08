@@ -22,3 +22,8 @@ projets.json.backup
 *.log
 warn-*.txt
 xref-*.html
+
+installe/build/
+installe/dist/
+
+backup_config.json
