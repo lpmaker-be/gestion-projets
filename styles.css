@@ -636,3 +636,11 @@ body.dark .archived-banner { background: #2c2e33; color: #666; }
 /* Desactiver la selection de texte pendant le drag */
 .sortable-chosen, .sortable-drag { user-select: none !important; -webkit-user-select: none !important; }
 body.dragging * { user-select: none !important; -webkit-user-select: none !important; cursor: grabbing !important; }
+
+.main-row-collapse-btn { background:none; border:none; cursor:pointer; color:var(--text2); font-size:11px; padding:2px 4px; line-height:1; transition:transform .2s; transform:rotate(0deg); }
+.main-row-collapse-btn.open { transform:rotate(90deg); }
+.main-row-collapse-btn:hover { color:var(--accent); }
+
+.task-collapse-btn { background:none; border:none; cursor:pointer; color:var(--text3); font-size:10px; padding:0 4px; line-height:1; transition:transform .15s, color .15s; transform:rotate(0deg); }
+.task-collapse-btn.open { transform:rotate(90deg); color:var(--text2); }
+.task-collapse-btn:hover { color:var(--accent); }

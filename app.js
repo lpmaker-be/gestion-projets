@@ -75,7 +75,8 @@ let showArchived = false;
 let sideType = '';
 
 /** Set des IDs de projets réduits (collapsed) dans la vue tableau */
-let collapsed = new Set();
+let collapsed     = new Set();
+let mainCollapsed = new Set(JSON.parse(localStorage.getItem('gp_main_collapsed') || '[]'));
 
 /** Filtre de priorité des tâches : 'all' | 'high' | 'med' | 'low' */
 let prioFilter = 'all';
@@ -462,7 +463,8 @@ function getFilteredProjects() {
         if (sortBy === 'deadline')  return (a.deadline || '9999') > (b.deadline || '9999') ? 1 : -1;
         if (sortBy === 'priority')  { const po = { high: 0, med: 1, low: 2 }; return po[a.priority] - po[b.priority]; }
         if (sortBy === 'name')      return a.name.localeCompare(b.name);
-        return b.createdAt - a.createdAt;    // Par défaut : ordre de création décroissant
+        if (sortBy === 'created' || sortBy === 'creation') return b.createdAt - a.createdAt;
+        // 'manual' ou vide = ordre du tableau (drag & drop)
     });
 
     // Tri topologique : les projets dependants apres leurs dependances
@@ -630,7 +632,7 @@ function renderAll() {
     updateSideCounts();
     updateSummary();
 
-    if      (currentView === 'board')     renderBoard();
+    if      (currentView === 'board')     { renderBoard(); setTimeout(initProjDrag, 50); }
     else if (currentView === 'kanban')    renderKanban();
     else if (currentView === 'calendar')  renderCalendar();
     else if (currentView === 'gantt')     renderGantt();
@@ -673,9 +675,9 @@ function renderBoard() {
 
         // ── En-tête du projet ──────────────────────────────────────────
         html += `
-        <div class="project-block" data-proj-id="${p.id}">
+        <div class="project-block" data-proj-id="${p.id}" draggable="true">
             <div class="proj-hdr" onmouseenter="currentProjId='${p.id}'">
-                <button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
+                <span class="proj-drag-handle" title="Glisser pour reordonner">⠿</span><button class="collapse-btn ${isCol ? '' : 'open'}" onclick="toggleCollapse('${p.id}')">▶</button>
                 <span class="proj-color" style="background:${color}"></span>
                 <input class="proj-name-inp"
                     value="${escHtml(p.name)}"
@@ -737,8 +739,12 @@ function renderBoard() {
                     <tbody class="task-tbody">
 
                     <!-- Ligne résumé projet -->
-                    <tr style="background:#f0f4ff;border-left:4px solid ${color}" onclick="openProjectModal('${p.id}')">
-                        <td></td>
+                    <tr style="background:#f0f4ff;border-left:4px solid ${color}" data-proj-main="${p.id}" onclick="openProjectModal('${p.id}')">
+                        <td onclick="event.stopPropagation()">
+                            <button class="main-row-collapse-btn ${mainCollapsed.has(p.id) ? '' : 'open'}"
+                                    onclick="event.stopPropagation();toggleMainRow('${p.id}',this)"
+                                    title="Reduire/Developper les taches">&#9658;</button>
+                        </td>
                         <td>
                             <div class="tname-cell">
                                 <span style="font-weight:700;color:${color}">${escHtml(p.name)}</span>
@@ -766,7 +772,7 @@ function renderBoard() {
                     </tr>`;
 
             // Lignes de tâches
-            tasks.forEach(t => {
+            if (!mainCollapsed.has(p.id)) tasks.forEach(t => {
                 const tdl       = t.deadline ? dlInfo(t.deadline) : null;
                 const isRunning = timers[t.id] && timers[t.id].running;
                 const spent     = (t.timeSpent || 0) + (isRunning
@@ -778,7 +784,7 @@ function renderBoard() {
                     if (!subtasks || !subtasks.length) return '';
                     const indent = 32 + (level * 20);
                     return subtasks.map(st => `
-                    <tr class="task-row subtask-row-${level}" onclick="openSubtaskDetail('${p.id}', '${t.id}', '${st.id}', ${level})">
+                    <tr class="task-row subtask-row-${level}" data-sub-of="${t.id}" onclick="openSubtaskDetail('${p.id}', '${t.id}', '${st.id}', ${level})">
                         <td onclick="event.stopPropagation()">
                             <input class="row-chk" type="checkbox" ${st.done ? 'checked' : ''}
                                    onclick="event.preventDefault(); toggleSubtask('${p.id}', '${t.id}', '${st.id}')">
@@ -818,7 +824,8 @@ function renderBoard() {
                         <td>
                             <div style="display:flex;flex-direction:column;min-width:0;max-width:400px">
                                 <div class="tname-cell">
-                                    ${t.depends ? `<span style="font-size:10px;color:var(--text3)">&#128279;</span>` : ''}
+     
+                                    ${(t.subtasks && t.subtasks.length) ? `<button class="task-collapse-btn open" onclick="event.stopPropagation();toggleTaskCollapse('${t.id}',this)" title="Reduire/Developper">&#9658;</button>` : '<span style="width:16px;display:inline-block"></span>'}                               ${t.depends ? `<span style="font-size:10px;color:var(--text3)">&#128279;</span>` : ''}
                                     <span class="tname-txt ${t.done ? 'done' : ''}">${escHtml(t.name)}</span>
                                     ${t.note ? `<span class="note-ic" title="${escHtml(t.note)}">&#128221;</span>` : ''}
                                     ${t.reminder && !t.done ? `<span class="note-ic" title="Rappel : ${t.reminder.replace('T',' ')}">&#128276;</span>` : ''}
@@ -4206,3 +4213,75 @@ function toggleHelp() {
 /** Démarrage : chargement des données depuis le serveur */
 loadData();
 unregisterOldServiceWorkers().then(function() { registerServiceWorker(); });
+
+/* === DRAG & DROP PROJETS === */
+var _dragProjId = null;
+var _dragOverId = null;
+
+function initProjDrag() {
+    document.querySelectorAll('.project-block[draggable]').forEach(function(block) {
+        if (block._dragInit) return;
+        block._dragInit = true;
+        block.addEventListener('dragstart', function(e) {
+            _dragProjId = block.dataset.projId;
+            block.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.stopPropagation();
+        });
+        block.addEventListener('dragend', function() {
+            block.classList.remove('dragging');
+            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+        });
+        block.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (block.dataset.projId === _dragProjId) return;
+            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+            block.classList.add('drag-over');
+            _dragOverId = block.dataset.projId;
+        });
+        block.addEventListener('drop', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.project-block').forEach(function(b) { b.classList.remove('drag-over'); });
+            if (!_dragProjId || _dragProjId === block.dataset.projId) return;
+            var fromIdx = data.projects.findIndex(function(p) { return p.id === _dragProjId; });
+            var toIdx   = data.projects.findIndex(function(p) { return p.id === block.dataset.projId; });
+            if (fromIdx < 0 || toIdx < 0) return;
+            var moved = data.projects.splice(fromIdx, 1)[0];
+            data.projects.splice(toIdx, 0, moved);
+            saveProjOrder();
+        });
+    });
+}
+
+async function saveProjOrder() {
+    try {
+        var ids = data.projects.map(function(p) { return p.id; });
+        await fetch('/api/projects/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        });
+        var sortEl = document.getElementById('sort-by');
+        if (sortEl) sortEl.value = 'manual';
+    } catch(e) { toast('Erreur sauvegarde ordre', true); }
+    renderAll();
+    setTimeout(initProjDrag, 60);
+}
+
+/* === COLLAPSE LIGNE PRINCIPALE PROJET === */
+function toggleMainRow(projId, btn) {
+    if (mainCollapsed.has(projId)) mainCollapsed.delete(projId);
+    else mainCollapsed.add(projId);
+    localStorage.setItem('gp_main_collapsed', JSON.stringify([...mainCollapsed]));
+    if (btn) btn.classList.toggle('open', !mainCollapsed.has(projId));
+    renderAll();
+}
+
+/* === COLLAPSE SOUS-TACHES D'UNE TACHE === */
+function toggleTaskCollapse(taskId, btn) {
+    var rows = document.querySelectorAll('[data-sub-of="' + taskId + '"]');
+    var isOpen = btn.classList.contains('open');
+    rows.forEach(function(row) { row.style.display = isOpen ? 'none' : ''; });
+    if (isOpen) btn.classList.remove('open');
+    else btn.classList.add('open');
+}
