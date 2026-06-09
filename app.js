@@ -4386,9 +4386,7 @@ function openNotesPanel(projId) {
 }
 
 function closeNotesPanel() {
-    var p = document.getElementById('notes-panel');
-    p.classList.remove('open');
-    p.style.left=''; p.style.top='';
+    closeModal('modal-notes');
     _npProjId = null;
 }
 
