@@ -4378,6 +4378,7 @@ function openGlobalNotes() {
     document.getElementById('np-input').value = '';
     renderNotesList();
     document.getElementById('notes-popup').style.display = 'flex';
+    document.getElementById('notes-backdrop').style.display = 'block';
     setTimeout(function(){document.getElementById('np-input').focus();}, 100);
 }
 
@@ -4389,11 +4390,14 @@ function openNotesPanel(projId) {
     document.getElementById('np-input').value = '';
     renderNotesList();
     document.getElementById('notes-popup').style.display = 'flex';
+    document.getElementById('notes-backdrop').style.display = 'block';
     setTimeout(function(){document.getElementById('np-input').focus();}, 100);
 }
 
 function closeNotesPopup() {
     document.getElementById('notes-popup').style.display = 'none';
+    var bd = document.getElementById('notes-backdrop');
+    if(bd) bd.style.display = 'none';
     _npProjId = null;
 }
 
