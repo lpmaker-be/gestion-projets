@@ -4476,6 +4476,7 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 
 /* Reset position notes panel */
+function _resetNotesPanelPos(){var el=document.getElementById("notes-panel");if(!el)return;el.style.position="fixed";el.style.bottom="20px";el.style.right="20px";el.style.top="";el.style.left="";el.style.width="300px";el.style.maxHeight="420px";el.style.zIndex="9000";}
 var _onp=openNotesPanel,_ogn=openGlobalNotes;
-openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.cssText="position:fixed;bottom:20px;right:20px;z-index:9000;width:300px;max-height:420px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;display:flex;";}_onp(id);};
-openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.cssText="position:fixed;bottom:20px;right:20px;z-index:9000;width:300px;max-height:420px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;display:flex;";}_ogn();};
+openNotesPanel=function(id){_resetNotesPanelPos();_onp(id);};
+openGlobalNotes=function(){_resetNotesPanelPos();_ogn();};
