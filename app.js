@@ -2553,6 +2553,7 @@ setInterval(async function() {
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
     localStorage.setItem('gp_theme', theme);
     document.querySelectorAll('.theme-swatch').forEach(function(s) {
         s.classList.toggle('active', s.dataset.theme === theme);
@@ -2573,6 +2574,7 @@ function openThemePicker() {
 (function() {
     var saved = localStorage.getItem('gp_theme') || 'blue';
     document.documentElement.setAttribute('data-theme', saved);
+    document.body.setAttribute('data-theme', saved);
 })();
 
 /* === SERVICE WORKER - NOTIFICATIONS PUSH === */
