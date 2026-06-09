@@ -4460,12 +4460,14 @@ document.addEventListener('DOMContentLoaded',function(){
         if(!panel||!hdr) return;
         hdr.addEventListener('mousedown',function(e){
             if(e.target.closest('button')) return;
-            dragging=true;
-            var rect=panel.getBoundingClientRect();
-            ox=e.clientX-rect.left; oy=e.clientY-rect.top;
-            panel.style.left=rect.left+'px';
-            panel.style.top=rect.top+'px';
-            panel.style.right='auto'; panel.style.bottom='auto';
+            var sx=e.clientX,sy=e.clientY,moved=false,sr=panel.getBoundingClientRect();
+            function mv(e2){
+                if(!moved&&Math.abs(e2.clientX-sx)<5&&Math.abs(e2.clientY-sy)<5)return;
+                if(!moved){moved=true;panel.style.left=sr.left+'px';panel.style.top=sr.top+'px';panel.style.right='auto';panel.style.bottom='auto';}
+                panel.style.left=(sr.left+e2.clientX-sx)+'px';panel.style.top=(sr.top+e2.clientY-sy)+'px';
+            }
+            function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+            document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
             e.preventDefault();
         });
         document.addEventListener('mousemove',function(e){if(!dragging)return;panel.style.left=(e.clientX-ox)+'px';panel.style.top=(e.clientY-oy)+'px';});
