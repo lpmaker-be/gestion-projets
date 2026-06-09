@@ -4472,3 +4472,8 @@ document.addEventListener('DOMContentLoaded',function(){
         document.addEventListener('mouseup',function(){dragging=false;});
     });
 })();
+
+/* Reset position notes panel */
+var _onp=openNotesPanel,_ogn=openGlobalNotes;
+openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";}_onp(id);};
+openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";}_ogn();};
