@@ -4475,5 +4475,5 @@ document.addEventListener('DOMContentLoaded',function(){
 
 /* Reset position notes panel */
 var _onp=openNotesPanel,_ogn=openGlobalNotes;
-openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";}_onp(id);};
-openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";}_ogn();};
+openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";el.style.right="";el.style.bottom="";}_onp(id);};
+openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";el.style.right="";el.style.bottom="";}_ogn();};
