@@ -611,6 +611,23 @@
         </div>
     </div>
 </div>
+
+<!-- PANNEAU NOTES FLOTTANT -->
+<div id="notes-panel" class="notes-panel">
+    <div class="notes-panel-hdr" id="np-header">
+        <span style="font-weight:700;font-size:13px">&#128221; <span id="np-proj-name">Notes</span></span>
+        <div style="display:flex;gap:4px">
+            <button class="note-btn" onclick="document.getElementById('np-list').style.display=document.getElementById('np-list').style.display==='none'?'':'none'" title="Reduire">_</button>
+            <button class="note-btn" onclick="closeNotesPanel()" title="Fermer">&#x2715;</button>
+        </div>
+    </div>
+    <div id="np-list" class="notes-panel-list"></div>
+    <div class="notes-panel-footer">
+        <textarea id="np-input" class="notes-panel-input" placeholder="Nouvelle note... (Ctrl+Entree)" rows="3"></textarea>
+        <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="addNotePanel()">+ Ajouter</button>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 

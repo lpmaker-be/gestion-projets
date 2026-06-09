@@ -4368,3 +4368,99 @@ async function triggerNasBackup() {
 // Verifier le statut au demarrage et toutes les 60 secondes
 setTimeout(checkNasStatus, 2000);
 setInterval(checkNasStatus, 60000);
+
+/* === PANNEAU NOTES FLOTTANT === */
+var _npProjId = null;
+
+function openNotesPanel(projId) {
+    _npProjId = projId;
+    var p = data.projects.find(function(x){return x.id===projId;});
+    if(!p) return;
+    document.getElementById('np-proj-name').textContent = p.name;
+    document.getElementById('np-input').value = '';
+    document.getElementById('notes-panel').classList.add('open');
+    renderNotesPanel(p);
+    setTimeout(function(){document.getElementById('np-input').focus();},100);
+}
+
+function closeNotesPanel() {
+    document.getElementById('notes-panel').classList.remove('open');
+    _npProjId = null;
+}
+
+function renderNotesPanel(p) {
+    var notes = p.notes || [];
+    var list  = document.getElementById('np-list');
+    if(!notes.length){list.innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;padding:10px">Aucune note</div>';return;}
+    list.innerHTML = notes.slice().reverse().map(function(n,i){
+        var idx = notes.length-1-i;
+        return '<div class="notes-panel-item"><div class="note-date">'+n.date+'</div><div style="white-space:pre-wrap;font-size:12px">'+escHtml(n.text)+'</div><button class="note-del" onclick="deleteNote('+idx+')">&#x2715;</button></div>';
+    }).join('');
+}
+
+function deleteNote(idx) {
+    var p = data.projects.find(function(x){return x.id===_npProjId;});
+    if(!p||!p.notes) return;
+    p.notes.splice(idx,1);
+    apiPost('/api/projects',p).then(function(){renderNotesPanel(p);});
+}
+
+async function addNotePanel() {
+    var text = document.getElementById('np-input').value.trim();
+    if(!text||!_npProjId) return;
+    var note = {date:new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),text:text};
+    document.getElementById('np-input').value = '';
+    if(_npProjId==='__global__'){
+        var notes=getGlobalNotes(); notes.push(note); saveGlobalNotes(notes); renderGlobalNotesList(); return;
+    }
+    var p = data.projects.find(function(x){return x.id===_npProjId;});
+    if(!p) return;
+    if(!p.notes) p.notes=[];
+    p.notes.push(note);
+    await apiPost('/api/projects',p);
+    renderNotesPanel(p);
+}
+
+function openGlobalNotes() {
+    _npProjId = '__global__';
+    document.getElementById('np-proj-name').textContent = 'Notes generales';
+    document.getElementById('np-input').value = '';
+    document.getElementById('notes-panel').classList.add('open');
+    renderGlobalNotesList();
+    setTimeout(function(){document.getElementById('np-input').focus();},100);
+}
+function getGlobalNotes(){try{return JSON.parse(localStorage.getItem('gp_global_notes')||'[]');}catch(e){return[];}}
+function saveGlobalNotes(n){localStorage.setItem('gp_global_notes',JSON.stringify(n));}
+function renderGlobalNotesList(){
+    var notes=getGlobalNotes();
+    var list=document.getElementById('np-list');
+    if(!notes.length){list.innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;padding:10px">Aucune note</div>';return;}
+    list.innerHTML=notes.slice().reverse().map(function(n,i){var idx=notes.length-1-i;return '<div class="notes-panel-item"><div class="note-date">'+n.date+'</div><div style="white-space:pre-wrap;font-size:12px">'+escHtml(n.text)+'</div><button class="note-del" onclick="deleteGlobalNote('+idx+')">&#x2715;</button></div>';}).join('');
+}
+function deleteGlobalNote(idx){var n=getGlobalNotes();n.splice(idx,1);saveGlobalNotes(n);renderGlobalNotesList();}
+
+/* Ctrl+Entree pour ajouter */
+document.addEventListener('DOMContentLoaded',function(){
+    var inp=document.getElementById('np-input');
+    if(inp) inp.addEventListener('keydown',function(e){if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();addNotePanel();}});
+});
+
+/* Drag du panneau */
+(function(){
+    var panel,hdr,dragging=false,ox,oy;
+    document.addEventListener('DOMContentLoaded',function(){
+        panel=document.getElementById('notes-panel');
+        hdr=document.getElementById('np-header');
+        if(!panel||!hdr) return;
+        hdr.addEventListener('mousedown',function(e){
+            if(e.target.closest('button')) return;
+            dragging=true;
+            var rect=panel.getBoundingClientRect();
+            ox=e.clientX-rect.left; oy=e.clientY-rect.top;
+            panel.style.right='auto'; panel.style.bottom='auto';
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove',function(e){if(!dragging)return;panel.style.left=(e.clientX-ox)+'px';panel.style.top=(e.clientY-oy)+'px';});
+        document.addEventListener('mouseup',function(){dragging=false;});
+    });
+})();
