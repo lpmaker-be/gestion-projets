@@ -4475,8 +4475,17 @@ document.addEventListener('DOMContentLoaded',function(){
     });
 })();
 
-/* Reset position notes panel */
-function _resetNotesPanelPos(){var el=document.getElementById("notes-panel");if(!el)return;el.style.position="fixed";el.style.bottom="20px";el.style.right="20px";el.style.top="";el.style.left="";el.style.width="300px";el.style.maxHeight="420px";el.style.zIndex="9000";}
+/* Reset position notes panel - calcul explicite */
+function _resetNotesPanelPos(){
+    var el=document.getElementById("notes-panel");if(!el)return;
+    var pw=300,ph=420;
+    el.style.position="fixed";
+    el.style.left=(window.innerWidth-pw-20)+"px";
+    el.style.top=(window.innerHeight-ph-20)+"px";
+    el.style.right="auto";el.style.bottom="auto";
+    el.style.width=pw+"px";el.style.maxHeight=ph+"px";
+    el.style.zIndex="9000";
+}
 var _onp=openNotesPanel,_ogn=openGlobalNotes;
 openNotesPanel=function(id){_resetNotesPanelPos();_onp(id);};
 openGlobalNotes=function(){_resetNotesPanelPos();_ogn();};
