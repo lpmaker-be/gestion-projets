@@ -611,34 +611,6 @@
         </div>
     </div>
 </div>
-
-    </div>
-    <div id="np-list" class="notes-panel-list"></div>
-    <div class="notes-panel-footer">
-        <textarea id="np-input" class="notes-panel-input" placeholder="Nouvelle note... (Ctrl+Entree)" rows="3"></textarea>
-        <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="addNotePanel()">+ Ajouter</button>
-    </div>
-</div>
-
-
-<!-- MODAL NOTES -->
-<div class="modal-overlay" id="modal-notes">
-    <div class="modal" style="max-width:500px">
-        <div class="modal-hdr">
-            <h2>&#128221; <span id="notes-modal-title">Notes</span></h2>
-            <button class="modal-x" onclick="closeModal('modal-notes')">&#x2715;</button>
-        </div>
-        <div class="modal-body">
-            <div id="np-list" style="max-height:260px;overflow-y:auto;margin-bottom:12px"></div>
-            <textarea id="np-input" class="frow" style="width:100%;height:70px;border:1.5px solid var(--border);border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:vertical" placeholder="Nouvelle note... (Ctrl+Entree)"></textarea>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-notes')">Fermer</button>
-            <button class="btn btn-primary btn-sm" onclick="addNotePanel()">+ Ajouter</button>
-        </div>
-    </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 
