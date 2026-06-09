@@ -4378,7 +4378,9 @@ function openNotesPanel(projId) {
     if(!p) return;
     document.getElementById('np-proj-name').textContent = p.name;
     document.getElementById('np-input').value = '';
-    document.getElementById('notes-panel').classList.add('open');
+    var _panel=document.getElementById('notes-panel');
+    _panel.style.left=''; _panel.style.top='';
+    _panel.classList.add('open');
     renderNotesPanel(p);
     setTimeout(function(){document.getElementById('np-input').focus();},100);
 }
@@ -4427,7 +4429,9 @@ function openGlobalNotes() {
     _npProjId = '__global__';
     document.getElementById('np-proj-name').textContent = 'Notes generales';
     document.getElementById('np-input').value = '';
-    document.getElementById('notes-panel').classList.add('open');
+    var _panel=document.getElementById('notes-panel');
+    _panel.style.left=''; _panel.style.top='';
+    _panel.classList.add('open');
     renderGlobalNotesList();
     setTimeout(function(){document.getElementById('np-input').focus();},100);
 }
