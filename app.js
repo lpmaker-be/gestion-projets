@@ -711,6 +711,7 @@ function renderBoard() {
                             onclick="openFiles('${p.id}')" title="Fichiers du projet">&#128193;</button>
                     <button class="ic-btn" style="color:#e2445c;font-size:11px;font-weight:600"
                             onclick="exportPDF('${p.id}')" title="Exporter PDF">PDF</button>
+                    <button class="ic-btn" onclick="openNotesPanel('${p.id}')" title="Notes du projet" style="font-size:13px">&#128221;</button>
                     <button class="btn btn-secondary btn-sm" onclick="exportExcel('${p.id}')" title="Exporter Excel" style="padding:3px 8px;font-size:11px;color:#1d6f42;border-color:#1d6f42">XLS</button>
                     <button class="ic-btn" style="color:var(--red)"
                             onclick="deleteProject('${p.id}')" title="Supprimer">🗑</button>
