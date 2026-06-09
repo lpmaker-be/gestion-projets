@@ -4384,7 +4384,9 @@ function openNotesPanel(projId) {
 }
 
 function closeNotesPanel() {
-    document.getElementById('notes-panel').classList.remove('open');
+    var p = document.getElementById('notes-panel');
+    p.classList.remove('open');
+    p.style.left=''; p.style.top='';
     _npProjId = null;
 }
 
@@ -4457,6 +4459,8 @@ document.addEventListener('DOMContentLoaded',function(){
             dragging=true;
             var rect=panel.getBoundingClientRect();
             ox=e.clientX-rect.left; oy=e.clientY-rect.top;
+            panel.style.left=rect.left+'px';
+            panel.style.top=rect.top+'px';
             panel.style.right='auto'; panel.style.bottom='auto';
             e.preventDefault();
         });
