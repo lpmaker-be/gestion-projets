@@ -853,3 +853,13 @@ body.dragging * { user-select: none !important; -webkit-user-select: none !impor
 .note-date{font-size:10px;color:var(--text3);margin-bottom:4px;}
 .note-del{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 5px;border-radius:3px;}
 .note-del:hover{background:var(--red);color:#fff;}
+
+/* Sidebar collapse */
+.sb-collapse-btn{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;padding:0 0 0 6px;margin-left:auto;}
+.sb-collapse-btn:hover{color:#fff;}
+.sidebar-mini .sidebar{width:54px;min-width:54px;}
+.sidebar-mini .logo-text,.sidebar-mini .sb-label,.sidebar-mini .sb-count,.sidebar-mini .sb-footer{display:none;}
+.sidebar-mini .sb-item{justify-content:center;padding:8px 0;}
+.sidebar-mini .sb-item span:last-child:not(.sb-dot){display:none;}
+.sidebar-mini .sidebar-logo{padding:12px 0;justify-content:center;}
+.sidebar-mini .app-version-badge{display:none;}
