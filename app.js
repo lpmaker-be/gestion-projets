@@ -4477,5 +4477,5 @@ document.addEventListener('DOMContentLoaded',function(){
 
 /* Reset position notes panel */
 var _onp=openNotesPanel,_ogn=openGlobalNotes;
-openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";el.style.right="";el.style.bottom="";}_onp(id);};
-openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.left="";el.style.top="";el.style.right="";el.style.bottom="";}_ogn();};
+openNotesPanel=function(id){var el=document.getElementById("notes-panel");if(el){el.style.cssText="position:fixed;bottom:20px;right:20px;z-index:9000;width:300px;max-height:420px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;display:flex;";}_onp(id);};
+openGlobalNotes=function(){var el=document.getElementById("notes-panel");if(el){el.style.cssText="position:fixed;bottom:20px;right:20px;z-index:9000;width:300px;max-height:420px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;display:flex;";}_ogn();};
